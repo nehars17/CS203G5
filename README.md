@@ -1,1 +1,1 @@
-# CS203G5
+# Welcome to Cue Manager!
