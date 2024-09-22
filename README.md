@@ -1,1 +1,1 @@
-# Welcome to Cue Manager!
+# Welcome to Cue Master!
