@@ -21,7 +21,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class match {
+public class Match {
     private @Id @GeneratedValue (strategy = GenerationType.IDENTITY) Long id;
 
     
