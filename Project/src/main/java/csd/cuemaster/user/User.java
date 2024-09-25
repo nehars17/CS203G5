@@ -15,6 +15,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.lang.String;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import csd.cuemaster.profile.Profile;
@@ -58,6 +60,17 @@ public class User implements UserDetails{
         this.username = username;
         this.password = password;
         this.authorities = authorities;
+    }
+
+    private UserRole role; //UserRole is a Enum types, Enum types in Java are a special type of class that defines a fixed set of constants
+
+    public enum UserRole{
+        PLAYER,
+        ORGANIZER,
+        ADMIN
+    }
+    public UserRole getRole() {
+        return role;
     }
 
 
