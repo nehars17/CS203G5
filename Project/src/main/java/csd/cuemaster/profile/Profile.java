@@ -17,17 +17,15 @@ import csd.cuemaster.user.User;
 import csd.cuemaster.user.User.UserRole;
 import lombok.*;
 
-
 @Entity
-@Getter                     //getter methods for all the variables 
+@Getter // getter methods for all the variables
 @Setter
 @ToString
-@AllArgsConstructor         //generates a constructor that takes all instance variables as argument
-@NoArgsConstructor          //generates a no-argument constructor
-@EqualsAndHashCode          //generate equals() and hashCode() methods for a class
+@AllArgsConstructor // generates a constructor that takes all instance variables as argument
+@NoArgsConstructor // generates a no-argument constructor
+@EqualsAndHashCode // generate equals() and hashCode() methods for a class
 public class Profile {
-    private @Id @GeneratedValue (strategy = GenerationType.IDENTITY) Long id;
-    
+    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
     @NotNull(message = "First name should not be null")
     @Size(min = 2, message = "First name should be at least 5 characters long")
@@ -41,29 +39,27 @@ public class Profile {
     @Past(message = "Date of birth must be in the past")
     private LocalDate birthdate;
 
-    @NotNull (message = "Location should not be null")
-    private String location; 
+    @NotNull(message = "Location should not be null")
+    private String location;
 
     private FileOutputStream profilephoto;
 
     private String organization;
 
-    private int TournamentCount; 
+    private int TournamentCount;
 
     private int TournamentWinCount;
 
-    private int MatchCount; 
+    private int MatchCount;
 
-    private int MatchWinCount; 
+    private int MatchWinCount;
 
-    private Integer points;     //use Integer so that I can assign null to point 
+    private Integer points; // use Integer so that I can assign null to point
 
-    public void prePresist(){
-
-        if (user.getId() == null && user.getRole() == UserRole.PLAYER){
-
-            points = 1200; 
-        }else if (user.getRole() != UserRole.PLAYER){
+    public void prePresist() {
+        if (user.getId() == null && user.getRole() == UserRole.PLAYER) {
+            points = 1200;
+        } else if (user.getRole() != UserRole.PLAYER) {
             points = null;
         }
     }
@@ -73,5 +69,4 @@ public class Profile {
     // nullable = false: add not-null constraint to the database column "book_id"
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    
 }
