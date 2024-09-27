@@ -73,6 +73,13 @@ public class User implements UserDetails{
         return role;
     }
 
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     /* Return a collection of authorities (roles) granted to the user.
     */

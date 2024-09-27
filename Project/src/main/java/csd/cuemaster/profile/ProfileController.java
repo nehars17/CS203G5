@@ -1,10 +1,11 @@
 package csd.cuemaster.profile;
 
 import java.util.Optional;
+import java.util.List;
 
 import jakarta.validation.Valid;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,10 +29,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class ProfileController {
+    private ProfileService profileService;
     private ProfileRepository profilerepository;
     private UserRepository userrepository;
 
-    public ProfileController(ProfileRepository ps, UserRepository us){
+    public ProfileController(ProfileService p, ProfileRepository ps, UserRepository us){
+        this.profileService = p;
         this.profilerepository = ps;
         this.userrepository = us;
     }
@@ -52,5 +55,11 @@ public class ProfileController {
 
         }
     }
-    
+
+    // Returns a leaderboard.
+    @GetMapping("/profiles")
+    public List<Profile> getLeaderboard() {
+        List<User> users = userrepository.findAll();
+        return profileService.getSortedPlayers(users);
+    }
 }

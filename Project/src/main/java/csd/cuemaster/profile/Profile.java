@@ -54,7 +54,11 @@ public class Profile {
 
     private int MatchWinCount;
 
-    private Integer points; // use Integer so that I can assign null to point
+    protected Integer points; // use Integer so that I can assign null to points.
+
+    public Profile(Long id) {
+        this.id = id;
+    }
 
     public void prePresist() {
         if (user.getId() == null && user.getRole() == UserRole.PLAYER) {
