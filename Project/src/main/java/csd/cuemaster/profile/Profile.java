@@ -56,6 +56,10 @@ public class Profile {
 
     private Integer points; // use Integer so that I can assign null to points.
 
+    public Long getId() {
+        return id;
+    }
+
     public Integer getPoints() {
         return points;
     }
