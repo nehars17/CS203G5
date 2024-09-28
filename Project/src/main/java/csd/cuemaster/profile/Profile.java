@@ -54,10 +54,10 @@ public class Profile {
 
     private int MatchWinCount;
 
-    protected Integer points; // use Integer so that I can assign null to points.
+    private Integer points; // use Integer so that I can assign null to points.
 
-    public Profile(Long id) {
-        this.id = id;
+    public Integer getPoints() {
+        return points;
     }
 
     public void prePresist() {

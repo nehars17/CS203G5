@@ -53,8 +53,7 @@ public class User implements UserDetails{
 
     @OneToOne (mappedBy = "user", orphanRemoval = true)
     @JsonIgnore
-    private Profile profile; 
-
+    private Profile profile;
 
     public User(String username, String password, String authorities){
         this.username = username;
@@ -69,6 +68,7 @@ public class User implements UserDetails{
         ORGANIZER,
         ADMIN
     }
+
     public UserRole getRole() {
         return role;
     }
@@ -77,8 +77,8 @@ public class User implements UserDetails{
         return profile;
     }
 
-    public Long getId() {
-        return id;
+    public Long getProfileId() {
+        return profile.getId();
     }
 
     /* Return a collection of authorities (roles) granted to the user.

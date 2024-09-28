@@ -26,13 +26,13 @@ public class ProfileServiceImpl implements ProfileService {
         }
         return users.stream()
                 .filter(user -> user.getRole() == UserRole.PLAYER)
-                .sorted(Comparator.comparingInt(user -> ((User) user).getProfile().points).reversed())
-                .map(user -> getProfile(user.getId()))
+                .sorted(Comparator.comparingInt(user -> ((User) user).getProfile().getPoints()).reversed())
+                .map(user -> getProfile(user.getProfileId()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Profile getProfile(Long id){
+    public Profile getProfile(Long id) {
         return profiles.findById(id).orElse(null);
     }
 }
