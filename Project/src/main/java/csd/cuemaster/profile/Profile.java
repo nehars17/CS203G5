@@ -64,6 +64,10 @@ public class Profile {
         return points;
     }
 
+    public void setPoints(Integer points) {
+        this.points = points;
+    }
+
     public void prePresist() {
         if (user.getId() == null && user.getRole() == UserRole.PLAYER) {
             points = 1200;

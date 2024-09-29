@@ -6,5 +6,6 @@ import csd.cuemaster.user.User;
 
 public interface ProfileService {
     List<Profile> getSortedPlayers(List<User> users);
+    List<Profile> getSortedPlayersAfterPointsReset(List<User> users);
     Profile getProfile(Long id);
 }

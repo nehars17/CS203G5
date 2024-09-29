@@ -32,6 +32,22 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    public List<Profile> getSortedPlayersAfterPointsReset(List<User> users) {
+        if (users == null || users.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return users.stream()
+                .filter(user -> user.getRole() == UserRole.PLAYER)
+                .sorted(Comparator.comparingInt(user -> ((User) user).getProfile().getPoints()).reversed())
+                .map(user -> {
+                    Profile profile = getProfile(user.getProfileId());
+                    profile.setPoints(1200);
+                    return profile;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Profile getProfile(Long id) {
         return profiles.findById(id).orElse(null);
     }

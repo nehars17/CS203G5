@@ -62,4 +62,11 @@ public class ProfileController {
         List<User> users = userrepository.findAll();
         return profileService.getSortedPlayers(users);
     }
+
+    // Returns a leaderboard after a reset.
+    @PutMapping("/profiles")
+    public List<Profile> getLeaderboardAfterPointsReset() {
+        List<User> users = userrepository.findAll();
+        return profileService.getSortedPlayersAfterPointsReset(users);
+    }
 }
