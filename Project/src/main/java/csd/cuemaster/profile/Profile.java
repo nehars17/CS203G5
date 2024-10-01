@@ -56,6 +56,8 @@ public class Profile {
 
     private Integer points; // use Integer so that I can assign null to points.
 
+    private Integer rank;
+
     public Long getId() {
         return id;
     }
@@ -66,6 +68,10 @@ public class Profile {
 
     public void setPoints(Integer points) {
         this.points = points;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
     }
 
     public void prePresist() {

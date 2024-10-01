@@ -51,4 +51,13 @@ public class ProfileServiceImpl implements ProfileService {
     public Profile getProfile(Long id) {
         return profiles.findById(id).orElse(null);
     }
+
+    @Override
+    public void updateRank(List<Profile> sortedplayers) {
+        int currentRank = 1;
+            for (Profile profile : sortedplayers) {
+                profile.setRank(currentRank);
+                currentRank++;
+            }
+    }
 }
