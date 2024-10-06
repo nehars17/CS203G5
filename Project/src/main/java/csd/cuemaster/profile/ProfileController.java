@@ -50,10 +50,15 @@ public class ProfileController {
 
         UserRole role = user.getRole();
 
-        if (role == UserRole.ORGANIZER){
+        // if (role == UserRole.ORGANIZER){
 
 
-        }
+        // }
+        //testing
+        Profile profile = profilerepository.findByUser(user)
+                .orElseThrow(() -> new UsernameNotFoundException("Profile for User ID: " + userId + " not found."));
+                
+        return profile;
     }
 
     // Returns a sorted list of players.

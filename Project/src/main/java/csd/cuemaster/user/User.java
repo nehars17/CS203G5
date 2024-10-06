@@ -3,6 +3,13 @@ package csd.cuemaster.user;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import csd.cuemaster.profile.Profile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,18 +17,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.lang.String;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import csd.cuemaster.profile.Profile;
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -55,13 +56,13 @@ public class User implements UserDetails{
     @JsonIgnore
     private Profile profile;
 
+    private UserRole role; //UserRole is a Enum types, Enum types in Java are a special type of class that defines a fixed set of constants
+
     public User(String username, String password, String authorities){
         this.username = username;
         this.password = password;
         this.authorities = authorities;
     }
-
-    private UserRole role; //UserRole is a Enum types, Enum types in Java are a special type of class that defines a fixed set of constants
 
     public enum UserRole{
         PLAYER,
@@ -77,8 +78,18 @@ public class User implements UserDetails{
         return profile;
     }
 
-    public Long getProfileId() {
-        return profile.getId();
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
     }
 
     /* Return a collection of authorities (roles) granted to the user.

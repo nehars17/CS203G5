@@ -26,7 +26,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
         return users.stream()
                 .filter(user -> user.getRole() == UserRole.PLAYER)
-                .map(user -> getProfile(user.getProfileId()))
+                .map(user -> getProfile(user.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -38,7 +38,7 @@ public class ProfileServiceImpl implements ProfileService {
         return users.stream()
                 .filter(user -> user.getRole() == UserRole.PLAYER)
                 .sorted(Comparator.comparingInt(user -> ((User) user).getProfile().getPoints()).reversed())
-                .map(user -> getProfile(user.getProfileId()))
+                .map(user -> getProfile(user.getId()))
                 .collect(Collectors.toList());
     }
 
