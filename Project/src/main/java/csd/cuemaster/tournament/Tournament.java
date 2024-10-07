@@ -25,6 +25,7 @@ import lombok.*;
 @Setter
 @ToString
 @AllArgsConstructor
+// @NoArgsConstructor
 @EqualsAndHashCode
 
 public class Tournament {

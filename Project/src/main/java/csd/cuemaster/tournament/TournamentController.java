@@ -1,33 +1,39 @@
 package csd.cuemaster.tournament;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/tournaments")
+// @RequestMapping("/tournaments")
 public class TournamentController {
 
     @Autowired
     private TournamentService tournamentService;
 
     // Create a new Tournament
-    @PostMapping
-    public Tournament createTournament(@RequestBody Tournament tournament) {
-        return tournamentService.createTournament(tournament);
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/tournaments")
+    public Tournament createTournament(@Valid @RequestBody Tournament tournament) {
+        Tournament savedTournament = tournamentService.createTournament(tournament);
+        if (savedTournament ==  null) throw new TournamentExistsException(tournament.getId());
+        return savedTournament;
     }
 
     // Get all Tournaments
-    @GetMapping
+    @GetMapping("/tournaments")
     public List<Tournament> getAllTournaments() {
         return tournamentService.getAllTournaments();
     }
 
     // Get a specific Tournament by ID
-    @GetMapping("/{id}")
+    @GetMapping("/tournaments/{id}")
     public ResponseEntity<Tournament> getTournamentById(@PathVariable Long id) {
         Optional<Tournament> tournament = tournamentService.getTournamentById(id);
         return tournament.map(ResponseEntity::ok)
@@ -35,7 +41,7 @@ public class TournamentController {
     }
 
     // Update a Tournament by ID
-    @PutMapping("/{id}")
+    @PutMapping("/tournaments/{id}")
     public ResponseEntity<Tournament> updateTournament(
             @PathVariable Long id, @RequestBody Tournament tournamentDetails) {
         try {
@@ -47,12 +53,12 @@ public class TournamentController {
     }
 
     // Delete a Tournament by ID
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/tournaments/{id}")
     public ResponseEntity<Void> deleteTournament(@PathVariable Long id) {
         try {
             tournamentService.deleteTournament(id);
             return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
+        } catch (TournamentNotFoundException e) { // RuntimeException
             return ResponseEntity.notFound().build();
         }
     }
