@@ -1,3 +1,57 @@
+### Create a new tournament
+POST http://localhost:8080/tournaments
+Content-Type: application/json
+
+{
+  "tournamentname": "New York Tournament",
+  "location": "New York",
+  "startDate": "2024-09-20",
+  "endDate": "2024-09-21",
+  "time": "10:00:00",
+  "status": "UPCOMING",
+  "description": "Test Tournament",
+  "winnerId": null,
+  "players": []
+}
+
+### Retrieve all tournaments
+GET http://localhost:8080/tournaments
+
+### Retrieve a specific tournament by ID
+GET http://localhost:8080/tournaments/1
+
+### Retrieve a specific tournament by ID that doesnt exist
+GET http://localhost:8080/tournaments/4
+
+### Update a tournament
+PUT http://localhost:8080/tournaments/1
+Content-Type: application/json
+
+{
+  "tournamentname": "New York Tournament",
+  "location": "Los Angeles",
+  "startDate": "2024-09-22",
+  "endDate": "2024-09-23",
+  "time": "12:00:00",
+  "status": "ONGOING",
+  "description": "Updated Tournament",
+  "winnerId": 3,
+  "players": [3, 4]
+}
+
+### Delete a tournament
+DELETE http://localhost:8080/tournaments/1
+
+### Delete a tournament that doesnt exist
+DELETE http://localhost:8080/tournaments/4
+
+
+
+
+
+
+
+
 GET http://localhost:8080/books
 
 ###

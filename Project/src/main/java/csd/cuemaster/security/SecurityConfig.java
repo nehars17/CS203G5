@@ -66,11 +66,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/books/*").hasAnyRole("ADMIN")
                 // note that Spring Security 6 secures all endpoints by default
                 // remove the below line after adding the required rules
-                // .anyRequest().permitAll() // allowing the request without any authentication / authorization 
-                .requestMatchers(HttpMethod.POST, "/books/*/reviews").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/books/*/reviews/*").hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/books/*/reviews").hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/users").hasAnyRole("ADMIN")
+                .anyRequest().permitAll() // allowing the request without any authentication / authorization 
+                // .requestMatchers(HttpMethod.POST, "/books/*/reviews").authenticated()
+                // .requestMatchers(HttpMethod.DELETE, "/books/*/reviews/*").hasAnyRole("ADMIN")
+                // .requestMatchers(HttpMethod.PUT, "/books/*/reviews").hasAnyRole("ADMIN")
+                // .requestMatchers(HttpMethod.POST, "/users").hasAnyRole("ADMIN")
             )
             // ensure that the application won’t create any session in our stateless REST APIs
             .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -23,12 +23,17 @@ public class CueMasterApplication {
 
 	public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(CueMasterApplication.class, args);
-        TournamentRepository tournaments = ctx.getBean(TournamentRepository.class);
 
-        // Create and save a tournament with valid initial data to satisfy validation constraints
-        Tournament tournament = new Tournament("New York", LocalDate.now(), LocalDate.now().plusDays(5),
-                LocalTime.of(12, 0), Tournament.Status.UPCOMING, "Annual 9-ball Tournament", null, new ArrayList<>());
+        UserRepository users = ctx.getBean(UserRepository.class);
+        BCryptPasswordEncoder encoder = ctx.getBean(BCryptPasswordEncoder.class);
+        System.out.println("[Add user]: " + users.save(new User("admin", 
+        encoder.encode("goodpassword"), "ROLE_ADMIN")).getUsername());
+
+        // TournamentRepository tournaments = ctx.getBean(TournamentRepository.class);
+        // // Create and save a tournament with valid initial data to satisfy validation constraints
+        // Tournament tournament = new Tournament("New York Tournament", "New York", LocalDate.now(), LocalDate.now().plusDays(5),
+        //         LocalTime.of(12, 0), Tournament.Status.UPCOMING, "Annual 9-ball Tournament", null, new ArrayList<>());
         
-        System.out.println("[Add tournament]: " + tournaments.save(tournament).getId());
+        // System.out.println("[Add tournament]: " + tournaments.save(tournament).getId());
     }
 }

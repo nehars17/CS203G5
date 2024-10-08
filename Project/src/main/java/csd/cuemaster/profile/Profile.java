@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
-import java.io.FileOutputStream;
+// import java.io.FileOutputStream;
 import java.time.LocalDate;
 
 import csd.cuemaster.user.User;
@@ -42,7 +42,7 @@ public class Profile {
     @NotNull(message = "Location should not be null")
     private String location;
 
-    private FileOutputStream profilephoto;
+    // private FileOutputStream profilephoto;
 
     private String organization;
 

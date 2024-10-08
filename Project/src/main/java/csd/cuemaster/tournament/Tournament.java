@@ -1,5 +1,7 @@
 package csd.cuemaster.tournament;
 
+import jakarta.persistence.CascadeType;
+
 // import org.hibernate.mapping.List;
 
 import jakarta.persistence.ElementCollection;
@@ -78,8 +80,8 @@ public class Tournament {
         FINAL
     }
 
-    @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Match match;
+    // @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
+    // private Match match;
 
     // Default constructor
     public Tournament() {
@@ -88,7 +90,7 @@ public class Tournament {
     }
 
     // Additional overloaded constructors if needed
-    public Tournament(String location, LocalDate startDate, LocalDate endDate, 
+    public Tournament(String tournamentname, String location, LocalDate startDate, LocalDate endDate, 
     LocalTime time, Status status, String description, Long winnerId, List<Long> players) {
         this.location = location;
         this.startDate = startDate;

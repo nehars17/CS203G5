@@ -68,7 +68,9 @@ public class RestTemplateClient {
      * @return The created Tournament object
      */
     public Tournament createTournament(final String URI, final Tournament newTournament) {
-        return template.postForObject(URI, newTournament, Tournament.class);
+        final Tournament returned = template.postForObject(URI, newTournament, Tournament.class);
+        
+        return returned;
     }
 
     /**
@@ -79,7 +81,8 @@ public class RestTemplateClient {
      * @return The retrieved Tournament object
      */
     public Tournament getTournamentById(final String URI, final Long id) {
-        return template.getForObject(URI + "/" + id, Tournament.class);
+        final Tournament tournament = template.getForObject(URI + "/" + id, Tournament.class);
+        return tournament;
     }
 
     /**
@@ -88,6 +91,7 @@ public class RestTemplateClient {
      * @param URI The endpoint URI
      * @return List of Tournament objects
      */
+    @SuppressWarnings("unchecked")
     public List<Tournament> getAllTournaments(final String URI) {
         return template.getForObject(URI, List.class);
     }
