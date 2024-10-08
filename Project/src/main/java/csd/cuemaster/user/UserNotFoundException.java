@@ -1,15 +1,15 @@
-package csd.cuemaster.profile;
+package csd.cuemaster.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ProfileNotFoundException extends RuntimeException{
+public class UserNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public ProfileNotFoundException(Long id) {
-        super("Profile with user ID " + id + " not found.");
+    public UserNotFoundException(Long id) {
+        super("User with UserID: " + id + " not found.");
     }
-    
 }
+

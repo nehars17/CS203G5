@@ -41,17 +41,17 @@ public class ProfileController {
     }
 
     @GetMapping("/users/{user_id}/profile/{profile_id}")
-    public Profile getUserProfile(@PathVariable Long user_id,@PathVariable Long profile_id) {
-        return profileService.getProfile(profile_id);
+    public Profile getUserProfile(@PathVariable (value = "user_id") Long user_id,@PathVariable Long profile_id) {
+        return profileService.getProfile(user_id,profile_id);
     }
     
-    @PutMapping("/profiles/{user_id}/edit")
+    @PutMapping("/user/{user_id}/profile/edit")
     public Profile putExistingProfile(@PathVariable Long user_id, @Valid @RequestBody Profile newProfileInfo) {
         return profileService.updateProfile(user_id, newProfileInfo);
     }
 
     @PostMapping("users/{user_id}/profile")
-    public Profile postMethodName(@PathVariable (value = "userId") Long user_id, @Valid @RequestBody Profile profile) {
+    public Profile postMethodName(@PathVariable (value = "user_id") Long user_id, @Valid @RequestBody Profile profile) {
         return profileService.addProfile(user_id, profile);
     }
     

@@ -1,9 +1,12 @@
 package csd.cuemaster.client;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -31,10 +34,55 @@ public class RestTemplateClient {
     //  * @param id
     //  * @return
     //  */
-    public Profile getProfileByProfileID(final String URI, final Long id) {
-        final Profile profile = template.getForObject(URI + "/profile/" + id, Profile.class);
+    public Profile getProfileByProfileID(final String URI, final Long userid, final Long profileid) {
+        final Profile profile = template.getForObject(URI + "/users/" + userid + "/profile/" + profileid, Profile.class);
         return profile;
     }
+
+
+    /**
+     * Get all profile
+     * 
+    //  * @param URI
+    //  * @param id
+    //  * @return
+    //  */
+    public List<Profile> getAllProfile(final String URI, final Long id) {
+        Profile[] profileArray = template.getForObject(URI + "/profile", Profile[].class);
+        List<Profile> profileList = Arrays.asList(profileArray);
+        return profileList;
+    }
+
+
+    /**
+     * Get update user profile
+     * 
+    //  * @param URI
+    //  * @param id
+    //  * @return
+    //  */
+    public Profile putUserProfile(final String URI, final Long userid, final Profile newProfile){
+
+        HttpEntity<Profile> requestEntity = new HttpEntity<>(newProfile);
+        ResponseEntity<Profile> responseEntity = template.exchange(URI + "/user/" + userid + "/profile/edit", HttpMethod.PUT, requestEntity, Profile.class);
+        return responseEntity.getBody();
+    }
+
+
+    // /**
+    //  * Add a new profile
+    //  * 
+    //  * @param URI
+    //  * @param newBook
+    //  * @return
+    //  */
+    public Profile addBook(final String URI, final Long userid, final Profile newProfile) {
+        final Profile returned = template.postForObject(URI + "/users/" + userid + "/profile", newProfile, Profile.class);
+        
+        return returned;
+    }
+
+
 
     // public Book getBook(final String URI, final Long id) {
     //     final Book book = template.getForObject(URI + "/" + id, Book.class);

@@ -25,9 +25,13 @@ public class CueMasterApplication {
         System.out.println("[Add user]: " + users.save(
         new User("admin", encoder.encode("goodpassword"), "ROLE_ADMIN")).getUsername());
 
-        // User user = new User("bryan", encoder.encode("goodpassword"), "ROLE_ORGANIZER");
-        // User saveduser = users.save(user);
-        // System.out.println("[Add user]: " + saveduser.getUsername());
+        User user = new User("bryan", encoder.encode("goodpassword"), "ROLE_ORGANIZER");
+        User saveduser = users.save(user);
+        System.out.println("[Add user]: " + saveduser.getUsername());
+
+        User user2 = new User("nehaneha", encoder.encode("goodpassword"), "ROLE_PLAYER");
+        User saveduser2 = users.save(user2);
+        System.out.println("[Add user]: " + saveduser2.getUsername());
 
         // String fos = "C:\\Users\\ngcho\\OneDrive\\Desktop\\sunset.jpg";
         // ProfileRepository profiles = ctx.getBean(ProfileRepository.class);
