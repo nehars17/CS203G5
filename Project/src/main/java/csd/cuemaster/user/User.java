@@ -3,14 +3,6 @@ package csd.cuemaster.user;
 import java.util.Arrays;
 import java.util.Collection;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,8 +10,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import csd.cuemaster.profile.Profile;
-
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -37,8 +41,8 @@ public class User implements UserDetails{
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     
-    @NotNull(message = "Username should not be null")
-    @Size(min = 5, max = 20, message = "Username should be between 5 and 20 characters")
+    @NotNull(message = "Email should not be null")
+    @Size(min = 5, max = 20, message = "Email address should be between 5 and 20 characters")
     private String username;
     
     @NotNull(message = "Password should not be null")
@@ -46,18 +50,25 @@ public class User implements UserDetails{
     private String password;
 
     @NotNull(message = "Authorities should not be null")
-    // We define two roles/authorities: ROLE_USER or ROLE_ADMIN
+    // We define three roles/authorities: ROLE_PLAYER or ROLE_ADMIN or ROLE_ORGANISER
     private String authorities;
 
-    @OneToOne (mappedBy = "user", orphanRemoval = true)
+    private boolean enabled;
+
+    private String provider;
+
+
+    @OneToOne(mappedBy = "user", orphanRemoval = true, cascade=CascadeType.ALL)
     @JsonIgnore
     private Profile profile; 
 
 
-    public User(String username, String password, String authorities){
+    public User(String username, String password, String authorities, String provider){
         this.username = username;
         this.password = password;
         this.authorities = authorities;
+        this.enabled = false;
+        this.provider = provider;
     }
 
 
@@ -84,8 +95,15 @@ public class User implements UserDetails{
     public boolean isCredentialsNonExpired() {
         return true;
     }
-    @Override
-    public boolean isEnabled() {
-        return true;
+    // @Override
+    // public boolean isEnabled() {
+    //     return true;
+    // }
+    public void setEnabled(){
+        this.enabled = true;
+    }
+
+    public boolean getEnabled(){
+        return enabled;
     }
 }

@@ -2,11 +2,12 @@ package csd.cuemaster.client;
 
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import csd.cuemaster.profile.Book;
+import csd.cuemaster.user.User;
+
+// import csd.cuemaster.profile.Book;
 
 @Component
 public class RestTemplateClient {
@@ -29,10 +30,10 @@ public class RestTemplateClient {
      * @param id
      * @return
      */
-    public Book getBook(final String URI, final Long id) {
-        final Book book = template.getForObject(URI + "/" + id, Book.class);
-        return book;
-    }
+    // public Book getBook(final String URI, final Long id) {
+    //     final Book book = template.getForObject(URI + "/" + id, Book.class);
+    //     return book;
+    // }
 
     /**
      * Add a new book
@@ -41,8 +42,8 @@ public class RestTemplateClient {
      * @param newBook
      * @return
      */
-    public Book addBook(final String URI, final Book newBook) {
-        final Book returned = template.postForObject(URI, newBook, Book.class);
+    public User addOrganiserUser(final String URI, final User newUser) {
+        final User returned = template.postForObject(URI, newUser, User.class);
         
         return returned;
     }
@@ -53,8 +54,8 @@ public class RestTemplateClient {
      * @param id
      * @return
      */
-    public ResponseEntity<Book> getBookEntity(final String URI, final Long id){
-        return template.getForEntity(URI + "/{id}", Book.class, Long.toString(id));
-    }
+    // public ResponseEntity<Book> getBookEntity(final String URI, final Long id){
+    //     return template.getForEntity(URI + "/{id}", Book.class, Long.toString(id));
+    // }
     
 }
