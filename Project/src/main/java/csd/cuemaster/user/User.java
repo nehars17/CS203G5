@@ -1,5 +1,6 @@
 package csd.cuemaster.user;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -57,17 +58,21 @@ public class User implements UserDetails{
 
     private String provider;
 
+    private String activationToken;
+
+    private LocalDateTime expiryDate;
+
 
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade=CascadeType.ALL)
     @JsonIgnore
     private Profile profile; 
 
 
-    public User(String username, String password, String authorities, String provider){
+    public User(String username, String password, String authorities, String provider,Boolean enabled){
         this.username = username;
         this.password = password;
         this.authorities = authorities;
-        this.enabled = false;
+        this.enabled = enabled;
         this.provider = provider;
     }
 
@@ -95,15 +100,10 @@ public class User implements UserDetails{
     public boolean isCredentialsNonExpired() {
         return true;
     }
-    // @Override
-    // public boolean isEnabled() {
-    //     return true;
-    // }
-    public void setEnabled(){
-        this.enabled = true;
-    }
 
-    public boolean getEnabled(){
+    public boolean isEnabled(){
         return enabled;
     }
+
+
 }

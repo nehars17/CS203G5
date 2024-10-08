@@ -7,15 +7,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-
 @RestController
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private EmailService emailService;
 
 
 
@@ -32,32 +36,43 @@ public class UserController {
      */
 
     @PostMapping("/register/player")
-    public String addPlayerUser(@Valid @RequestBody User user) {
+    public String addPlayerUser(@Valid @RequestBody User user,HttpServletRequest request) {
         User savedUser = userService.addPlayer(user);
         if (savedUser == null) {
             return "Account Exists";
         }
-        return "Registration Successful";
-        // if (users.findByUsername(user.getUsername()) != null) {
-        //     return "Account Exists";
+        String activationLink = "http://localhost:8080/activate?token=" + savedUser.getActivationToken();
+        try {
+            emailService.sendActivationEmail(savedUser.getUsername(), activationLink);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        return "Registration Successful. Please check your email to activate your account.";
 
-        // }
-        // user.setUsername(user.getUsername());
-        // user.setPassword(encoder.encode(user.getPassword()));
-        // user.setAuthorities("ROLE_PLAYER");
-        // user.setProvider("normal");
-        // users.save(user);
-        // return "Registration Successful";
     }
 
     @PostMapping("/register/organiser")
-    public String addOrganiserUser(@Valid @RequestBody User user) {
+    public String addOrganiserUser(@Valid @RequestBody User user, HttpServletRequest request) {
         User savedUser = userService.addOrganiser(user);
+        
         if (savedUser == null) {
             return "Account Exists";
         }
-        return "Registration Successful";
+        String activationLink = "http://localhost:8080/activate?token=" + savedUser.getActivationToken();
+        try {
+            emailService.sendActivationEmail(savedUser.getUsername(), activationLink);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        return "Registration Successful. Please check your email to activate your account.";
 
+    }
+
+    @GetMapping("/activate")
+    public String activateAccount(@RequestParam("token") String token) {
+        String message = userService.accountActivation(token);
+
+        return message; // Return a view to show the activation status
     }
 
     @GetMapping("/normallogin")
@@ -70,6 +85,9 @@ public class UserController {
         if (LoggedInUser==null) {
             return "Username or Password Incorrect";
 
+        }
+        if(!LoggedInUser.isEnabled()){
+            return "Please activate account first";
         }
         if(!LoggedInUser.getProvider().equals("google")){
         } else {

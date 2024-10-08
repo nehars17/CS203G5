@@ -1,9 +1,19 @@
 ###
+POST http://localhost:8080/register/player
+Content-Type: application/json
+
+{
+    "username": "lee334203@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_PLAYER"
+}
+
+###
 POST http://localhost:8080/register/organiser
 Content-Type: application/json
 
 {
-    "username": "test@gmail.com",
+    "username": "nehars.rs@gmail.com",
     "password": "goodpassword",
     "authorities":"ROLE_ORGANISER"
 }
@@ -27,9 +37,19 @@ GET http://localhost:8080/normallogin
 Content-Type: application/json
 
 {
-    "username": "test@gmail.com",
+    "username": "nehars.rs@gmail.com",
     "password": "goodpassword",
     "authorities": "ROLE_ORGANISER"
+}
+
+###
+GET http://localhost:8080/normallogin
+Content-Type: application/json
+
+{
+    "username": "lee334203@gmail.com",
+    "password": "goodpassword",
+    "authorities": "ROLE_PLAYER"
 }
 
 

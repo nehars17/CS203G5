@@ -1,6 +1,7 @@
 package csd.cuemaster.user;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +16,11 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository users, BCryptPasswordEncoder encoder) {
         this.users = users;
         this.encoder = encoder;
+
+    }
+
+    public String generateActivationToken() {
+        return UUID.randomUUID().toString(); // You can store this in the database with a timestamp
     }
 
     @Override
@@ -51,6 +57,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setAuthorities("ROLE_PLAYER");
         user.setProvider("normal");
+        String token = generateActivationToken(); // Generate token
+        user.setActivationToken(token);
         return users.save(user);
     }
 
@@ -63,19 +71,39 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setAuthorities("ROLE_ORGANISER");
         user.setProvider("normal");
+        String token = generateActivationToken(); // Generate token
+        user.setActivationToken(token);
         return users.save(user);
 
     }
 
+    @Override
+
     public String googleLogin(String email, String role) {
         User existingUser = users.findByUsername(email)
                 .orElseGet(() -> {
-                    User newUser = new User(email, "no password", role, "google");
+                    User newUser = new User(email, "no password", role,"google",false);
                     return users.save(newUser);
                 });
 
         return existingUser.getUsername();
 
+    }
+
+    @Override
+    public String accountActivation(String token) {
+        // Find the user by the activation token
+        User foundUser = users.findByActivationToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid activation code"));
+
+        // Set the user as enabled and clear the activation token
+        foundUser.setEnabled(true); // Activate the user
+        foundUser.setActivationToken(null); // Clear token after activation
+
+        // Save the updated user to the database
+        users.save(foundUser);
+
+        return "Account Activated";
     }
 
     @Override
@@ -87,7 +115,5 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-   
 
 }

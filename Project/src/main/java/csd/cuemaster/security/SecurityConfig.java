@@ -93,7 +93,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/normallogin", "/loginSuccess").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/activate","/activate/*","/normallogin", "/loginSuccess").permitAll()
                         .requestMatchers(HttpMethod.POST,"/register/*").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated())
@@ -103,12 +103,7 @@ public class SecurityConfig {
                         .loginPage("/googlelogin/*")
                         .successHandler(customSuccessHandler)
 
-                // .successHandler((request, response, authentication) -> {
-                // // Log the authentication details for debugging
-                // System.out.println("Login successful! User: " +
-                // authentication.getPrincipal());
-                // response.sendRedirect("/loginSuccess");
-                // })
+             
 
                 )
                 .logout(logout -> logout
