@@ -10,7 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import csd.week5.review.Review;
+
+import csd.cuemaster.review.Review;
 import lombok.*;
 
 

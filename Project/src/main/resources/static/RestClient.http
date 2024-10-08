@@ -1,4 +1,4 @@
-GET http://localhost:8080/books
+GET http://localhost:8080/profile
 
 ###
 GET http://localhost:8080/books/abc
@@ -39,13 +39,10 @@ GET http://localhost:8080/books/2/reviews
 
 
 ###
-DELETE http://localhost:8080/books/2/reviews/2
+GET  http://localhost:8080/profile/0
 Content-Type: application/json
-Authorization: Basic gooduser:goodpassword
 
-{
-    "review": "Terrible :)"
-}
+
 ###
 POST http://localhost:8080/books/2/reviews
 Content-Type: application/json

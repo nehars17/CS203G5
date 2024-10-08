@@ -62,18 +62,6 @@ public class User implements UserDetails{
         this.authorities = authorities;
     }
 
-    private UserRole role; //UserRole is a Enum types, Enum types in Java are a special type of class that defines a fixed set of constants
-
-    public enum UserRole{
-        PLAYER,
-        ORGANIZER,
-        ADMIN
-    }
-    public UserRole getRole() {
-        return role;
-    }
-
-
     /* Return a collection of authorities (roles) granted to the user.
     */
     @Override

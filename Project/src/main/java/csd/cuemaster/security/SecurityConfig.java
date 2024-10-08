@@ -59,18 +59,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests((authz) -> authz
-                .requestMatchers("/error").permitAll() // the default error page
-                .requestMatchers(HttpMethod.GET, "/books", "/books/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/books").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/books/*").hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/books/*").hasAnyRole("ADMIN")
+                // .requestMatchers("/error").permitAll() // the default error page
+                // .requestMatchers(HttpMethod.GET, "/books", "/books/**").permitAll()
+                // .requestMatchers(HttpMethod.POST, "/books").authenticated()
+                // .requestMatchers(HttpMethod.PUT, "/books/*").hasAnyRole("ADMIN")
+                // .requestMatchers(HttpMethod.DELETE, "/books/*").hasAnyRole("ADMIN")
                 // note that Spring Security 6 secures all endpoints by default
                 // remove the below line after adding the required rules
-                // .anyRequest().permitAll() // allowing the request without any authentication / authorization 
-                .requestMatchers(HttpMethod.POST, "/books/*/reviews").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/books/*/reviews/*").hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/books/*/reviews").hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/users").hasAnyRole("ADMIN")
+                .anyRequest().permitAll() // allowing the request without any authentication / authorization 
+                // .requestMatchers(HttpMethod.POST, "/books/*/reviews").authenticated()
+                // .requestMatchers(HttpMethod.DELETE, "/books/*/reviews/*").hasAnyRole("ADMIN")
+                // .requestMatchers(HttpMethod.PUT, "/books/*/reviews").hasAnyRole("ADMIN")
+                // .requestMatchers(HttpMethod.POST, "/users").hasAnyRole("ADMIN")
             )
             // ensure that the application won’t create any session in our stateless REST APIs
             .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

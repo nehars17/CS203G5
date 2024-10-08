@@ -1,12 +1,14 @@
 package csd.cuemaster.profile;
 
 import java.util.Optional;
+import java.util.List;
 
 import jakarta.validation.Valid;
 
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,36 +23,36 @@ import org.springframework.web.bind.annotation.RestController;
 
 import csd.cuemaster.user.UserRepository;
 import csd.cuemaster.user.User;
-import csd.cuemaster.user.User.UserRole;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
 public class ProfileController {
-    private ProfileRepository profilerepository;
-    private UserRepository userrepository;
+    private ProfileService profileService; 
 
-    public ProfileController(ProfileRepository ps, UserRepository us){
-        this.profilerepository = ps;
-        this.userrepository = us;
+    public ProfileController (ProfileService profileService){
+        this.profileService = profileService;
     }
 
-    @GetMapping("/{userID}/profile")
-    public Profile getProfileByProfileID(@PathVariable (value = "userId") Long userId) {
+    @GetMapping("/profiles")
+    public List<Profile> getAllProfiles() {
+        return profileService.getAllProfile();
+    }
 
-        // Optional<User> optionalUser = userrepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User ID: " + String.valueOf(user.getId()) + " not found."));
-        // User user = optionalUser.get();
+    @GetMapping("/users/{user_id}/profile/{profile_id}")
+    public Profile getUserProfile(@PathVariable Long user_id,@PathVariable Long profile_id) {
+        return profileService.getProfile(profile_id);
+    }
+    
+    @PutMapping("/profiles/{user_id}/edit")
+    public Profile putExistingProfile(@PathVariable Long user_id, @Valid @RequestBody Profile newProfileInfo) {
+        return profileService.updateProfile(user_id, newProfileInfo);
+    }
 
-        User user = userrepository.findById(userId)             //this statement retrieves the User object from the database 
-                         .orElseThrow(() -> new UsernameNotFoundException("User ID: " + String.valueOf(userId) + " not found.")); //This statement applies the orElseThrow() method to the Optional<User> returned by findById(userId)
-
-        UserRole role = user.getRole();
-
-        if (role == UserRole.ORGANIZER){
-
-
-        }
+    @PostMapping("users/{user_id}/profile")
+    public Profile postMethodName(@PathVariable (value = "userId") Long user_id, @Valid @RequestBody Profile profile) {
+        return profileService.addProfile(user_id, profile);
     }
     
 }
