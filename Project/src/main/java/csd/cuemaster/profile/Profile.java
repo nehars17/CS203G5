@@ -10,7 +10,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
-import java.io.FileOutputStream;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;

@@ -8,4 +8,5 @@ public interface ProfileService {
     Profile getProfile(Long userId, Long profileId);
     Profile updateProfile(Long userId, Profile newProfileInfo);
     Profile addProfile(Long userId, Profile profile);
+    // String addProfilePhoto(Long userID, byte[] image);
 }
