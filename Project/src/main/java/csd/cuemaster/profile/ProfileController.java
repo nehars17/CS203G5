@@ -39,22 +39,22 @@ public class ProfileController {
         this.userrepository = us;
     }
 
-    @GetMapping("/{userID}/profile")
-    public Profile getProfileByProfileID(@PathVariable (value = "userId") Long userId) {
+    // @GetMapping("/{userID}/profile")
+    // public Profile getProfileByProfileID(@PathVariable (value = "userId") Long userId) {
 
-        // Optional<User> optionalUser = userrepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User ID: " + String.valueOf(user.getId()) + " not found."));
-        // User user = optionalUser.get();
+    //     // Optional<User> optionalUser = userrepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User ID: " + String.valueOf(user.getId()) + " not found."));
+    //     // User user = optionalUser.get();
 
-        User user = userrepository.findById(userId)             //this statement retrieves the User object from the database 
-                         .orElseThrow(() -> new UsernameNotFoundException("User ID: " + String.valueOf(userId) + " not found.")); //This statement applies the orElseThrow() method to the Optional<User> returned by findById(userId)
+    //     User user = userrepository.findById(userId)             //this statement retrieves the User object from the database 
+    //                      .orElseThrow(() -> new UsernameNotFoundException("User ID: " + String.valueOf(userId) + " not found.")); //This statement applies the orElseThrow() method to the Optional<User> returned by findById(userId)
 
-        UserRole role = user.getRole();
+    //     UserRole role = user.getRole();
 
-        if (role == UserRole.ORGANIZER){
+    //     if (role == UserRole.ORGANIZER){
 
 
-        }
-    }
+    //     }
+    // }
 
     // Returns a sorted list of players.
     @GetMapping("/profiles")

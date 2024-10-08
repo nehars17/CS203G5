@@ -18,6 +18,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import csd.cuemaster.match.Match;
+
 import lombok.*;
 
 @Entity
@@ -76,8 +78,8 @@ public class Tournament {
         FINAL
     }
 
-    // @OneToMany(mappedBy = "matches", orphanRemoval = true, cascade = CascadeType.ALL)
-    // private csd.cuemaster.match.Match match;
+    @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Match match;
 
     // Default constructor
     public Tournament() {

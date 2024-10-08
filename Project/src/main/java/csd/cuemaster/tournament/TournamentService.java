@@ -38,7 +38,9 @@ public class TournamentService {
             tournament.setWinnerId(tournamentDetails.getWinnerId());
             tournament.setPlayers(tournamentDetails.getPlayers());
             return tournamentRepository.save(tournament);
-        }).orElseThrow(() -> new RuntimeException("Tournament not found with id " + id));
+        }).orElseThrow(() -> new TournamentNotFoundException(id));
+            
+        // }).orElseThrow(() -> new RuntimeException("Tournament not found with id " + id));
     }
 
     // Delete a tournament
