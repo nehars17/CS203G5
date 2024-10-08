@@ -3,6 +3,7 @@ package csd.cuemaster.user;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,27 +37,29 @@ public class UserController {
      */
 
     @PostMapping("/register/player")
-    public String addPlayerUser(@Valid @RequestBody User user,HttpServletRequest request) {
+    public User addPlayerUser(@Valid @RequestBody User user,HttpServletRequest request) {
         User savedUser = userService.addPlayer(user);
         if (savedUser == null) {
-            return "Account Exists";
+            throw new UserExistsException(user.getUsername());
+            
         }
         String activationLink = "http://localhost:8080/activate?token=" + savedUser.getActivationToken();
         try {
             emailService.sendActivationEmail(savedUser.getUsername(), activationLink);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            throw new AccountActivationException("unable to send email");
         }
-        return "Registration Successful. Please check your email to activate your account.";
+        return savedUser;
 
     }
 
     @PostMapping("/register/organiser")
-    public String addOrganiserUser(@Valid @RequestBody User user, HttpServletRequest request) {
+    public User addOrganiserUser(@Valid @RequestBody User user, HttpServletRequest request) {
         User savedUser = userService.addOrganiser(user);
         
         if (savedUser == null) {
-            return "Account Exists";
+            throw new UserExistsException(user.getUsername());
+
         }
         String activationLink = "http://localhost:8080/activate?token=" + savedUser.getActivationToken();
         try {
@@ -64,30 +67,29 @@ public class UserController {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        return "Registration Successful. Please check your email to activate your account.";
+        return savedUser;
 
     }
 
     @GetMapping("/activate")
     public String activateAccount(@RequestParam("token") String token) {
         String message = userService.accountActivation(token);
-
         return message; // Return a view to show the activation status
     }
 
     @GetMapping("/normallogin")
-    public String retrieveUser(HttpSession session, @Valid @RequestBody User user) {
+    public User retrieveUser(HttpSession session, @Valid @RequestBody User user) {
         String existingSession = (String) session.getAttribute("currentUser");
         if(existingSession!=null){
-            return "Please logout first";
+            throw new UserSessionExistException("Please Logout First");
         }
         User LoggedInUser = userService.loginUser(user);
         if (LoggedInUser==null) {
-            return "Username or Password Incorrect";
+            throw new UsernameNotFoundException("Username or Password Incorrect");
 
         }
         if(!LoggedInUser.isEnabled()){
-            return "Please activate account first";
+            throw new AccountActivationException("Please activate account first");
         }
         if(!LoggedInUser.getProvider().equals("google")){
         } else {
@@ -95,15 +97,15 @@ public class UserController {
         }
    
         session.setAttribute("currentUser", LoggedInUser.getUsername());
-        return "Login Successful";
+        return LoggedInUser;
 
        
     }
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public ResponseEntity<?> logout(HttpSession session) {
         // Invalidate the session to log the user out
         session.setAttribute("currentUser", null);
-        return "Logged out successfully";
+        return ResponseEntity.ok().build();
     }
 
 }
