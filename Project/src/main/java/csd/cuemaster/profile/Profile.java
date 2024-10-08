@@ -1,5 +1,8 @@
 package csd.cuemaster.profile;
 
+import java.time.LocalDate;
+
+import csd.cuemaster.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,13 +12,12 @@ import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-
-import java.io.FileOutputStream;
-import java.time.LocalDate;
-
-import csd.cuemaster.user.User;
-import csd.cuemaster.user.User.UserRole;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter // getter methods for all the variables
@@ -42,7 +44,7 @@ public class Profile {
     @NotNull(message = "Location should not be null")
     private String location;
 
-    private FileOutputStream profilephoto;
+    // private FileOutputStream profilephoto;
 
     private String organization;
 
@@ -74,13 +76,7 @@ public class Profile {
         this.rank = rank;
     }
 
-    public void prePresist() {
-        if (user.getId() == null && user.getRole() == UserRole.PLAYER) {
-            points = 1200;
-        } else if (user.getRole() != UserRole.PLAYER) {
-            points = null;
-        }
-    }
+
 
     @OneToOne
     // the column "book_id" will be in the auto-generated table "review"

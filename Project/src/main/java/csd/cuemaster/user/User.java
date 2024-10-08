@@ -1,7 +1,9 @@
 package csd.cuemaster.user;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,7 +12,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import csd.cuemaster.profile.Profile;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,7 +42,8 @@ e.g., what authorities (roles) are granted to the user and whether the account i
 public class User implements UserDetails{
     private static final long serialVersionUID = 1L;
 
-    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    private Long id;
     
     @NotNull(message = "Username should not be null")
     @Size(min = 5, max = 20, message = "Username should be between 5 and 20 characters")
@@ -50,37 +55,31 @@ public class User implements UserDetails{
 
     @NotNull(message = "Authorities should not be null")
     // We define two roles/authorities: ROLE_USER or ROLE_ADMIN
-    private String authorities;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> authorities = new ArrayList<>();
 
     @OneToOne (mappedBy = "user", orphanRemoval = true)
     @JsonIgnore
     private Profile profile;
 
-    private UserRole role; //UserRole is a Enum types, Enum types in Java are a special type of class that defines a fixed set of constants
-
     public User(String username, String password, String authorities){
         this.username = username;
         this.password = password;
-        this.authorities = authorities;
+        this.authorities = Arrays.asList(authorities);
     }
 
-    public enum UserRole{
-        PLAYER,
-        ORGANIZER,
-        ADMIN
-    }
 
-    public UserRole getRole() {
-        return role;
-    }
+    // public UserRole getRole() {
+    //     return role;
+    // }
 
-    public Profile getProfile() {
-        return profile;
-    }
+    // public Profile getProfile() {
+    //     return profile;
+    // }
 
-    public Long getId() {
-        return id;
-    }
+    // public Long getId() {
+    //     return id;
+    // }
 
     @Override
     public String getUsername() {
@@ -96,9 +95,12 @@ public class User implements UserDetails{
     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority(authorities));
+        List<SimpleGrantedAuthority> authList = new ArrayList<>();
+        for (String authority : this.authorities) {
+            authList.add(new SimpleGrantedAuthority(authority));
+        }
+        return authList;
     }
-
     /*
     The various is___Expired() methods return a boolean to indicate whether
     or not the user’s account is enabled or expired.
