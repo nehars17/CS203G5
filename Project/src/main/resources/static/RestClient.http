@@ -1,3 +1,4 @@
+#Bryan Test
 GET http://localhost:8080/profiles
 
 ###
@@ -41,4 +42,77 @@ Content-Type: application/json
     "birthdate": "2000-01-01",
     "birthlocation": "Singapore",
     "organization": null  
+}
+
+
+#Neha Test
+###
+POST http://localhost:8080/register/player
+Content-Type: application/json
+
+{
+    "username": "lee334203@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_PLAYER"
+}
+
+###
+POST http://localhost:8080/register/organiser
+Content-Type: application/json
+
+{
+    "username": "nehars.rs@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_ORGANISER"
+}
+
+###
+GET http://localhost:8080/users
+
+
+###
+GET http://localhost:8080/normallogin
+Content-Type: application/json
+
+{
+    "username": "admin@gmail.com",
+    "password": "goodpassword",
+    "authorities": "ROLE_ADMIN"
+}
+
+###
+GET http://localhost:8080/normallogin
+Content-Type: application/json
+
+{
+    "username": "nehars.rs@gmail.com",
+    "password": "goodpassword",
+    "authorities": "ROLE_ORGANISER"
+}
+
+###
+GET http://localhost:8080/normallogin
+Content-Type: application/json
+
+{
+    "username": "lee334203@gmail.com",
+    "password": "goodpassword",
+    "authorities": "ROLE_PLAYER"
+}
+
+
+
+###
+GET http://localhost:8080/logout
+Content-Type: application/json
+
+
+###
+POST http://localhost:8080/register/player
+Content-Type: application/json
+
+{
+    "username": "player@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_PLAYER"
 }
