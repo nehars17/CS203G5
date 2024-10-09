@@ -84,10 +84,24 @@ public class TournamentController {
     // Delete a Tournament by ID
     @DeleteMapping("/tournaments/{id}")
     public void deleteTournament(@PathVariable Long id) {
-        try {
-            tournamentService.deleteTournament(id);
-        } catch (EmptyResultDataAccessException e) { 
-            throw new TournamentNotFoundException(id);
-        }
+        // try {
+        tournamentService.deleteTournament(id);
+        // } catch (EmptyResultDataAccessException e) { 
+        //     throw new TournamentNotFoundException(id);
+        // }
     }
 }
+
+
+//     public ResponseEntity<Void> deleteMatch(@PathVariable Long matchId) {
+//         matchService.deleteMatchById(matchId);
+//         return ResponseEntity.noContent().build();
+//     }
+
+//     // Exception handler for ResourceNotFoundException
+//     @ExceptionHandler(TournamentNotFoundException.class)
+//     public ResponseEntity<String> handleTournamentNotFound(TioNotFoundException ex) {
+//         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+//     }
+
+// }

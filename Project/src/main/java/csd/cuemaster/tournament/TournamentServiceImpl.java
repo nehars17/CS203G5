@@ -49,6 +49,9 @@ public class TournamentServiceImpl implements TournamentService {
     // Delete a tournament
     @Override
     public void deleteTournament(Long id) {
+        if (!tournamentRepository.existsById(id)) {
+            throw new TournamentNotFoundException(id); // check if tournament id exists before attempting to delete it. If it doesnt exist, throw excpetion
+        }
         tournamentRepository.deleteById(id);
     }
 }

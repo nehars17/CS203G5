@@ -39,6 +39,22 @@ Content-Type: application/json
   "players": [3, 4]
 }
 
+### Update a tournament that doesnt exist
+PUT http://localhost:8080/tournaments/4
+Content-Type: application/json
+
+{
+  "tournamentname": "New York Tournament",
+  "location": "Los Angeles",
+  "startDate": "2024-09-22",
+  "endDate": "2024-09-23",
+  "time": "12:00:00",
+  "status": "ONGOING",
+  "description": "Updated Tournament",
+  "winnerId": 3,
+  "players": [3, 4]
+}
+
 ### Delete a tournament
 DELETE http://localhost:8080/tournaments/1
 
