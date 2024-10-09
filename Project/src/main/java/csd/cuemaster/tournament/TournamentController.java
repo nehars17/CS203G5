@@ -91,17 +91,3 @@ public class TournamentController {
         // }
     }
 }
-
-
-//     public ResponseEntity<Void> deleteMatch(@PathVariable Long matchId) {
-//         matchService.deleteMatchById(matchId);
-//         return ResponseEntity.noContent().build();
-//     }
-
-//     // Exception handler for ResourceNotFoundException
-//     @ExceptionHandler(TournamentNotFoundException.class)
-//     public ResponseEntity<String> handleTournamentNotFound(TioNotFoundException ex) {
-//         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-//     }
-
-// }
