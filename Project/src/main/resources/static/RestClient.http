@@ -1,98 +1,118 @@
-GET http://localhost:8080/books
+#Bryan Test
+GET http://localhost:8080/profiles
 
 ###
-GET http://localhost:8080/books/abc
-
-###
-DELETE http://localhost:8080/books/1
-
-
-###
-POST http://localhost:8080/books
+GET http://localhost:8080/users/2/profile/1
 Content-Type: application/json
-Authorization: Basic admin goodpassword
-
-{
-    "title": "The Great Ideas"
-}
-###
-POST http://localhost:8080/books
-Content-Type: application/json
-Authorization: Basic admin goodpassword
-# Validation failed - book title is null
-
-{
-    "name": "I, Robot"
-}
-###
-PUT http://localhost:8080/books/1
-Content-Type: application/json
-# Wrong username
-Authorization: Basic dt goodpassword
-
-{
-    "title": "The Return of the King"
-}
-
-###
-GET http://localhost:8080/books/2/reviews
-
-
-###
-DELETE http://localhost:8080/books/2/reviews/2
-Content-Type: application/json
-Authorization: Basic gooduser:goodpassword
-
-{
-    "review": "Terrible :)"
-}
-###
-POST http://localhost:8080/books/2/reviews
-Content-Type: application/json
-Authorization: Basic gooduser:goodpassword
-
-{
-    "review": "Should be good!"
-}
-
-###
-PUT http://localhost:8080/books/2/reviews/2
-Content-Type: application/json
-
-{
-    "review": "Should be bad!"
-}
-
-###
-DELETE http://localhost:8080/books/1/reviews/5
 
 ###
 GET http://localhost:8080/users
 
 ###
-POST http://localhost:8080/users
+POST http://localhost:8080/users/2/profile
 Content-Type: application/json
-Authorization: Basic admin goodpassword
 
 {
-    "username": "donta",
+    "firstname": "Bryan",
+    "lastname": "Ng",
+    "birthdate": "2000-01-01",
+    "birthlocation": "Singapore",
+    "organization": "SMU"
+}
+
+###
+POST http://localhost:8080/users/3/profile
+Content-Type: application/json
+
+{
+    "firstname": "Neha",
+    "lastname": "Neha",
+    "birthdate": "2003-01-01",
+    "birthlocation": "Singapore"
+}
+
+
+###
+PUT http://localhost:8080/user/2/profile/edit
+Content-Type: application/json
+
+{
+    "firstname": "Glenn",
+    "lastname": "Fann",
+    "birthdate": "2000-01-01",
+    "birthlocation": "Singapore",
+    "organization": null  
+}
+
+
+#Neha Test
+###
+POST http://localhost:8080/register/player
+Content-Type: application/json
+
+{
+    "username": "lee334203@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_PLAYER"
+}
+
+###
+POST http://localhost:8080/register/organiser
+Content-Type: application/json
+
+{
+    "username": "nehars.rs@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_ORGANISER"
+}
+
+###
+GET http://localhost:8080/users
+
+
+###
+GET http://localhost:8080/normallogin
+Content-Type: application/json
+
+{
+    "username": "admin@gmail.com",
     "password": "goodpassword",
     "authorities": "ROLE_ADMIN"
 }
 
 ###
-POST http://localhost:8080/users
+GET http://localhost:8080/normallogin
 Content-Type: application/json
-Authorization: Basic admin goodpassword
 
 {
-    "username": "gooduser",
+    "username": "nehars.rs@gmail.com",
     "password": "goodpassword",
-    "authorities": "ROLE_USER"
+    "authorities": "ROLE_ORGANISER"
 }
 
 ###
-GET http://localhost:8080/users
+GET http://localhost:8080/normallogin
 Content-Type: application/json
-Authorization: Basic admin goodpassword
 
+{
+    "username": "lee334203@gmail.com",
+    "password": "goodpassword",
+    "authorities": "ROLE_PLAYER"
+}
+
+
+
+###
+GET http://localhost:8080/logout
+Content-Type: application/json
+
+
+###
+POST http://localhost:8080/register/player
+Content-Type: application/json
+
+{
+    "username": "player@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_PLAYER"
+}
