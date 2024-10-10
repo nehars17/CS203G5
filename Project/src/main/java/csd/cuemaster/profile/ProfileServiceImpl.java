@@ -3,13 +3,14 @@ package csd.cuemaster.profile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import csd.cuemaster.user.*;
-import csd.cuemaster.user.User.UserRole;
+// import csd.cuemaster.user.User.UserRole;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
@@ -21,7 +22,6 @@ public class ProfileServiceImpl implements ProfileService{
 
     @Override 
     public List<Profile> getAllProfile(){
-
         return profiles.findAll();
     }
 
@@ -100,34 +100,27 @@ public class ProfileServiceImpl implements ProfileService{
     //     try{
     //         St
     //     }
-    // }
+    // } getAllProfile()
 
     @Override
-    public List<Profile> getPlayers(List<User> users) {
-        if (users == null || users.isEmpty()) {
+    public List<Profile> getPlayers(List<Profile> profiles) {
+        if (profiles == null || profiles.isEmpty()) {
             return new ArrayList<>();
         }
-        return users.stream()
-                .filter(user -> user.getRole() == UserRole.PLAYER)
-                .map(user -> getProfile(user.getProfileId()))
+        return profiles.stream()
+                .filter(profile -> profile.getUser().getAuthorities().equals("ROLE_PLAYER"))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Profile> getSortedPlayers(List<User> users) {
-        if (users == null || users.isEmpty()) {
+    public List<Profile> getSortedPlayers(List<Profile> profiles) {
+        if (profiles == null || profiles.isEmpty()) {
             return new ArrayList<>();
         }
-        return users.stream()
-                .filter(user -> user.getRole() == UserRole.PLAYER)
-                .sorted(Comparator.comparingInt(user -> ((User) user).getProfile().getPoints()).reversed())
-                .map(user -> getProfile(user.getProfileId()))
+        return profiles.stream()
+                .filter(profile -> profile.getUser().getAuthorities().equals("ROLE_PLAYER"))
+                .sorted(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed())
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Profile getProfile(Long id) {
-        return profiles.findById(id).orElse(null);
     }
 
     @Override
@@ -137,12 +130,12 @@ public class ProfileServiceImpl implements ProfileService{
             }
     }
 
-    @Override
+    /* @Override
     public void updateRank(List<Profile> sortedplayers) {
         int currentRank = 1;
             for (Profile profile : sortedplayers) {
                 profile.setRank(currentRank);
                 currentRank++;
             }
-    }
+    } */
 }

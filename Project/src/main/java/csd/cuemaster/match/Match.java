@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import csd.cuemaster.review.Review;
+import csd.cuemaster.match.Match;
 import lombok.*;
 
 
@@ -24,6 +24,4 @@ import lombok.*;
 @EqualsAndHashCode
 public class Match {
     private @Id @GeneratedValue (strategy = GenerationType.IDENTITY) Long id;
-
-    
 }

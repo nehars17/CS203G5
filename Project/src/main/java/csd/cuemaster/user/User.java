@@ -100,8 +100,8 @@ public class User implements UserDetails{
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
-    public boolean isEnabled(){
+    @Override
+    public boolean isEnabled() {
         return enabled;
     }
 }
