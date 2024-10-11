@@ -65,7 +65,7 @@ public class RestTemplateClient {
         return responseEntity.getBody();
     }
 
-    /*
+    /**
      * Returns a sorted list of players with given id.
      * @param URI
      * @param id
