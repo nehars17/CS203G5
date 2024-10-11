@@ -112,8 +112,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void deleteUser(Long userId) {
+        User user = users.findById(userId)           
+                        .orElseThrow(() -> new UserNotFoundException(userId));
+        users.delete(user);
     }
 
 }

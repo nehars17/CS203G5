@@ -3,7 +3,6 @@ package csd.cuemaster.profile;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import csd.cuemaster.user.*;
@@ -30,7 +29,7 @@ public class ProfileServiceImpl implements ProfileService{
             throw new ProfileIdNotFoundException(profileId);
         }
         return profiles.findByUserId(userId)
-                      .orElseThrow(()-> new ProfileIdNotFoundException(profileId));
+                      .orElseThrow(()-> new UserProfileNotFoundException(userId));
     }
 
     //havent settle profile photo
@@ -63,7 +62,7 @@ public class ProfileServiceImpl implements ProfileService{
     @Override
     public Profile addProfile(Long userId, Profile profile){ 
         User user = users.findById(userId)           
-                        .orElseThrow(() -> new UsernameNotFoundException("User ID: " + String.valueOf(userId) + " not found."));
+                        .orElseThrow(() -> new UserNotFoundException(userId));
 
         if(profiles.findByUserId(userId).isPresent()){
             throw new ProfileAlreadyExistsException(userId);

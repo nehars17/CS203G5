@@ -24,7 +24,7 @@ public class ProfileController {
         return profileService.getAllProfile();
     }
 
-    @GetMapping("/users/{user_id}/profile/{profile_id}")
+    @GetMapping("/user/{user_id}/profile/{profile_id}")
     public Profile getUserProfile(@PathVariable (value = "user_id") Long user_id,@PathVariable Long profile_id) {
         return profileService.getProfile(user_id,profile_id);
     }
@@ -34,7 +34,7 @@ public class ProfileController {
         return profileService.updateProfile(user_id, newProfileInfo);
     }
 
-    @PostMapping("users/{user_id}/profile")
+    @PostMapping("user/{user_id}/profile")
     public Profile postMethodName(@PathVariable (value = "user_id") Long user_id, @Valid @RequestBody Profile profile) {
         return profileService.addProfile(user_id, profile);
     }
