@@ -86,4 +86,20 @@ public class MatchServiceImpl implements MatchService {
     public List<Match> getMatchesByTournamentId(Long tournamentId) {
         return matchRepository.findByTournamentId(tournamentId);
     }
+
+    // Set the winner of the match
+    @Override
+    public Match declareWinner(Long matchId, Long winnerId) {
+        Match match = matchRepository.findById(matchId).orElseThrow(() -> new ResourceNotFoundException("Match with ID " + matchId + " does not exist"));
+    
+            // Check if the winner is one of the two users in the match
+        if (!match.getUser1().getId().equals(winnerId) && !match.getUser2().getId().equals(winnerId)) {
+            throw new IllegalArgumentException("Winner must be one of the two participants of the match.");
+        }
+    
+            // Set the winner and update the match
+        match.setWinner(userRepository.findById(winnerId).orElseThrow(() -> new ResourceNotFoundException("User with ID " + winnerId + " does not exist")));
+        
+        return matchRepository.save(match);
+    }
 }
