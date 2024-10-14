@@ -65,7 +65,7 @@ public class RestTemplateClient {
         return responseEntity.getBody();
     }
 
-    /*
+    /**
      * Returns a sorted list of players with given id.
      * @param URI
      * @param id
@@ -88,7 +88,7 @@ public class RestTemplateClient {
      * @param id
      * @return
      */
-    public List<Profile> resetPoints(final String URI, final Long id) {
+    public List<Profile> getLeaderboardAfterPointsReset(final String URI, final Long id) {
         ResponseEntity<List<Profile>> response = template.exchange(
         URI + "/" + id,
         HttpMethod.PUT,
