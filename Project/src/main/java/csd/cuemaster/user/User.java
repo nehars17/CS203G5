@@ -67,8 +67,7 @@ public class User implements UserDetails{
 
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade=CascadeType.ALL)
     @JsonIgnore
-    private Profile profile; 
-
+    private Profile profile;
 
     public User(String username, String password, String authorities, String provider,Boolean enabled){
         this.username = username;
@@ -101,10 +100,8 @@ public class User implements UserDetails{
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
-    public boolean isEnabled(){
+    @Override
+    public boolean isEnabled() {
         return enabled;
     }
-
-
 }

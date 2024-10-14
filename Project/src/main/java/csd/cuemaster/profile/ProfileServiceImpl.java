@@ -1,11 +1,15 @@
 package csd.cuemaster.profile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import csd.cuemaster.user.*;
+// import csd.cuemaster.user.User.UserRole;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
@@ -17,7 +21,6 @@ public class ProfileServiceImpl implements ProfileService{
 
     @Override 
     public List<Profile> getAllProfile(){
-
         return profiles.findAll();
     }
 
@@ -96,5 +99,42 @@ public class ProfileServiceImpl implements ProfileService{
     //     try{
     //         St
     //     }
-    // }
+    // } getAllProfile()
+
+    @Override
+    public List<Profile> getPlayers(List<Profile> profiles) {
+        if (profiles == null || profiles.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return profiles.stream()
+                .filter(profile -> profile.getUser().getAuthorities().equals("ROLE_PLAYER"))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void sort(List<Profile> players) {
+        if (players == null || players.isEmpty()) {
+            return;
+        }
+        players.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());
+    }
+
+    @Override
+    public void resetPoints(List<Profile> players) {
+        if (players == null || players.isEmpty()) {
+            return;
+        }
+        for (Profile profile : players) {
+            profile.setPoints(1200);
+        }
+    }
+
+    /* @Override
+    public void updateRank(List<Profile> sortedplayers) {
+        int currentRank = 1;
+            for (Profile profile : sortedplayers) {
+                profile.setRank(currentRank);
+                currentRank++;
+            }
+    } */
 }

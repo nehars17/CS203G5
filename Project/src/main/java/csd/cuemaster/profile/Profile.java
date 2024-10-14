@@ -17,17 +17,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import csd.cuemaster.user.User;
 import lombok.*;
 
-
 @Entity
-@Getter                     //getter methods for all the variables 
+@Getter // getter methods for all the variables
 @Setter
 @ToString
-@AllArgsConstructor         //generates a constructor that takes all instance variables as argument
-@NoArgsConstructor          //generates a no-argument constructor
-@EqualsAndHashCode          //generate equals() and hashCode() methods for a class
+@AllArgsConstructor // generates a constructor that takes all instance variables as argument
+@NoArgsConstructor // generates a no-argument constructor
+@EqualsAndHashCode // generate equals() and hashCode() methods for a class
 public class Profile {
-    private @Id @GeneratedValue (strategy = GenerationType.IDENTITY) Long id;
-    
+    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
     @NotNull(message = "First name should not be null")
     @Size(min = 2, message = "First name should be at least 2 characters long")

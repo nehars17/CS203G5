@@ -43,5 +43,24 @@ public class ProfileController {
     // public String postMethodName(@PathVariable (value = "user_id") Long user_id,  @RequestBody byte[] imageData) {
     //     return profileService.addProfilePhoto(user_id,imageData);
     // }
-    
+
+    // Returns a sorted list of players.
+    @GetMapping("/leaderboard")
+    public List<Profile> getLeaderboard() {
+        List<Profile> profiles = profileService.getAllProfile();
+        profiles = profileService.getPlayers(profiles);
+        profileService.sort(profiles);
+        // profileService.updateRank(profiles);
+        return profiles;
+    }
+
+    // Returns a list of players after a points reset.
+    @PutMapping("/profiles/resetpoints")
+    public List<Profile> getLeaderboardAfterPointsReset() {
+        List<Profile> profiles = profileService.getAllProfile();
+        profiles = profileService.getPlayers(profiles);
+        profileService.sort(profiles);
+        profileService.resetPoints(profiles);
+        return profiles;
+    }
 }
