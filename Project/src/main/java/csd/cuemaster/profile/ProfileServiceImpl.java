@@ -117,20 +117,21 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     @Override
-    public void sort() {
+    public List<Profile> sort() {
         List<Profile> profileList = getPlayers();
         if (profileList == null || profileList.isEmpty()) {
-            return;
+            return new ArrayList<Profile>();
         }
         profileList.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());
+        return profileList;
     }
 
     @Override
     public Profile pointsSet(Long user_id, Integer points) {
         Profile profile = profiles.findByUserId(user_id)
-            .orElseThrow(() -> new ProfileAlreadyExistsException(user_id));
+            .orElseThrow(() -> new UserProfileNotFoundException(user_id));
         profile.setPoints(points);
-        return profile;
+        return profiles.save(profile);
     }
 
     /* @Override

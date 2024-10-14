@@ -30,7 +30,7 @@ public class ProfileController {
     }
     
     @PutMapping("/user/{user_id}/profile/edit")
-    public Profile putExistingProfile(@PathVariable Long user_id, @Valid @RequestBody Profile newProfileInfo) { 
+    public Profile putExistingProfile(@PathVariable (value = "user_id") Long user_id, @Valid @RequestBody Profile newProfileInfo) { 
         return profileService.updateProfile(user_id, newProfileInfo);
     }
 
@@ -47,15 +47,15 @@ public class ProfileController {
     // Returns a sorted list of players.
     @GetMapping("/leaderboard")
     public List<Profile> getLeaderboard() {
-        List<Profile> profiles = profileService.getPlayers();
-        profileService.sort();
+        List<Profile> sortedProfileList = profileService.sort();
         // profileService.updateRank(profiles);
-        return profiles;
+        return sortedProfileList;
     }
 
     // Changes a player's points.
     @PutMapping("/changepoints/{user_id}")
-    public Profile changePoints(@PathVariable Long user_id, @RequestBody Integer points) {
-        return profileService.pointsSet(user_id, points);
+    public Profile changePoints(@PathVariable (value = "user_id") Long user_id, @RequestBody Profile profile) {
+        Integer newpoints = profile.getPoints();
+        return profileService.pointsSet(user_id, newpoints);
     }
 }
