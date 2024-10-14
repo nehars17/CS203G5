@@ -104,9 +104,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/tournaments/*").hasRole("ORGANISER")
 
                         // .requestMatchers(HttpMethod.GET,"/matches/*").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/matches/create").permitAll()
-                        .requestMatchers(HttpMethod.DELETE,"/matches/*").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/matches/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/matches/create").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.DELETE,"/matches/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.PUT,"/matches/*").hasRole("ORGANISER")
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form

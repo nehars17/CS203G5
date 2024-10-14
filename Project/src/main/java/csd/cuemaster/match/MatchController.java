@@ -27,19 +27,20 @@ public class MatchController {
 
     //create match
     @PostMapping("/create")
-    public ResponseEntity<Match> createMatch(@Valid @RequestBody Match match) {
+    public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
         //TODO: process POST request
         Match savedMatch = matchService.createMatch(match);
-        return ResponseEntity.ok(savedMatch);
+        // return ResponseEntity.ok(savedMatch);
+        return ResponseEntity.ok("match created");
     }
     
     //update match
     @PutMapping("/{id}")
-    public ResponseEntity<Match> updateMatch(@PathVariable Long id, @RequestBody Match match) {
+    public ResponseEntity<String> updateMatch(@PathVariable Long id, @RequestBody Match match) {
         //TODO: process PUT request
         match.setId(id);
         Match updatedMatch = matchService.updateMatch(id, match);
-        return ResponseEntity.ok(updatedMatch);
+        return ResponseEntity.ok("match updated");
     }
 
     //get match info by id

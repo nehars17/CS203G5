@@ -219,7 +219,7 @@ Authorization: Basic org@gmail.com goodpassword
 }
 
 ###
-DELETE http://localhost:8080/matches/9990
+DELETE http://localhost:8080/matches/1
 Authorization: Basic org@gmail.com goodpassword
 
 ###
