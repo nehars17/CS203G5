@@ -10,7 +10,7 @@ public interface ProfileService {
     Profile addProfile(Long userId, Profile profile);
     // String addProfilePhoto(Long userID, byte[] image);
     List<Profile> getPlayers(List<Profile> profiles);
-    void sort(List<Profile> players);
+    List<Profile> getSortedPlayers(List<Profile> profiles);
     void resetPoints(List<Profile> players);
     // void updateRank(List<Profile> sortedplayers);
 }

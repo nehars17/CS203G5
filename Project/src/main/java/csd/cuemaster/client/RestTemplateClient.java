@@ -88,7 +88,7 @@ public class RestTemplateClient {
      * @param id
      * @return
      */
-    public List<Profile> getLeaderboardAfterPointsReset(final String URI, final Long id) {
+    public List<Profile> resetPoints(final String URI, final Long id) {
         ResponseEntity<List<Profile>> response = template.exchange(
         URI + "/" + id,
         HttpMethod.PUT,

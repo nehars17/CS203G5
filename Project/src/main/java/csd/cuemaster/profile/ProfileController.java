@@ -48,18 +48,16 @@ public class ProfileController {
     @GetMapping("/profiles")
     public List<Profile> getLeaderboard() {
         List<Profile> profiles = profileService.getAllProfile();
-        profiles = profileService.getPlayers(profiles);
-        profileService.sort(profiles);
+        profiles = profileService.getSortedPlayers(profiles);
         // profileService.updateRank(profiles);
         return profiles;
     }
 
     // Returns a list of players after a points reset.
     @PutMapping("/profiles")
-    public List<Profile> getLeaderboardAfterPointsReset() {
+    public List<Profile> resetPoints() {
         List<Profile> profiles = profileService.getAllProfile();
         profiles = profileService.getPlayers(profiles);
-        profileService.sort(profiles);
         profileService.resetPoints(profiles);
         return profiles;
     }
