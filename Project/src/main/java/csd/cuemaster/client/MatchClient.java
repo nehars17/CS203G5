@@ -7,6 +7,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import csd.cuemaster.match.Match;
 
 public class MatchClient {
     private final String BASE_URL = "http://localhost:8080/matches";

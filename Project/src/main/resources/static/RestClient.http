@@ -61,15 +61,14 @@ DELETE http://localhost:8080/tournaments/1
 ### Delete a tournament that doesnt exist
 DELETE http://localhost:8080/tournaments/4
 
-
-
 #Canica
+###
 POST http://localhost:8080/matches/create
 Content-Type: application/json
 
 {
     "tournament": {
-        "id": 1
+        "id": 3
     },
     "user1": {
         "id": 1
@@ -84,7 +83,7 @@ Content-Type: application/json
 }
 
 DELETE http://localhost:8080/matches/9990
-Authorization: Basic admin:goodpassword
+//Authorization: Basic admin:goodpassword
 
 GET http://localhost:8080/matches/1
 
