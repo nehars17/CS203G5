@@ -1,8 +1,5 @@
 package csd.cuemaster.profile;
 
-import java.time.LocalDate;
-
-import csd.cuemaster.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,7 +43,6 @@ public class Profile {
     private String location;
 
     // private FileOutputStream profilephoto;
-    // private FileOutputStream profilephoto;
 
     private String organization;
 
@@ -78,7 +74,13 @@ public class Profile {
         this.rank = rank;
     }
 
-
+    public void prePresist() {
+        if (user.getId() == null && user.getRole() == UserRole.PLAYER) {
+            points = 1200;
+        } else if (user.getRole() != UserRole.PLAYER) {
+            points = null;
+        }
+    }
 
     @OneToOne
     // the column "book_id" will be in the auto-generated table "review"

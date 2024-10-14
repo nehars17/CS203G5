@@ -1,32 +1,27 @@
 package csd.cuemaster.user;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import csd.cuemaster.profile.Profile;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.lang.String;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import csd.cuemaster.profile.Profile;
+
+import lombok.*;
 
 @Entity
 @Getter
@@ -42,8 +37,7 @@ e.g., what authorities (roles) are granted to the user and whether the account i
 public class User implements UserDetails{
     private static final long serialVersionUID = 1L;
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    private Long id;
+    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     
     @NotNull(message = "Username should not be null")
     @Size(min = 5, max = 20, message = "Username should be between 5 and 20 characters")
@@ -55,8 +49,7 @@ public class User implements UserDetails{
 
     @NotNull(message = "Authorities should not be null")
     // We define two roles/authorities: ROLE_USER or ROLE_ADMIN
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> authorities = new ArrayList<>();
+    private String authorities;
 
     @OneToOne (mappedBy = "user", orphanRemoval = true)
     @JsonIgnore
@@ -65,42 +58,36 @@ public class User implements UserDetails{
     public User(String username, String password, String authorities){
         this.username = username;
         this.password = password;
-        this.authorities = Arrays.asList(authorities);
+        this.authorities = authorities;
     }
 
+    private UserRole role; //UserRole is a Enum types, Enum types in Java are a special type of class that defines a fixed set of constants
 
-    // public UserRole getRole() {
-    //     return role;
-    // }
-
-    // public Profile getProfile() {
-    //     return profile;
-    // }
-
-    // public Long getId() {
-    //     return id;
-    // }
-
-    @Override
-    public String getUsername() {
-        return this.username;
+    public enum UserRole{
+        PLAYER,
+        ORGANIZER,
+        ADMIN
     }
 
-    @Override
-    public String getPassword() {
-        return this.password;
+    public UserRole getRole() {
+        return role;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public Long getProfileId() {
+        return profile.getId();
     }
 
     /* Return a collection of authorities (roles) granted to the user.
     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authList = new ArrayList<>();
-        for (String authority : this.authorities) {
-            authList.add(new SimpleGrantedAuthority(authority));
-        }
-        return authList;
+        return Arrays.asList(new SimpleGrantedAuthority(authorities));
     }
+
     /*
     The various is___Expired() methods return a boolean to indicate whether
     or not the user’s account is enabled or expired.
