@@ -12,60 +12,85 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
-
 @RestController
-@RequestMapping("/matches")
 public class MatchController {
     
     @Autowired
     private MatchService matchService;
 
     //create match
-    @PostMapping("/create")
+    // @PostMapping("/matches/create")
+    // public Match createMatch(@Valid @RequestBody Match match) {
+    //     return matchService.createMatch(match);     
+    // }
+
+    //create match
+    @PostMapping("/matches/create")
     public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
-        //TODO: process POST request
-        Match savedMatch = matchService.createMatch(match);
-        // return ResponseEntity.ok(savedMatch);
-        return ResponseEntity.ok("match created");
+        
+        Match createdMatch = matchService.createMatch(match);
+        // return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
+        return ResponseEntity.ok("match created: id =" + match.getId());
     }
     
+    // public Match updateMatch(@PathVariable Long id, @Valid @RequestBody Match match) {
+        
+    //     Match updatedMatch = matchService.updateMatch(id, match);
+        
+    //     if (updatedMatch == null) {
+    //         throw new ResourceNotFoundException("match with this id does not exist:" + id);
+    //     }
+
+    //     return updatedMatch;
+    // }
+    
     //update match
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateMatch(@PathVariable Long id, @RequestBody Match match) {
-        //TODO: process PUT request
-        match.setId(id);
-        Match updatedMatch = matchService.updateMatch(id, match);
-        return ResponseEntity.ok("match updated");
+    @PutMapping("/matches/{matchId}")
+    public ResponseEntity<String> updateMatch(@PathVariable Long matchId, @Valid @RequestBody Match match) {
+        match.setId(matchId);
+        Match updatedMatch = matchService.updateMatch(matchId, match);
+        return ResponseEntity.ok("match updated: id =" + matchId);
     }
 
     //get match info by id
-    @GetMapping("/{matchId}")
-    public ResponseEntity<Match> getMatchById(@PathVariable Long matchId) {
+    @GetMapping("/matches/{matchId}")
+    public Match getMatchById(@PathVariable Long matchId) {
         Match savedMatch = matchService.getMatchById(matchId);
-        return savedMatch != null ? ResponseEntity.ok(savedMatch) : ResponseEntity.notFound().build();
+        
+        if (savedMatch == null) {
+            throw new ResourceNotFoundException("match with this id does not exist:" + matchId);
+        }
+        
+        return matchService.getMatchById(matchId);
     }
+
+    //tempo: get all matches
+    @GetMapping("/matches")
+    public List<Match> getAllMatches() {
+        return matchService.getAllMatches();
+    }
+    
 
     //get all matches per tournament
     //need edits
-    @GetMapping("/tournament/{tournamentId}")
-    public ResponseEntity<List<Match>> getAllMatchesByTournamentId(@PathVariable Long tournamentId) {
-        List<Match> matches = matchService.getMatchesByTournamentId(tournamentId);
-        return ResponseEntity.ok(matches);
-    }
+    // @GetMapping("/tournament/{tournamentId}")
+    // public ResponseEntity<List<Match>> getAllMatchesByTournamentId(@PathVariable Long tournamentId) {
+    //     List<Match> matches = matchService.getMatchesByTournamentId(tournamentId);
+    //     return ResponseEntity.ok(matches);
+    // }
 
     //delete a match
-    @DeleteMapping("/{matchId}")
+    @DeleteMapping("/matches/{matchId}")
     public ResponseEntity<Void> deleteMatch(@PathVariable Long matchId) {
         matchService.deleteMatchById(matchId);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{matchId}/declareWinner/{winnerId}")
+    @PostMapping("/matches/{matchId}/declareWinner/{winnerId}")
     public ResponseEntity<Match> declareWinner(@PathVariable Long matchId, @PathVariable Long winnerId) {
         try {
             Match updatedMatch = matchService.declareWinner(matchId, winnerId);

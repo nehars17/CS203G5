@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
         return users.findById(id).orElse(null);
     }
 
+    @Override
     public User loginUser(User user) {
         User foundUser = users.findByUsername(user.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));

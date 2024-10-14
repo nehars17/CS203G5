@@ -1,9 +1,14 @@
 package csd.cuemaster.tournament;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import csd.cuemaster.match.Match;
 import jakarta.persistence.CascadeType;
-
-// import org.hibernate.mapping.List;
-
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,17 +17,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import csd.cuemaster.match.Match;
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -80,8 +80,9 @@ public class Tournament {
         FINAL
     }
 
-    // @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
-    // private Match match;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Match> match;
 
     // Default constructor
     public Tournament() {

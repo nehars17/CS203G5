@@ -3,6 +3,7 @@ package csd.cuemaster.match;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import csd.cuemaster.tournament.Tournament;
@@ -13,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,7 +34,8 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
 
-    @ManyToOne 
+    @JsonBackReference
+    @OneToOne 
     @JoinColumn(name = "tournament_id", nullable=false)
     private Tournament tournament;
 

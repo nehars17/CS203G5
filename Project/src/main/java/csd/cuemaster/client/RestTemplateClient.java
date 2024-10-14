@@ -112,11 +112,6 @@ public class RestTemplateClient {
         return responseEntity.getBody();
     }
 
-        //update match by id
-        public Match updateMatch(final String URI, Long matchId, Match match) {
-            template.put(URI + "/" + matchId, match);
-            return getMatchById(URI, matchId);
-        }
     /**
      * Delete a tournament by ID.
      * 
@@ -127,43 +122,42 @@ public class RestTemplateClient {
     public ResponseEntity<Void> deleteTournament(final String URI, final Long id) {
         return template.exchange(URI + "/" + id, HttpMethod.DELETE, null, Void.class);
     }
-    // /**
-    //  * Returns a list of players after a points reset with given id.
-    //  * @param URI
-    //  * @param id
-    //  * @return
-    //  */
-    // public List<Profile> resetPoints(final String URI, final Long id) {
-    //     ResponseEntity<List<Profile>> response = template.exchange(
-    //     URI + "/" + id,
-    //     HttpMethod.PUT,
-    //     null,
-    //     new ParameterizedTypeReference<List<Profile>>() {}
-    //     );
-    //     List<Profile> profiles = response.getBody();
-    //     return profiles;
-    // }
 
-        public Match createMatch(final String URI, Match match) {
-        ResponseEntity<Match> response = template.postForEntity(URI + "/create", match, Match.class);
-        return response.getBody();
+
+    //create matches
+    public Match createMatch(final String URI, Match newMatch) {
+        Match returned = template.postForObject(URI, newMatch, Match.class);
+
+        return returned;
+    }
+
+    //update match by id
+    public Match updateMatch(final String URI, Long matchId, Match updatedMatch) {
+        
+        HttpEntity<Match> requestEntity = new HttpEntity<>(updatedMatch);
+
+        ResponseEntity<Match> responseEntity = template.exchange(
+                    URI, HttpMethod.PUT, requestEntity, Match.class);
+            
+        return responseEntity.getBody();
     }
 
     //get match by id
     public Match getMatchById(final String URI, Long matchId) {
-        return template.getForObject(URI + "/" + matchId, Match.class);
+        Match match = template.getForObject(URI + "/"+ matchId, Match.class);
+
+        return match;
     }
 
-
-
-    public List<Match> getAllMatchesByTournamentId(final String URI, Long tournamentId) {
-        ResponseEntity<List> response = template.exchange(URI + "/tournaments/" + tournamentId, HttpMethod.GET, null, List.class
-        );
-        return response.getBody();
-    }
+    //to edit 
+    // public List<Match> getAllMatchesByTournamentId(final String URI, Long tournamentId) {
+    //     ResponseEntity<List> response = template.exchange(URI + "/tournaments/" + tournamentId, HttpMethod.GET, null, List.class
+    //     );
+    //     return response.getBody();
+    // }
 
     //delete match by ID
-    public void deleteMatchById(final String URI, Long matchId) {
-        template.delete(URI + "/" + matchId);
+    public ResponseEntity<Void> deleteMatchById(final String URI, Long matchId) {
+        return template.exchange(URI + "/" + matchId, HttpMethod.DELETE, null, Void.class);
     }
 }
