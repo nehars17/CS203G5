@@ -1,86 +1,47 @@
 package csd.cuemaster.client;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 import csd.cuemaster.profile.Profile;
+import csd.cuemaster.tournament.Tournament;
 
 @Component
 public class RestTemplateClient {
     private final RestTemplate template;
 
     /**
-     * Add authentication information for the RestTemplate
-     */
+    //  * Add authentication information for the RestTemplate
+    //  */
     public RestTemplateClient(RestTemplateBuilder restTemplateBuilder) {
         this.template = restTemplateBuilder
                 .basicAuthentication("admin", "goodpassword")
                 .build();
     }
 
-    /**
-     * Get a profile with given id
-     * 
+    // /**
+    //  * Returns a sorted list of players with given id.
     //  * @param URI
     //  * @param id
     //  * @return
     //  */
-    public Profile getProfileByProfileID(final String URI, final Long userid, final Long profileid) {
-        final Profile profile = template.getForObject(URI + "/users/" + userid + "/profile/" + profileid, Profile.class);
-        return profile;
-    }
-
-    /**
-     * Get all profile
-     * 
-    //  * @param URI
-    //  * @param id
-    //  * @return
-    //  */
-    public List<Profile> getAllProfile(final String URI, final Long id) {
-        Profile[] profileArray = template.getForObject(URI + "/profile", Profile[].class);
-        List<Profile> profileList = Arrays.asList(profileArray);
-        return profileList;
-    }
-
-    /**
-     * Get update user profile
-     * 
-    //  * @param URI
-    //  * @param id
-    //  * @return
-    //  */
-    public Profile putUserProfile(final String URI, final Long userid, final Profile newProfile){
-
-        HttpEntity<Profile> requestEntity = new HttpEntity<>(newProfile);
-        ResponseEntity<Profile> responseEntity = template.exchange(URI + "/user/" + userid + "/profile/edit", HttpMethod.PUT, requestEntity, Profile.class);
-        return responseEntity.getBody();
-    }
-
-    /**
-     * Returns a sorted list of players with given id.
-     * @param URI
-     * @param id
-     * @return
-     */
-    public List<Profile> getLeaderboard(final String URI, final Long id) {
-        ResponseEntity<List<Profile>> response = template.exchange(
-        URI + "/" + id,
-        HttpMethod.GET,
-        null,
-        new ParameterizedTypeReference<List<Profile>>() {}
-        );
-        List<Profile> profiles = response.getBody();
-        return profiles;
-    }
+    // public List<Profile> getLeaderboard(final String URI, final Long id) {
+    //     ResponseEntity<List<Profile>> response = template.exchange(
+    //     URI + "/" + id,
+    //     HttpMethod.GET,
+    //     null,
+    //     new ParameterizedTypeReference<List<Profile>>() {}
+    //     );
+    //     List<Profile> profiles = response.getBody();
+    //     return profiles;
+    // }
 
     /**
      * Returns a list of players after a points reset with given id.
@@ -88,7 +49,7 @@ public class RestTemplateClient {
      * @param id
      * @return
      */
-    public List<Profile> getLeaderboardAfterPointsReset(final String URI, final Long id) {
+    public List<Profile> resetPoints(final String URI, final Long id) {
         ResponseEntity<List<Profile>> response = template.exchange(
         URI + "/" + id,
         HttpMethod.PUT,
@@ -98,4 +59,82 @@ public class RestTemplateClient {
         List<Profile> profiles = response.getBody();
         return profiles;
     }
+
+    /**
+     * Create a new tournament.
+     * 
+     * @param URI The endpoint URI
+     * @param newTournament The Tournament object to create
+     * @return The created Tournament object
+     */
+    public Tournament createTournament(final String URI, final Tournament newTournament) {
+        final Tournament returned = template.postForObject(URI, newTournament, Tournament.class);
+        
+        return returned;
+    }
+
+    /**
+     * Retrieve a tournament by ID.
+     * 
+     * @param URI The endpoint URI
+     * @param id The ID of the tournament to retrieve
+     * @return The retrieved Tournament object
+     */
+    public Tournament getTournamentById(final String URI, final Long id) {
+        final Tournament tournament = template.getForObject(URI + "/" + id, Tournament.class);
+        return tournament;
+    }
+
+    /**
+     * Retrieve all tournaments.
+     * 
+     * @param URI The endpoint URI
+     * @return List of Tournament objects
+     */
+    @SuppressWarnings("unchecked")
+    public List<Tournament> getAllTournaments(final String URI) {
+        return template.getForObject(URI, List.class);
+    }
+
+    /**
+     * Update an existing tournament.
+     * 
+     * @param URI The endpoint URI
+     * @param id The ID of the tournament to update
+     * @param updatedTournament The updated Tournament object
+     * @return The updated Tournament object
+     */
+    public Tournament updateTournament(final String URI, final Long id, final Tournament updatedTournament) {
+        HttpEntity<Tournament> requestEntity = new HttpEntity<>(updatedTournament);
+        ResponseEntity<Tournament> responseEntity = template.exchange(
+                URI + "/" + id, HttpMethod.PUT, requestEntity, Tournament.class);
+        return responseEntity.getBody();
+    }
+
+    /**
+     * Delete a tournament by ID.
+     * 
+     * @param URI The endpoint URI
+     * @param id The ID of the tournament to delete
+     * @return ResponseEntity indicating the result of the operation
+     */
+    public ResponseEntity<Void> deleteTournament(final String URI, final Long id) {
+        return template.exchange(URI + "/" + id, HttpMethod.DELETE, null, Void.class);
+    }
+    // /**
+    //  * Returns a list of players after a points reset with given id.
+    //  * @param URI
+    //  * @param id
+    //  * @return
+    //  */
+    // public List<Profile> resetPoints(final String URI, final Long id) {
+    //     ResponseEntity<List<Profile>> response = template.exchange(
+    //     URI + "/" + id,
+    //     HttpMethod.PUT,
+    //     null,
+    //     new ParameterizedTypeReference<List<Profile>>() {}
+    //     );
+    //     List<Profile> profiles = response.getBody();
+    //     return profiles;
+    // }
 }
