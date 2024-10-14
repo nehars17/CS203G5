@@ -113,21 +113,21 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     @Override
-    public List<Profile> getSortedPlayers(List<Profile> profiles) {
-        if (profiles == null || profiles.isEmpty()) {
-            return new ArrayList<>();
+    public void sort(List<Profile> players) {
+        if (players == null || players.isEmpty()) {
+            return;
         }
-        return profiles.stream()
-                .filter(profile -> profile.getUser().getAuthorities().equals("ROLE_PLAYER"))
-                .sorted(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed())
-                .collect(Collectors.toList());
+        players.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());
     }
 
     @Override
     public void resetPoints(List<Profile> players) {
-            for (Profile profile : players) {
-                profile.setPoints(1200);
-            }
+        if (players == null || players.isEmpty()) {
+            return;
+        }
+        for (Profile profile : players) {
+            profile.setPoints(1200);
+        }
     }
 
     /* @Override
