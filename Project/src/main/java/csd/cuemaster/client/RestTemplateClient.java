@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-
 import csd.cuemaster.match.Match;
 import csd.cuemaster.profile.Profile;
 import csd.cuemaster.tournament.Tournament;
@@ -112,11 +111,6 @@ public class RestTemplateClient {
         return responseEntity.getBody();
     }
 
-        //update match by id
-        public Match updateMatch(final String URI, Long matchId, Match match) {
-            template.put(URI + "/" + matchId, match);
-            return getMatchById(URI, matchId);
-        }
     /**
      * Delete a tournament by ID.
      * 
@@ -127,26 +121,18 @@ public class RestTemplateClient {
     public ResponseEntity<Void> deleteTournament(final String URI, final Long id) {
         return template.exchange(URI + "/" + id, HttpMethod.DELETE, null, Void.class);
     }
-    // /**
-    //  * Returns a list of players after a points reset with given id.
-    //  * @param URI
-    //  * @param id
-    //  * @return
-    //  */
-    // public List<Profile> resetPoints(final String URI, final Long id) {
-    //     ResponseEntity<List<Profile>> response = template.exchange(
-    //     URI + "/" + id,
-    //     HttpMethod.PUT,
-    //     null,
-    //     new ParameterizedTypeReference<List<Profile>>() {}
-    //     );
-    //     List<Profile> profiles = response.getBody();
-    //     return profiles;
+
+
+    // public Tournament createTournament(final String URI, final Tournament newTournament) {
+    //     final Tournament returned = template.postForObject(URI, newTournament, Tournament.class);
+        
+    //     return returned;
     // }
 
-        public Match createMatch(final String URI, Match match) {
-        ResponseEntity<Match> response = template.postForEntity(URI + "/create", match, Match.class);
-        return response.getBody();
+    public Match createMatch(final String URI, Match newMatch) {
+        Match returned = template.postForObject(URI, newMatch, Match.class);
+        
+        return returned;
     }
 
     //get match by id
@@ -155,15 +141,21 @@ public class RestTemplateClient {
     }
 
 
-
-    public List<Match> getAllMatchesByTournamentId(final String URI, Long tournamentId) {
-        ResponseEntity<List> response = template.exchange(URI + "/tournaments/" + tournamentId, HttpMethod.GET, null, List.class
-        );
-        return response.getBody();
-    }
+    //to edit
+    // public List<Match> getAllMatchesByTournamentId(final String URI, Long tournamentId) {
+    //     ResponseEntity<List> response = template.exchange(URI + "/tournaments/" + "/matches/" + tournamentId, HttpMethod.GET, null, List.class
+    //     );
+    //     return response.getBody();
+    // }
 
     //delete match by ID
     public void deleteMatchById(final String URI, Long matchId) {
         template.delete(URI + "/" + matchId);
+    }
+
+    //update match by id
+    public Match updateMatch(final String URI, Long matchId, Match match) {
+        template.put(URI + "/" + matchId, match);
+        return getMatchById(URI, matchId);
     }
 }

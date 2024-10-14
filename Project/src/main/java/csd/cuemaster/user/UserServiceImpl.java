@@ -1,8 +1,11 @@
 package csd.cuemaster.user;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,10 +33,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(Long id) {
-
         return users.findById(id).orElse(null);
     }
 
+    @Override
     public User loginUser(User user) {
         User foundUser = users.findByUsername(user.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -54,10 +57,15 @@ public class UserServiceImpl implements UserService {
         if (users.findByUsername(user.getUsername()).isPresent()) {
             return null; // User already exists
         }
+        
         user.setPassword(encoder.encode(user.getPassword()));
-        user.setAuthorities("ROLE_PLAYER");
+        
+        user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_PLAYER")));
+
         user.setProvider("normal");
+        
         String token = generateActivationToken(); // Generate token
+        
         user.setActivationToken(token);
         return users.save(user);
     }
@@ -69,7 +77,9 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(encoder.encode(user.getPassword()));
-        user.setAuthorities("ROLE_ORGANISER");
+       
+        user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ORGANIZER")));
+
         user.setProvider("normal");
         String token = generateActivationToken(); // Generate token
         user.setActivationToken(token);
@@ -78,8 +88,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-
-    public String googleLogin(String email, String role) {
+    public String googleLogin(String email, List<GrantedAuthority> role) {
         User existingUser = users.findByUsername(email)
                 .orElseGet(() -> {
                     User newUser = new User(email, "no password", role,"google",false);

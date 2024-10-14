@@ -1,14 +1,16 @@
 package csd.cuemaster.profile;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import csd.cuemaster.user.*;
+import csd.cuemaster.user.User;
+import csd.cuemaster.user.UserNotFoundException;
+import csd.cuemaster.user.UserRepository;
 // import csd.cuemaster.user.User.UserRole;
 
 @Service
@@ -107,7 +109,8 @@ public class ProfileServiceImpl implements ProfileService{
             return new ArrayList<>();
         }
         return profiles.stream()
-                .filter(profile -> profile.getUser().getAuthorities().equals("ROLE_PLAYER"))
+                .filter(profile -> profile.getUser().getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_PLAYER")))
                 .collect(Collectors.toList());
     }
 

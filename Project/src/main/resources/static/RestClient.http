@@ -53,7 +53,9 @@ Content-Type: application/json
 {
     "username": "lee334203@gmail.com",
     "password": "goodpassword",
-    "authorities":"ROLE_PLAYER"
+    "authorities": [
+        {"authority": "ROLE_ORGANIZER"}
+    ]
 }
 
 ###
@@ -110,9 +112,11 @@ POST http://localhost:8080/register/player
 Content-Type: application/json
 
 {
-    "username": "player@gmail.com",
+    "username": "admin@gmail.com",
     "password": "goodpassword",
-    "authorities":"ROLE_PLAYER"
+    "authorities": [
+        {"authority": "ROLE_PLAYER"}
+    ]
 }
 
 ###

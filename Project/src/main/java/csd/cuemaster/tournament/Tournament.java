@@ -1,9 +1,12 @@
 package csd.cuemaster.tournament;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import csd.cuemaster.match.Match;
 import jakarta.persistence.CascadeType;
-
-// import org.hibernate.mapping.List;
-
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,26 +15,21 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import csd.cuemaster.match.Match;
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
-// @NoArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
-
 public class Tournament {
 
     private @Id @GeneratedValue (strategy = GenerationType.IDENTITY) Long id;
@@ -63,6 +61,9 @@ public class Tournament {
 
     private Long winnerId; // stores the winner's player ID
 
+    @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Match> match = new ArrayList<>();;
+
     @ElementCollection
     private List<Long> players = new ArrayList<>();; // Storing player IDs participating in the tournament
     // Initializing players list to avoid null issues 
@@ -80,14 +81,11 @@ public class Tournament {
         FINAL
     }
 
-    // @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
-    // private Match match;
-
     // Default constructor
-    public Tournament() {
-        // Initialize fields if needed
-        this.players = new ArrayList<>(); // Avoids null pointer exceptions when adding players
-    }
+    // public Tournament() {
+    //     // Initialize fields if needed
+    //     this.players = new ArrayList<>(); // Avoids null pointer exceptions when adding players
+    // }
 
     // Additional overloaded constructors if needed
     public Tournament(String tournamentname, String location, LocalDate startDate, LocalDate endDate, 

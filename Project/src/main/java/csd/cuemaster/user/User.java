@@ -1,20 +1,19 @@
 package csd.cuemaster.user;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.lang.String;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import csd.cuemaster.profile.Profile;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -54,7 +53,8 @@ public class User implements UserDetails{
 
     @NotNull(message = "Authorities should not be null")
     // We define three roles/authorities: ROLE_PLAYER or ROLE_ADMIN or ROLE_ORGANISER
-    private String authorities;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<SimpleGrantedAuthorityImpl> authorities;
 
     private boolean enabled;
 
@@ -69,19 +69,34 @@ public class User implements UserDetails{
     @JsonIgnore
     private Profile profile;
 
-    public User(String username, String password, String authorities, String provider,Boolean enabled){
+    public User(String username, String password, List<SimpleGrantedAuthorityImpl> authorities, String provider, Boolean enabled){
         this.username = username;
         this.password = password;
         this.authorities = authorities;
-        this.enabled = enabled;
         this.provider = provider;
+        this.enabled = enabled;
     }
 
     /* Return a collection of authorities (roles) granted to the user.
     */
+    // @Override
+    // public Collection<? extends GrantedAuthority> getAuthorities() {
+    //     return Arrays.asList(new SimpleGrantedAuthority(authorities));
+    // }
+
+    // @JsonCreator
+    // public User(@JsonProperty("username") String username,
+    //             @JsonProperty("password") String password,
+    //             @JsonProperty("authorities") List<GrantedAuthority> authorities) {
+    //     this.username = username;
+    //     this.password = password;
+    //     this.authorities = authorities;
+
+    // }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority(authorities));
+        return authorities; // Convert List<String> to List<GrantedAuthority>
     }
 
     /*
@@ -105,3 +120,4 @@ public class User implements UserDetails{
         return enabled;
     }
 }
+

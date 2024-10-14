@@ -1,14 +1,16 @@
 package csd.cuemaster.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import java.util.HashMap;
-import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Centralize exception handling in this class.
@@ -35,5 +37,12 @@ public class RestExceptionHandler{
         body.put("error", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<String> handleJsonProcessingException(JsonProcessingException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body("Error processing JSON: " + ex.getMessage());
+    }
+
 
 }

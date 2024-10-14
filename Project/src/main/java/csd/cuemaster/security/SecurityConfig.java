@@ -24,8 +24,8 @@ import csd.cuemaster.user.CustomAuthenticationSuccessHandler;
 @Configuration
 public class SecurityConfig {
 
-    private UserDetailsService userDetailsService;
-    private final CustomAuthenticationSuccessHandler customSuccessHandler; // Add this line
+    final private UserDetailsService userDetailsService;
+    final private CustomAuthenticationSuccessHandler customSuccessHandler; // Add this line
 
     public SecurityConfig(UserDetailsService userSvc, CustomAuthenticationSuccessHandler customSuccessHandler) {
         this.userDetailsService = userSvc;
@@ -69,25 +69,6 @@ public class SecurityConfig {
                 .build();
     }
 
-    /**
-     * TODO: Activity 2a - Authentication
-     * Add code to secure requests to Reviews
-     * In particular, only authenticated users would be able to create/update/delete
-     * Reviews
-     * Hint: Add requestMatchers rules
-     * 
-     * 
-     * 
-     * 
-     * TODO: Activity 2b - Authorization
-     * Add roles to specify permissions for each enpoint
-     * User role: can add review.
-     * Admin role: can add/delete/update books/reviews, and add/list users
-     * 
-     * Note: '*' matches zero or more characters, e.g., /books/* matches /books/20
-     * '**' matches zero or more 'directories' in a path, e.g., /books/** matches
-     * /books/1/reviews
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
