@@ -63,106 +63,128 @@ DELETE http://localhost:8080/tournaments/4
 
 
 
-
-
-
-
-
-GET http://localhost:8080/books
-
-###
-GET http://localhost:8080/books/abc
-
-###
-DELETE http://localhost:8080/books/1
-
-
-###
-POST http://localhost:8080/books
-Content-Type: application/json
-Authorization: Basic admin goodpassword
-
-{
-    "title": "The Great Ideas"
-}
-###
-POST http://localhost:8080/books
-Content-Type: application/json
-Authorization: Basic admin goodpassword
-# Validation failed - book title is null
-
-{
-    "name": "I, Robot"
-}
-###
-PUT http://localhost:8080/books/1
-Content-Type: application/json
-# Wrong username
-Authorization: Basic dt goodpassword
-
-{
-    "title": "The Return of the King"
-}
-
-###
-GET http://localhost:8080/books/2/reviews
-
-
-###
-DELETE http://localhost:8080/books/2/reviews/2
-Content-Type: application/json
-Authorization: Basic gooduser:goodpassword
-
-{
-    "review": "Terrible :)"
-}
-###
-POST http://localhost:8080/books/2/reviews
-Content-Type: application/json
-Authorization: Basic gooduser:goodpassword
-
-{
-    "review": "Should be good!"
-}
-
-###
-PUT http://localhost:8080/books/2/reviews/2
+#Canica
+POST http://localhost:8080/matches/create
 Content-Type: application/json
 
 {
-    "review": "Should be bad!"
+    "tournament": {
+        "id": 1
+    },
+    "user1": {
+        "id": 1
+    },
+    "user2": {
+        "id": 2
+    },
+    "matchDate": "2024-10-02",
+    "matchTime": "12:00",
+    "user1Score": 8,
+    "user2Score": 7
 }
 
-###
-DELETE http://localhost:8080/books/1/reviews/5
+DELETE http://localhost:8080/matches/9990
+Authorization: Basic admin:goodpassword
 
-###
-GET http://localhost:8080/users
+GET http://localhost:8080/matches/1
 
-###
-POST http://localhost:8080/users
+Authorization: Basic admin:goodpassword
+POST http://localhost:8080/matches/create
 Content-Type: application/json
-Authorization: Basic admin goodpassword
+Authorization: Basic admin:goodpassword
+{
+    "tournament": {
+        "id": 1
+    },
+    "user1": {
+        "id": 1
+    },
+    "user2": {
+        "id": 2
+    },
+    "matchDate": "2024-10-02",
+    "matchTime": "12:00",
+    "user1Score": 8,
+    "user2Score": 7
+}
+
+
+
+PUT http://localhost:8080/matches/create-update/1
+Content-Type: application/json
+Authorization: Basic admin:goodpassword
+{
+    "tournament": {
+        "id": 1
+    },
+    "user1": {
+        "id": 1
+    },
+    "user2": {
+        "id": 2
+    },
+    "matchDate": "2024-10-02",
+    "matchTime": "12:00",
+    "user1Score": 9,
+    "user2Score": 8
+}
+
+
+
+### 
+# Get a specific match by ID (replace {id} with the actual match ID)
+GET http://localhost:8080/matches/1L
+
+### 
+# Create a new match
+POST http://localhost:8080/matches
+Content-Type: application/json
+Authorization: Basic admin:goodpassword
 
 {
-    "username": "donta",
-    "password": "goodpassword",
-    "authorities": "ROLE_ADMIN"
+    "tournament": {
+        "id": 1
+    },
+    "user1": {
+        "id": 1
+    },
+    "user2": {
+        "id": 2
+    },
+    "matchDate": "2024-10-02",
+    "matchTime": "12:00",
+    "user1Score": 8,
+    "user2Score": 7
 }
 
-###
-POST http://localhost:8080/users
+### 
+# Update a match by ID (replace {id} with the actual match ID)
+PUT http://localhost:8080/matches/1L
 Content-Type: application/json
-Authorization: Basic admin goodpassword
+Authorization: Basic admin:goodpassword
 
 {
-    "username": "gooduser",
-    "password": "goodpassword",
-    "authorities": "ROLE_USER"
+    "tournament": {
+        "id": 1
+    },
+    "user1": {
+        "id": 1
+    },
+    "user2": {
+        "id": 2
+    },
+    "matchDate": "2024-10-02",
+    "matchTime": "12:00",
+    "user1Score": 9,
+    "user2Score": 8
 }
 
-###
-GET http://localhost:8080/users
-Content-Type: application/json
-Authorization: Basic admin goodpassword
+### 
+# Delete a match by ID (replace {id} with the actual match ID)
+DELETE http://localhost:8080/matches/1L
+Authorization: Basic admin:goodpassword
+
+
+
+
 
