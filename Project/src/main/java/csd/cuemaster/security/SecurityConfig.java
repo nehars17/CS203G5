@@ -69,34 +69,26 @@ public class SecurityConfig {
                 .build();
     }
 
-    /**
-     * TODO: Activity 2a - Authentication
-     * Add code to secure requests to Reviews
-     * In particular, only authenticated users would be able to create/update/delete
-     * Reviews
-     * Hint: Add requestMatchers rules
-     * 
-     * 
-     * 
-     * 
-     * TODO: Activity 2b - Authorization
-     * Add roles to specify permissions for each enpoint
-     * User role: can add review.
-     * Admin role: can add/delete/update books/reviews, and add/list users
-     * 
-     * Note: '*' matches zero or more characters, e.g., /books/* matches /books/20
-     * '**' matches zero or more 'directories' in a path, e.g., /books/** matches
-     * /books/1/reviews
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/activate","/activate/*","/normallogin", "/loginSuccess","/profiles", "/leaderboard", "/user/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/register/*", "/user/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/changepoints/*", "/user/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/user/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/activate","/activate/*","/normallogin", "/loginSuccess","/profiles", "/user/**","/tournaments/*","/matches/*", "/matches","/tournaments", "/leaderboard").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/register/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/user/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT,"/user/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT,"/changepoints/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
+                        // .requestMatchers(HttpMethod.GET,"/tournaments/*").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/tournaments/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.POST,"/tournaments/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.DELETE,"/tournaments/*").hasRole("ORGANISER")
+
+                        // .requestMatchers(HttpMethod.GET,"/matches/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/matches/create").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.DELETE,"/matches/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.PUT,"/matches/*").hasRole("ORGANISER")
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
