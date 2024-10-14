@@ -93,9 +93,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/activate","/activate/*","/normallogin", "/loginSuccess","/profiles", "/user/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/activate","/activate/*","/normallogin", "/loginSuccess","/profiles", "/leaderboard", "/user/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/register/*", "/user/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/user/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/changepoints/*", "/user/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/user/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated())

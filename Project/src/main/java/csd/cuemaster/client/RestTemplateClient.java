@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -72,30 +71,20 @@ public class RestTemplateClient {
      * @return
      */
     public List<Profile> getLeaderboard(final String URI, final Long id) {
-        ResponseEntity<List<Profile>> response = template.exchange(
-        URI + "/" + id,
-        HttpMethod.GET,
-        null,
-        new ParameterizedTypeReference<List<Profile>>() {}
-        );
-        List<Profile> profiles = response.getBody();
-        return profiles;
+        Profile[] profileArray = template.getForObject(URI + "/profile", Profile[].class);
+        List<Profile> profileList = Arrays.asList(profileArray);
+        return profileList;
     }
 
-    /**
-     * Returns a list of players after a points reset with given id.
-     * @param URI
-     * @param id
-     * @return
-     */
-    public List<Profile> getLeaderboardAfterPointsReset(final String URI, final Long id) {
-        ResponseEntity<List<Profile>> response = template.exchange(
-        URI + "/" + id,
-        HttpMethod.PUT,
-        null,
-        new ParameterizedTypeReference<List<Profile>>() {}
-        );
-        List<Profile> profiles = response.getBody();
-        return profiles;
+        /**
+     * Get a profile with given id
+     * 
+    //  * @param URI
+    //  * @param id
+    //  * @return
+    //  */
+    public Profile changePoints(final String URI, final Long userid, final Long profileid) {
+        final Profile profile = template.getForObject(URI + "/users/" + userid + "/profile/" + profileid, Profile.class);
+        return profile;
     }
 }
