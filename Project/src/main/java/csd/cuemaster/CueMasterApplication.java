@@ -19,6 +19,8 @@ public class CueMasterApplication {
         System.out.println("[Add user]: " + users.save(
             new User("admin@gmail.com", encoder.encode("goodpassword"), "ROLE_ADMIN","normal",true)).getUsername());
         // }
+        users.save(new User("org@gmail.com", encoder.encode("goodpassword"), "ROLE_ORGANISER","normal",true));
+    
         
     }
     

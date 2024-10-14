@@ -5,8 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import csd.cuemaster.tournament.TournamentRepository;
-import csd.cuemaster.user.UserRepository;
+// import csd.cuemaster.tournament.TournamentRepository;
+// import csd.cuemaster.user.UserRepository;
+import csd.cuemaster.tournament.*;
+import csd.cuemaster.user.*;
+import csd.cuemaster.match.*;
 
 @Service
 public class MatchServiceImpl implements MatchService {

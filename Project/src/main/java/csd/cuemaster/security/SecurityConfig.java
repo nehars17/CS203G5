@@ -93,10 +93,20 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/activate","/activate/*","/normallogin", "/loginSuccess","/profiles", "/user/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/register/*", "/user/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/user/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/user/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/activate","/activate/*","/normallogin", "/loginSuccess","/profiles", "/user/**","/tournaments/*","/matches/*", "/matches","/tournaments").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/register/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/user/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT,"/user/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
+                        // .requestMatchers(HttpMethod.GET,"/tournaments/*").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/tournaments/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.POST,"/tournaments/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.DELETE,"/tournaments/*").hasRole("ORGANISER")
+
+                        // .requestMatchers(HttpMethod.GET,"/matches/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/matches/create").permitAll()
+                        .requestMatchers(HttpMethod.DELETE,"/matches/*").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/matches/*").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form

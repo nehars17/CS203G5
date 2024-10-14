@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/matches")
@@ -25,7 +27,7 @@ public class MatchController {
 
     //create match
     @PostMapping("/create")
-    public ResponseEntity<Match> createMatch(@RequestBody Match match) {
+    public ResponseEntity<Match> createMatch(@Valid @RequestBody Match match) {
         //TODO: process POST request
         Match savedMatch = matchService.createMatch(match);
         return ResponseEntity.ok(savedMatch);

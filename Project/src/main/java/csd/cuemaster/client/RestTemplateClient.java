@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+import csd.cuemaster.match.Match;
 import csd.cuemaster.profile.Profile;
 import csd.cuemaster.tournament.Tournament;
 
@@ -111,6 +112,11 @@ public class RestTemplateClient {
         return responseEntity.getBody();
     }
 
+        //update match by id
+        public Match updateMatch(final String URI, Long matchId, Match match) {
+            template.put(URI + "/" + matchId, match);
+            return getMatchById(URI, matchId);
+        }
     /**
      * Delete a tournament by ID.
      * 
@@ -137,4 +143,27 @@ public class RestTemplateClient {
     //     List<Profile> profiles = response.getBody();
     //     return profiles;
     // }
+
+        public Match createMatch(final String URI, Match match) {
+        ResponseEntity<Match> response = template.postForEntity(URI + "/create", match, Match.class);
+        return response.getBody();
+    }
+
+    //get match by id
+    public Match getMatchById(final String URI, Long matchId) {
+        return template.getForObject(URI + "/" + matchId, Match.class);
+    }
+
+
+
+    public List<Match> getAllMatchesByTournamentId(final String URI, Long tournamentId) {
+        ResponseEntity<List> response = template.exchange(URI + "/tournaments/" + tournamentId, HttpMethod.GET, null, List.class
+        );
+        return response.getBody();
+    }
+
+    //delete match by ID
+    public void deleteMatchById(final String URI, Long matchId) {
+        template.delete(URI + "/" + matchId);
+    }
 }
