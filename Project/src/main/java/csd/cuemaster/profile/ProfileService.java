@@ -9,4 +9,8 @@ public interface ProfileService {
     Profile updateProfile(Long userId, Profile newProfileInfo);
     Profile addProfile(Long userId, Profile profile);
     // String addProfilePhoto(Long userID, byte[] image);
+    List<Profile> getPlayers(List<Profile> profiles);
+    List<Profile> getSortedPlayers(List<Profile> profiles);
+    void resetPoints(List<Profile> players);
+    // void updateRank(List<Profile> sortedplayers);
 }
