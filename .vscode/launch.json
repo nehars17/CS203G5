@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "test",
+            "request": "launch",
+            "mainClass": "csd.cuemaster.match.test",
+            "projectName": "week5"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-CueMasterApplication<week5>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "csd.cuemaster.CueMasterApplication",
+            "projectName": "week5",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

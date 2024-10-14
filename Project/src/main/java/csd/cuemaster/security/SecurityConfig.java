@@ -43,10 +43,16 @@ public class SecurityConfig {
      * Add code to secure requests to Reviews
      * In particular, only authenticated users would be able to create/update/delete Reviews
      * Hint: Add requestMatchers rules
-     * 
-     * 
-     * 
-     * 
+        @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .cors() // Enable CORS
+            .and()
+            .csrf().disable() // Disable CSRF if not needed (consider security implications)
+            .authorizeRequests()
+            .antMatchers("/matches").permitAll() // Allow access to /matches for all users
+            .anyRequest().authenticated(); // Other requests require authentication
+    }
      * TODO: Activity 2b - Authorization
      * Add roles to specify permissions for each enpoint
      * User role: can add review.
@@ -56,14 +62,39 @@ public class SecurityConfig {
              '**' matches zero or more 'directories' in a path, e.g., /books/** matches /books/1/reviews 
      */
     @Bean
+    // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    //     http
+    //         .authorizeHttpRequests((authz) -> authz
+    //             .requestMatchers("/error").permitAll() // the default error page
+    //             .requestMatchers(HttpMethod.GET, "/books", "/books/**").permitAll()
+    //             .requestMatchers(HttpMethod.POST, "/books").authenticated()
+    //             .requestMatchers(HttpMethod.PUT, "/books/*").hasAnyRole("ADMIN")
+    //             .requestMatchers(HttpMethod.DELETE, "/books/*").hasAnyRole("ADMIN")
+    //             // note that Spring Security 6 secures all endpoints by default
+    //             // remove the below line after adding the required rules
+    //             // .anyRequest().permitAll() // allowing the request without any authentication / authorization 
+    //             .requestMatchers(HttpMethod.POST, "/books/*/reviews").authenticated()
+    //             .requestMatchers(HttpMethod.DELETE, "/books/*/reviews/*").hasAnyRole("ADMIN")
+    //             .requestMatchers(HttpMethod.PUT, "/books/*/reviews").hasAnyRole("ADMIN")
+    //             .requestMatchers(HttpMethod.POST, "/users").hasAnyRole("ADMIN")
+    //         )
+    //         // ensure that the application won’t create any session in our stateless REST APIs
+    //         .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    //         .httpBasic(Customizer.withDefaults())
+    //         .csrf(csrf -> csrf.disable()) // CSRF protection is needed only for browser based attacks
+    //         .formLogin(form -> form.disable())
+    //         .headers(header -> header.disable()) // disable the security headers, as we do not return HTML in our APIs
+    //         .authenticationProvider(authenticationProvider());
+    //     return http.build();
+    // }
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests((authz) -> authz
                 .requestMatchers("/error").permitAll() // the default error page
-                .requestMatchers(HttpMethod.GET, "/books", "/books/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/books").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/books/*").hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/books/*").hasAnyRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/matches", "/matches/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/matches/create").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/matches/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/matches/**").permitAll()
                 // note that Spring Security 6 secures all endpoints by default
                 // remove the below line after adding the required rules
                 .anyRequest().permitAll() // allowing the request without any authentication / authorization 
@@ -93,5 +124,13 @@ public class SecurityConfig {
         // auto-generate a random salt internally
         return new BCryptPasswordEncoder();
     }
+
+    // @Override
+    // protected void configure(HttpSecurity http) throws Exception {
+    //     http
+    //         .csrf().disable() // Disable CSRF
+    //         .authorizeRequests().anyRequest().permitAll(); // Allow all requests
+    //         //.anyRequest().permitall(); // Other requests require authentication
+    // }
 }
  
