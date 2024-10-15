@@ -102,31 +102,36 @@ public class ProfileServiceImpl implements ProfileService{
     // } getAllProfile()
 
     @Override
-    public List<Profile> getPlayers(List<Profile> profiles) {
-        if (profiles == null || profiles.isEmpty()) {
+    public List<Profile> getPlayers() {
+        List<Profile> profileList = profiles.findAll();
+        if (profileList == null || profileList.isEmpty()) {
             return new ArrayList<>();
         }
-        return profiles.stream()
-                .filter(profile -> profile.getUser().getAuthorities().equals("ROLE_PLAYER"))
+        return profileList.stream()
+        .filter(profile -> {
+            User user = profile.getUser();
+            return user != null && user.getAuthorities().stream()
+                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"));
+        })
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void sort(List<Profile> players) {
-        if (players == null || players.isEmpty()) {
-            return;
+    public List<Profile> sort() {
+        List<Profile> profileList = getPlayers();
+        if (profileList == null || profileList.isEmpty()) {
+            return new ArrayList<Profile>();
         }
-        players.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());
+        profileList.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());
+        return profileList;
     }
 
     @Override
-    public void resetPoints(List<Profile> players) {
-        if (players == null || players.isEmpty()) {
-            return;
-        }
-        for (Profile profile : players) {
-            profile.setPoints(1200);
-        }
+    public Profile pointsSet(Long user_id, Integer points) {
+        Profile profile = profiles.findByUserId(user_id)
+            .orElseThrow(() -> new UserProfileNotFoundException(user_id));
+        profile.setPoints(points);
+        return profiles.save(profile);
     }
 
     /* @Override

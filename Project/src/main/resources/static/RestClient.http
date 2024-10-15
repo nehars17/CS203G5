@@ -1,5 +1,18 @@
-#Bryan Test
+#Glenn Test
+GET http://localhost:8080/leaderboard
+Content-Type: application/json
+
+###
+PUT http://localhost:8080/changepoints/2
+Content-Type: application/json
+
+{
+    "points": "2300"
+}
+
+###Bryan Test
 GET http://localhost:8080/profiles
+Content-Type: application/json
 
 ###
 GET http://localhost:8080/user/2/profile/1
@@ -21,7 +34,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/user/3/profile
+POST http://localhost:8080/user/2/profile
 Content-Type: application/json
 
 {
@@ -62,6 +75,15 @@ Content-Type: application/json
 
 {
     "username": "nehars.rs@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_ORGANISER"
+}
+###
+POST http://localhost:8080/register/organiser
+Content-Type: application/json
+
+{
+    "username": "bryannn@gmail.com",
     "password": "goodpassword",
     "authorities":"ROLE_ORGANISER"
 }

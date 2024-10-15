@@ -79,6 +79,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/register/*").permitAll()
                         .requestMatchers(HttpMethod.POST,"/user/**").authenticated()
                         .requestMatchers(HttpMethod.PUT,"/user/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT,"/changepoints/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
           
                         .requestMatchers(HttpMethod.PUT,"/tournaments/*").hasRole("ORGANISER")
