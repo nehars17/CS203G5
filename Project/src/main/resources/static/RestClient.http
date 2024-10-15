@@ -1,3 +1,47 @@
+#Neha Test
+ 
+# Demo Google Account Login with /googlelogin/player for lee334203@gmail.com
+###
+POST http://localhost:8080/register/player
+Content-Type: application/json
+
+{
+    "username": "nehars.rs@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_PLAYER"
+}
+
+###
+GET http://localhost:8080/users
+
+###
+GET http://localhost:8080/normallogin
+Content-Type: application/json
+
+{
+    "username": "nehars.rs@gmail.com",
+    "password": "goodpassword",
+    "authorities": "ROLE_ORGANISER"
+}
+
+
+###
+GET http://localhost:8080/logout
+Content-Type: application/json
+
+###
+GET http://localhost:8080/normallogin
+Content-Type: application/json
+
+{
+    "username": "org@gmail.com",
+    "password": "goodpassword",
+    "authorities": "ROLE_ORGANISER"
+}
+
+
+
+
 #Glenn Test
 GET http://localhost:8080/leaderboard
 Content-Type: application/json
@@ -36,6 +80,8 @@ Content-Type: application/json
 ###
 POST http://localhost:8080/user/2/profile
 Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
+
 
 {
     "firstname": "Neha",
@@ -48,6 +94,9 @@ Content-Type: application/json
 ###
 PUT http://localhost:8080/user/2/profile/edit
 Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
+
+
 
 {
     "firstname": "Glenn",
@@ -58,92 +107,7 @@ Content-Type: application/json
 }
 
 
-#Neha Test
-###
-POST http://localhost:8080/register/player
-Content-Type: application/json
 
-{
-    "username": "lee334203@gmail.com",
-    "password": "goodpassword",
-    "authorities":"ROLE_PLAYER"
-}
-
-###
-POST http://localhost:8080/register/organiser
-Content-Type: application/json
-
-{
-    "username": "nehars.rs@gmail.com",
-    "password": "goodpassword",
-    "authorities":"ROLE_ORGANISER"
-}
-###
-POST http://localhost:8080/register/organiser
-Content-Type: application/json
-
-{
-    "username": "bryannn@gmail.com",
-    "password": "goodpassword",
-    "authorities":"ROLE_ORGANISER"
-}
-
-###
-GET http://localhost:8080/users
-
-
-###
-GET http://localhost:8080/normallogin
-Content-Type: application/json
-
-{
-    "username": "admin@gmail.com",
-    "password": "goodpassword",
-    "authorities": "ROLE_ADMIN"
-}
-
-###
-GET http://localhost:8080/normallogin
-Content-Type: application/json
-
-{
-    "username": "org@gmail.com",
-    "password": "goodpassword",
-    "authorities": "ROLE_ORGANISER"
-}
-
-###
-GET http://localhost:8080/normallogin
-Content-Type: application/json
-
-{
-    "username": "lee334203@gmail.com",
-    "password": "goodpassword",
-    "authorities": "ROLE_PLAYER"
-}
-
-###
-GET http://localhost:8080/logout
-Content-Type: application/json
-
-
-###
-POST http://localhost:8080/register/player
-Content-Type: application/json
-
-{
-    "username": "player@gmail.com",
-    "password": "goodpassword",
-    "authorities":"ROLE_PLAYER"
-}
-
-###
-DELETE http://localhost:8080/user/2/account
-Content-Type: application/json
-
-{
-
-}
 #SHIYUN
 ### Create a new tournament
 POST http://localhost:8080/tournaments

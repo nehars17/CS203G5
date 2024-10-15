@@ -21,7 +21,7 @@ public class CueMasterApplication {
         // }
         users.save(new User("org@gmail.com", encoder.encode("goodpassword"), "ROLE_ORGANISER","normal",true));
     
-        
+
     }
     
 }
