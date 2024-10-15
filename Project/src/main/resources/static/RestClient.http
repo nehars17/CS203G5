@@ -41,19 +41,6 @@ Content-Type: application/json
 
 
 
-
-#Glenn Test
-GET http://localhost:8080/leaderboard
-Content-Type: application/json
-
-###
-PUT http://localhost:8080/changepoints/2
-Content-Type: application/json
-
-{
-    "points": "2300"
-}
-
 ###Bryan Test
 GET http://localhost:8080/profiles
 Content-Type: application/json
@@ -106,7 +93,17 @@ Authorization: Basic org@gmail.com goodpassword
     "organization": null  
 }
 
+#Glenn Test
+GET http://localhost:8080/leaderboard
+Content-Type: application/json
 
+###
+PUT http://localhost:8080/changepoints/2
+Content-Type: application/json
+
+{
+    "points": "2300"
+}
 
 #SHIYUN
 ### Create a new tournament
@@ -193,10 +190,10 @@ Authorization: Basic org@gmail.com goodpassword
         "id": 1
     },
     "user1": {
-        "id": 1
+        "id": 3
     },
     "user2": {
-        "id": 2
+        "id": 4
     },
     "matchDate": "2024-10-02",
     "matchTime": "12:00",
@@ -227,10 +224,10 @@ Authorization: Basic org@gmail.com goodpassword
         "id": 1
     },
     "user1": {
-        "id": 1
+        "id": 3
     },
     "user2": {
-        "id": 2
+        "id": 4
     },
     "matchDate": "2024-10-02",
     "matchTime": "12:00",
