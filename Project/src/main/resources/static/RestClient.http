@@ -41,7 +41,11 @@ Content-Type: application/json
 
 
 
-###Bryan Test
+#BRYAN
+###
+GET http://localhost:8080/users
+
+###
 GET http://localhost:8080/profiles
 Content-Type: application/json
 
@@ -49,12 +53,10 @@ Content-Type: application/json
 GET http://localhost:8080/user/2/profile/1
 Content-Type: application/json
 
-###
-GET http://localhost:8080/users
-
-###
+### (ORG PROFILE)
 POST http://localhost:8080/user/2/profile
 Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
 
 {
     "firstname": "Bryan",
@@ -64,15 +66,14 @@ Content-Type: application/json
     "organization": "SMU"
 }
 
-###
-POST http://localhost:8080/user/2/profile
+### (PLAYER PROFILE)
+POST http://localhost:8080/user/4/profile
 Content-Type: application/json
-Authorization: Basic org@gmail.com goodpassword
-
+Authorization: Basic nehars.rs@gmail.com goodpassword
 
 {
     "firstname": "Neha",
-    "lastname": "Neha",
+    "lastname": "Rs",
     "birthdate": "2003-01-01",
     "birthlocation": "Singapore"
 }
@@ -84,22 +85,16 @@ Content-Type: application/json
 Authorization: Basic org@gmail.com goodpassword
 
 
-
-{
-    "firstname": "Glenn",
-    "lastname": "Fann",
-    "birthdate": "2000-01-01",
-    "birthlocation": "Singapore",
-    "organization": null  
-}
-
-#Glenn Test
+#GLENN
+###
 GET http://localhost:8080/leaderboard
 Content-Type: application/json
+Authorization: Basic nehars.rs@gmail.com goodpassword
 
 ###
-PUT http://localhost:8080/changepoints/2
+PUT http://localhost:8080/changepoints/4
 Content-Type: application/json
+Authorization: Basic admin@gmail.com goodpassword
 
 {
     "points": "2300"
@@ -125,12 +120,15 @@ Authorization: Basic org@gmail.com goodpassword
 
 ### Retrieve all tournaments
 GET http://localhost:8080/tournaments
+Authorization: Basic org@gmail.com goodpassword
 
 ### Retrieve a specific tournament by ID
 GET http://localhost:8080/tournaments/1
+Authorization: Basic org@gmail.com goodpassword
 
 ### Retrieve a specific tournament by ID that doesnt exist
 GET http://localhost:8080/tournaments/4
+Authorization: Basic org@gmail.com goodpassword
 
 ### Update a tournament
 PUT http://localhost:8080/tournaments/1
@@ -169,7 +167,7 @@ Authorization: Basic org@gmail.com goodpassword
 }
 
 ### Delete a tournament
-DELETE http://localhost:8080/tournaments/1
+DELETE http://localhost:8080/tournaments/2
 Authorization: Basic org@gmail.com goodpassword
 
 
