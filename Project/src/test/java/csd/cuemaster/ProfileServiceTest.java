@@ -39,8 +39,6 @@ public class ProfileServiceTest {
 
     @InjectMocks
     private ProfileServiceImpl profileService;
-    @InjectMocks
-    private UserServiceImpl userService;
 
     @Test
     void createUserWithProfile() {
@@ -111,6 +109,7 @@ public class ProfileServiceTest {
         // Assert
         assertNotNull(leaderboard);
         assertFalse(leaderboard.isEmpty());
+        assertEquals(1200, profile1.getPoints());
         assertEquals(2300, profile2.getPoints());
         assertEquals(profile2, leaderboard.get(0));
     }
