@@ -41,7 +41,7 @@ public class ProfileServiceTest {
     private ProfileServiceImpl profileService;
 
     @Test
-    void createUserWithProfile() {
+    void createUserWithProfile_NewUserProfile_ReturnUserProfile() {
         // Arrange
         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user.setId(1L);
