@@ -6,8 +6,8 @@ public interface UserService {
     
     List<User> listUsers();
     User getUser(Long id);
-    User addPlayer(User user);
-    User addOrganiser(User user);
+    User addUser(User user);
+    // User addOrganiser(User user);
     User updateUser(Long id, User user);
     public User loginUser(User user);
     public String googleLogin(String email, String role);

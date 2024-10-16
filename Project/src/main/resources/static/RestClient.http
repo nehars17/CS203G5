@@ -2,7 +2,7 @@
  
 # Demo Google Account Login with /googlelogin/player for lee334203@gmail.com
 ###
-POST http://localhost:8080/register/player
+POST http://localhost:8080/register
 Content-Type: application/json
 
 {

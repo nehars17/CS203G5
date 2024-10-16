@@ -87,7 +87,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/activate","/activate/*","/normallogin", "/loginSuccess","/profiles", "/user/**","/tournaments/*","/matches/*", "/matches","/tournaments","/leaderboard").permitAll()
 
-                        .requestMatchers(HttpMethod.POST,"/register/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/register").permitAll()
                         .requestMatchers(HttpMethod.POST,"/user/**").authenticated()
                         .requestMatchers(HttpMethod.PUT,"/user/**").authenticated()
                         .requestMatchers(HttpMethod.PUT,"/changepoints/*").hasRole("ADMIN")
