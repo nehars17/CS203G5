@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
     public String googleLogin(String email, String role) {
         User existingUser = users.findByUsername(email)
                 .orElseGet(() -> {
-                    User newUser = new User(email, "nopassword", role,"google",false);
+                    User newUser = new User(email, "nopassword", role,"google",true);
                     return users.save(newUser);
                 });
 
