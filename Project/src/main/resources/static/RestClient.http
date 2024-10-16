@@ -6,7 +6,7 @@ POST http://localhost:8080/register/player
 Content-Type: application/json
 
 {
-    "username": "nehars.rs@gmail.com",
+    "username": "ns.rs@gmail.com",
     "password": "goodpassword",
     "authorities":"ROLE_PLAYER"
 }
@@ -19,7 +19,7 @@ GET http://localhost:8080/normallogin
 Content-Type: application/json
 
 {
-    "username": "nehars.rs@gmail.com",
+    "username": "nrs@gmail.com",
     "password": "goodpassword",
     "authorities": "ROLE_ORGANISER"
 }
@@ -54,7 +54,7 @@ GET http://localhost:8080/user/2/profile/1
 Content-Type: application/json
 
 ### (ORG PROFILE)
-POST http://localhost:8080/user/2/profile
+POST http://localhost:8080/user/5/profile
 Content-Type: application/json
 Authorization: Basic org@gmail.com goodpassword
 
@@ -84,6 +84,13 @@ PUT http://localhost:8080/user/2/profile/edit
 Content-Type: application/json
 Authorization: Basic org@gmail.com goodpassword
 
+{
+    "firstname": "Glenn",
+    "lastname": "Fann",
+    "birthdate": "2000-01-01",
+    "birthlocation": "Singapore",
+    "organization": "SCHOOL"  
+}
 
 #GLENN
 ###
@@ -204,10 +211,6 @@ GET http://localhost:8080/matches/1
 Authorization: Basic org@gmail.com goodpassword
 
 ###
-DELETE http://localhost:8080/matches/1
-Authorization: Basic org@gmail.com goodpassword
-
-###
 GET http://localhost:8080/matches
 Authorization: Basic org@gmail.com goodpassword
 
@@ -234,3 +237,6 @@ Authorization: Basic org@gmail.com goodpassword
 }
 
 
+###
+DELETE http://localhost:8080/matches/1
+Authorization: Basic org@gmail.com goodpassword
