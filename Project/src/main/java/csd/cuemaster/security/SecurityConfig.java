@@ -1,5 +1,6 @@
 package csd.cuemaster.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,10 +27,17 @@ public class SecurityConfig {
 
     private UserDetailsService userDetailsService;
     private final CustomAuthenticationSuccessHandler customSuccessHandler; // Add this line
+    
+    @Value("${google.client-id}")
+    private String client_id;
+
+    @Value("${google.client-secret}")
+    private String client_secret;
 
     public SecurityConfig(UserDetailsService userSvc, CustomAuthenticationSuccessHandler customSuccessHandler) {
         this.userDetailsService = userSvc;
         this.customSuccessHandler = customSuccessHandler; // Assign it here
+
     }
 
     /**
@@ -45,6 +53,7 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(encoder());
         return authProvider;
+       
     }
 
     @Bean
@@ -53,9 +62,11 @@ public class SecurityConfig {
     }
 
     private ClientRegistration googleClientRegistration() {
+        
+
         return ClientRegistration.withRegistrationId("google")
-                .clientId("643146770456-qeusj14u53puh4bi1hhi2t8g21qhh1hc.apps.googleusercontent.com")
-                .clientSecret("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")
+                .clientId(client_id)
+                .clientSecret(client_secret)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .redirectUri("http://localhost:8080/login/oauth2/code/{registrationId}")

@@ -6,7 +6,7 @@ POST http://localhost:8080/register/player
 Content-Type: application/json
 
 {
-    "username": "ns.rs@gmail.com",
+    "username": "nehars.rs@gmail.com",
     "password": "goodpassword",
     "authorities":"ROLE_PLAYER"
 }
@@ -19,7 +19,7 @@ GET http://localhost:8080/normallogin
 Content-Type: application/json
 
 {
-    "username": "nrs@gmail.com",
+    "username": "nehars.rs@gmail.com",
     "password": "goodpassword",
     "authorities": "ROLE_ORGANISER"
 }
