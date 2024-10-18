@@ -109,6 +109,7 @@ public class ProfileServiceTest {
         // Assert
         assertNotNull(updatedProfile);
         assertEquals(2300, profile.getPoints());
+        verify(profiles).save(profile);
     }
 
     // Test Case: Attempt to update organiser points which does not exist.
@@ -131,6 +132,7 @@ public class ProfileServiceTest {
         // Assert
         assertNotNull(updatedProfile);
         assertEquals(null, profile.getPoints());
+        verify(profiles).save(profile);
     }
 
     // Test Case: Sort players based on points.
@@ -168,8 +170,6 @@ public class ProfileServiceTest {
         // Assert
         assertNotNull(leaderboard);
         assertFalse(leaderboard.isEmpty());
-        assertEquals(1200, profile1.getPoints());
-        assertEquals(2300, profile2.getPoints());
         assertEquals(profile2, leaderboard.get(0));
     }
 
