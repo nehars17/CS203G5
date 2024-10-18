@@ -43,7 +43,7 @@ public class Profile {
     @NotNull (message = "Location should not be null")
     private String birthlocation; 
 
-    private String profilephotopath;
+    // private String profilephotopath;
 
     private String organization;
 
@@ -64,13 +64,13 @@ public class Profile {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, String profilephotopath, User user){
+    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, User user){
 
         this.firstname = firstname;
         this.lastname = lastname; 
         this.birthdate = birthdate;
         this.birthlocation = birthlocation;
-        this.profilephotopath = profilephotopath;
+        // this.profilephotopath = profilephotopath;
         this.TournamentCount = 0; 
         this.MatchCount = 0;
         this.organization = null; 
@@ -80,12 +80,12 @@ public class Profile {
         this.user = user; 
     }
 
-    public Profile (String firstname, String lastname,LocalDate birthdate, String birthlocation, String profilephotopath, String organization, User user){
+    public Profile (String firstname, String lastname,LocalDate birthdate, String birthlocation, String organization, User user){
         this.firstname = firstname;
         this.lastname = lastname; 
         this.birthdate = birthdate;
         this.birthlocation = birthlocation;
-        this.profilephotopath = profilephotopath;
+        // this.profilephotopath = profilephotopath;
         this.organization = organization;
         this.TournamentCount = null; 
         this.MatchCount = null;

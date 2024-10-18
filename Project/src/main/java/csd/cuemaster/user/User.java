@@ -1,5 +1,8 @@
 package csd.cuemaster.user;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import csd.cuemaster.deserializer.*;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,6 +56,7 @@ public class User implements UserDetails{
     private String password;
 
     @NotNull(message = "Authorities should not be null")
+    @JsonDeserialize(using = AuthorityDeserializer.class)
     // We define three roles/authorities: ROLE_PLAYER or ROLE_ADMIN or ROLE_ORGANISER
     private String authorities;
 
