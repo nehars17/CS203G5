@@ -1,9 +1,11 @@
 package csd.cuemaster.user;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -79,15 +81,25 @@ public class UserServiceImpl implements UserService {
     // }
 
     public String googleLogin(String email, String role) {
+        // Create the authority from the role string
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+    
         User existingUser = users.findByUsername(email)
-                .orElseGet(() -> {
-                    User newUser = new User(email, "nopassword", Arrays.asList(role),"google",true);
-                    return users.save(newUser);
-                });
-
+            .orElseGet(() -> {
+                List<String> roles = Collections.singletonList(role); // Assuming roles are stored as strings
+                User newUser = new User(email, encoder.encode("nopassword"), roles, "google", true);
+                return users.save(newUser);
+            });
+    
+        // Convert the user's roles to SimpleGrantedAuthority
+        List<SimpleGrantedAuthority> authorities = existingUser.getRoles().stream()
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
+    
+        // Now you can use the authorities as needed
         return existingUser.getUsername();
-
     }
+    
 
     @Override
     public String accountActivation(String token) {

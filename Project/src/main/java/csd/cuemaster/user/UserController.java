@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.mail.MessagingException;
+import jakarta.persistence.ElementCollection;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ public class UserController {
     private EmailService emailService;
 
 
-
+    @ElementCollection
     @GetMapping("/users")
     public List<User> getUsers() {
         return userService.listUsers();
