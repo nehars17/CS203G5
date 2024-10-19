@@ -1,5 +1,6 @@
 package csd.cuemaster.user;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,39 +52,36 @@ public class UserServiceImpl implements UserService {
      * Return null if there exists a book with the same title
      */
     @Override
-    public User addPlayer(User user) {
+    public User addUser(User user) {
         if (users.findByUsername(user.getUsername()).isPresent()) {
             return null; // User already exists
         }
         user.setPassword(encoder.encode(user.getPassword()));
-        user.setAuthorities("ROLE_PLAYER");
         user.setProvider("normal");
         String token = generateActivationToken(); // Generate token
         user.setActivationToken(token);
         return users.save(user);
     }
 
-    @Override
-    public User addOrganiser(User user) {
-        if (users.findByUsername(user.getUsername()).isPresent()) {
-            return null; // User already exists
-        }
+    // @Override
+    // public User addOrganiser(User user) {
+    //     if (users.findByUsername(user.getUsername()).isPresent()) {
+    //         return null; // User already exists
+    //     }
 
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setAuthorities("ROLE_ORGANISER");
-        user.setProvider("normal");
-        String token = generateActivationToken(); // Generate token
-        user.setActivationToken(token);
-        return users.save(user);
+    //     user.setPassword(encoder.encode(user.getPassword()));
+    //     user.setAuthorities("ROLE_ORGANISER");
+    //     user.setProvider("normal");
+    //     String token = generateActivationToken(); // Generate token
+    //     user.setActivationToken(token);
+    //     return users.save(user);
 
-    }
-
-    @Override
+    // }
 
     public String googleLogin(String email, String role) {
         User existingUser = users.findByUsername(email)
                 .orElseGet(() -> {
-                    User newUser = new User(email, "nopassword", role,"google",false);
+                    User newUser = new User(email, "nopassword", Arrays.asList(role),"google",true);
                     return users.save(newUser);
                 });
 

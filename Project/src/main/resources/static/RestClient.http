@@ -2,11 +2,21 @@
  
 # Demo Google Account Login with /googlelogin/player for lee334203@gmail.com
 ###
-POST http://localhost:8080/register/player
+POST http://localhost:8080/register
 Content-Type: application/json
 
 {
-    "username": "ns.rs@gmail.com",
+    "username": "nehars.rs@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_PLAYER"
+}
+
+###
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+    "username": "ssam57@myyahoo.com",
     "password": "goodpassword",
     "authorities":"ROLE_PLAYER"
 }
@@ -19,7 +29,7 @@ GET http://localhost:8080/normallogin
 Content-Type: application/json
 
 {
-    "username": "nrs@gmail.com",
+    "username": "nehars.rs@gmail.com",
     "password": "goodpassword",
     "authorities": "ROLE_ORGANISER"
 }
@@ -54,7 +64,7 @@ GET http://localhost:8080/user/2/profile/1
 Content-Type: application/json
 
 ### (ORG PROFILE)
-POST http://localhost:8080/user/5/profile
+POST http://localhost:8080/user/2/profile
 Content-Type: application/json
 Authorization: Basic org@gmail.com goodpassword
 
@@ -66,14 +76,26 @@ Authorization: Basic org@gmail.com goodpassword
     "organization": "SMU"
 }
 
-### (PLAYER PROFILE)
-POST http://localhost:8080/user/4/profile
+### (PLAYER PROFILE 1 )
+POST http://localhost:8080/user/3/profile
 Content-Type: application/json
 Authorization: Basic nehars.rs@gmail.com goodpassword
 
 {
     "firstname": "Neha",
     "lastname": "Rs",
+    "birthdate": "2003-01-01",
+    "birthlocation": "Singapore"
+}
+
+### (PLAYER PROFILE 2)
+POST http://localhost:8080/user/5/profile
+Content-Type: application/json
+Authorization: Basic ssam57@myyahoo.com nopassword
+
+{
+    "firstname": "Sam",
+    "lastname": "Roy",
     "birthdate": "2003-01-01",
     "birthlocation": "Singapore"
 }

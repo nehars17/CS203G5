@@ -38,9 +38,9 @@ public class UserController {
      * @return
      */
 
-    @PostMapping("/register/player")
-    public User addPlayerUser(@Valid @RequestBody User user,HttpServletRequest request) {
-        User savedUser = userService.addPlayer(user);
+    @PostMapping("/register")
+    public User addUser(@Valid @RequestBody User user,HttpServletRequest request) {
+        User savedUser = userService.addUser(user);
         if (savedUser == null) {
             throw new UserExistsException(user.getUsername());
             
@@ -55,23 +55,6 @@ public class UserController {
 
     }
 
-    @PostMapping("/register/organiser")
-    public User addOrganiserUser(@Valid @RequestBody User user, HttpServletRequest request) {
-        User savedUser = userService.addOrganiser(user);
-        
-        if (savedUser == null) {
-            throw new UserExistsException(user.getUsername());
-
-        }
-        String activationLink = "http://localhost:8080/activate?token=" + savedUser.getActivationToken();
-        try {
-            emailService.sendActivationEmail(savedUser.getUsername(), activationLink);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-        return savedUser;
-
-    }
 
     @GetMapping("/activate")
     public String activateAccount(@RequestParam("token") String token) {
