@@ -1,5 +1,6 @@
 package csd.cuemaster.user;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,12 +78,10 @@ public class UserServiceImpl implements UserService {
 
     // }
 
-    @Override
-
     public String googleLogin(String email, String role) {
         User existingUser = users.findByUsername(email)
                 .orElseGet(() -> {
-                    User newUser = new User(email, "nopassword", role,"google",true);
+                    User newUser = new User(email, "nopassword", Arrays.asList(role),"google",true);
                     return users.save(newUser);
                 });
 

@@ -1,14 +1,13 @@
 package csd.cuemaster.user;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.lang.String;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -54,7 +53,7 @@ public class User implements UserDetails{
 
     @NotNull(message = "Authorities should not be null")
     // We define three roles/authorities: ROLE_PLAYER or ROLE_ADMIN or ROLE_ORGANISER
-    private String authorities;
+    private List<String> authorities;
 
     private boolean enabled;
 
@@ -69,7 +68,7 @@ public class User implements UserDetails{
     @JsonIgnore
     private Profile profile;
 
-    public User(String username, String password, String authorities, String provider,Boolean enabled){
+    public User(String username, String password, List<String> authorities, String provider,Boolean enabled){
         this.username = username;
         this.password = password;
         this.authorities = authorities;
@@ -79,10 +78,16 @@ public class User implements UserDetails{
 
     /* Return a collection of authorities (roles) granted to the user.
     */
-    @Override
+    /* The authorities field is now a List<String>, and the @ElementCollection annotation stores it as a JSON-like collection in the database.
+        In getAuthorities(), the List<String> is converted into a collection of GrantedAuthority objects using Java Streams.
+    */
+  @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority(authorities));
+        return authorities.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
+
 
     /*
     The various is___Expired() methods return a boolean to indicate whether
