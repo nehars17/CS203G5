@@ -23,9 +23,7 @@ public class CueMasterApplication {
         // Check if the admin user already exists
         String adminEmail = "admin@gmail.com";
         if (!users.findByUsername(adminEmail).isPresent()) {
-            User user = new User("admin@gmail.com", encoder.encode("goodpassword"), Arrays.asList("ROLE_ADMIN", "ROLE_USER"), "normal", true);
-            Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-            System.out.println(authorities); // Should print the roles as SimpleGrantedAuthority objects
+            User user = new User("admin@gmail.com", encoder.encode("goodpassword"), "ROLE_ADMIN", "normal", true);
             
             users.save(user);
             System.out.println("[Add user]: " + user.getUsername());

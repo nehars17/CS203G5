@@ -62,9 +62,8 @@ class CueMasterApplicationTests {
         
         // Encode the password since you're using BCryptPasswordEncoder in your UserService
         // String encodedPassword = encoder.encode("nopassword");
-		User user = new User("admin@gmail.com", encoder.encode("goodpassword"), Arrays.asList("ROLE_ADMIN", "ROLE_USER"), "normal", true);
-		Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-		System.out.println(authorities); // Should print the roles as SimpleGrantedAuthority objects
+		User user = new User("test@gmail.com", encoder.encode("goodpassword"), "ROLE_ADMIN", "normal", true);
+		users.save(user);
 
         ResponseEntity<User[]> result = restTemplate.getForEntity(uri, User[].class);
         User[] user_array = result.getBody();
@@ -72,7 +71,7 @@ class CueMasterApplicationTests {
         assertEquals(200, result.getStatusCode().value());
         // You can uncomment the following line if you want to assert the number of users
         // assertEquals(1, user_array.length);
-        System.out.println("Response JSON: " + Arrays.toString(user_array));
+        // System.out.println("Response JSON: " + Arrays.toString(user_array));
 
 		
     }
