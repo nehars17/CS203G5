@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import csd.cuemaster.profile.Profile;
+import csd.cuemaster.profile.ProfileAlreadyExistsException;
 import csd.cuemaster.profile.ProfileRepository;
 import csd.cuemaster.profile.ProfileServiceImpl;
 import csd.cuemaster.user.User;
@@ -38,6 +39,79 @@ public class ProfileServiceTest {
 
     @InjectMocks
     private ProfileServiceImpl profileService;
+
+    // Test Case: Two profiles in the list.
+    @Test
+    void getAllProfiles_TwoProfiles_ReturnList() {
+        // Arrange
+        List<Profile> profileList = new ArrayList<>();
+
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, null);
+        profile1.setId(1L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, "Cuesports", null);
+        profile2.setId(2L);
+
+        profileList.add(profile1);
+        profileList.add(profile2);
+
+        // Mock
+        when(profiles.findAll()).thenReturn(profileList);
+
+        // Act
+        profileList = profileService.getAllProfile();
+
+        // Assert
+        assertNotNull(profileList);
+        assertFalse(profileList.isEmpty());
+        }
+
+    // Test Case: Add a player profile.
+    @Test
+    void addProfile_PlayerProfile_ReturnProfile() {
+        // Arrange
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
+        profile.setId(1L);
+
+        // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
+        when(profiles.save(any(Profile.class))).thenReturn(profile);
+
+        // Act
+        Profile addedProfile = profileService.addProfile(1L, profile);
+
+        // Assert
+        assertNotNull(addedProfile);
+        assertEquals(profile, addedProfile);
+        assertEquals(1200, profile.getPoints());
+        }
+
+    // Test Case: Add a player profile that already belongs to a user.
+    @Test
+    void addProfile_PlayerWithProfile_ThrowProfileAlreadyExistsException() {
+        // Arrange
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
+        profile1.setId(1L);
+        user.setProfile(profile1);
+
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, null);
+        profile2.setId(2L);
+
+        // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
+        when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile1));
+
+        // Act
+        ProfileAlreadyExistsException exception = assertThrows(ProfileAlreadyExistsException.class, () -> {
+            profileService.addProfile(1L, profile2);
+        });
+
+        // Assert
+        assertEquals("User ID: 1 profile already exists.", exception.getMessage());
+        }
 
     // Test Case: One player in the list.
     @Test
@@ -145,26 +219,23 @@ public class ProfileServiceTest {
         user1.setId(1L);
         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
         profile1.setId(1L);
+        profile1.setPoints(1200);
         user1.setProfile(profile1);
 
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
         profile2.setId(2L);
+        profile2.setPoints(2300);
         user2.setProfile(profile2);
 
         leaderboard.add(profile1);
         leaderboard.add(profile2);
 
         // Mock
-        when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile1));
-        when(profiles.findByUserId(2L)).thenReturn(Optional.of(profile2));
-        when(profiles.save(any(Profile.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(profiles.findAll()).thenReturn(leaderboard);
 
         // Act
-        profile1 = profileService.pointsSet(1L, 1200);
-        profile2 = profileService.pointsSet(2L, 2300);
         leaderboard = profileService.sort();
 
         // Assert
@@ -194,14 +265,9 @@ public class ProfileServiceTest {
         leaderboard.add(profile2);
 
         // Mock
-        when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile1));
-        when(profiles.findByUserId(2L)).thenReturn(Optional.of(profile2));
-        when(profiles.save(any(Profile.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(profiles.findAll()).thenReturn(leaderboard);
 
         // Act
-        profile1 = profileService.pointsSet(1L, 1200);
-        profile2 = profileService.pointsSet(2L, 2300);
         leaderboard = profileService.sort();
 
         // Assert
