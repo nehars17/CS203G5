@@ -8,7 +8,7 @@ Content-Type: application/json
 {
     "username": "nehars.rs@gmail.com",
     "password": "goodpassword",
-    "authorities":["ROLE_PLAYER"]
+    "authorities":"ROLE_PLAYER"
 }
 
 ###
@@ -18,7 +18,7 @@ Content-Type: application/json
 {
     "username": "ssam57@myyahoo.com",
     "password": "goodpassword",
-    "authorities":["ROLE_PLAYER"]
+    "authorities":"ROLE_PLAYER"
 }
 
 ###
