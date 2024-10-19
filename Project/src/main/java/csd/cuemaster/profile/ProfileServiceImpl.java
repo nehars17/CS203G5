@@ -101,6 +101,7 @@ public class ProfileServiceImpl implements ProfileService{
     //     }
     // } getAllProfile()
 
+    // Returns a list of all players.
     @Override
     public List<Profile> getPlayers() {
         List<Profile> profileList = profiles.findAll();
@@ -116,6 +117,7 @@ public class ProfileServiceImpl implements ProfileService{
                 .collect(Collectors.toList());
     }
 
+    // Sorts all players based on points.
     @Override
     public List<Profile> sort() {
         List<Profile> profileList = getPlayers();
@@ -126,11 +128,16 @@ public class ProfileServiceImpl implements ProfileService{
         return profileList;
     }
 
+    // Sets a player's points.
     @Override
     public Profile pointsSet(Long user_id, Integer points) {
         Profile profile = profiles.findByUserId(user_id)
-            .orElseThrow(() -> new UserProfileNotFoundException(user_id));
-        profile.setPoints(points);
+                .orElseThrow(() -> new UserProfileNotFoundException(user_id));
+        User user = profile.getUser();
+        if (user != null && user.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"))) {
+            profile.setPoints(points);
+        }
         return profiles.save(profile);
     }
 
