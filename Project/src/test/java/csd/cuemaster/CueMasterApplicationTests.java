@@ -1,9 +1,5 @@
 package csd.cuemaster;
-
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -13,9 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import csd.cuemaster.profile.ProfileRepository;
 import csd.cuemaster.user.EmailService;
 import csd.cuemaster.user.User;
