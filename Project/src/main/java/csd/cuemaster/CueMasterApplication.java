@@ -23,25 +23,16 @@ public class CueMasterApplication {
         // Check if the admin user already exists
         String adminEmail = "admin@gmail.com";
         if (!users.findByUsername(adminEmail).isPresent()) {
-            User user = new User("admin@gmail.com", encoder.encode("goodpassword"), Arrays.asList("ROLE_ADMIN", "ROLE_USER"), "normal", true);
-            Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-            System.out.println(authorities); // Should print the roles as SimpleGrantedAuthority objects
-            
+            User user = new User("admin@gmail.com", encoder.encode("goodpassword"), "ROLE_ADMIN", "normal", true);
+            User user2 = new User("org@gmail.com", encoder.encode("goodpassword"), "ROLE_ORGANISER", "normal", true);
+
             users.save(user);
+            users.save(user2);
             System.out.println("[Add user]: " + user.getUsername());
         } else {
             System.out.println("[User exists]: " + adminEmail);
         }
 
-        // Uncomment the following lines if you want to add an organizer user as well
-        // String orgEmail = "org@gmail.com";
-        // if (!users.findByUsername(orgEmail).isPresent()) {
-        //     List<SimpleGrantedAuthority> orgAuthorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_ORGANISER"));
-        //     User orgUser = new User(orgEmail, encoder.encode("goodpassword"), orgAuthorities, "normal", true);
-        //     users.save(orgUser);
-        //     System.out.println("[Add user]: " + orgUser.getUsername());
-        // } else {
-        //     System.out.println("[User exists]: " + orgEmail);
-        // }
+        
     }
 }

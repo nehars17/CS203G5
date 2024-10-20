@@ -44,9 +44,9 @@ public class ProfileServiceTest {
         // Arrange
         List<Profile> profileList = new ArrayList<>();
 
-        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, null);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
         profile1.setId(1L);
-        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, "Cuesports", null);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", null);
         profile2.setId(2L);
 
         profileList.add(profile1);
@@ -67,9 +67,9 @@ public class ProfileServiceTest {
     @Test
     void addProfile_PlayerProfile_ReturnProfile() {
         // Arrange
-        User user = new User("Glenn", "goodpassword", Arrays.asList("ROLE_PLAYER"), "normal", true);
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user.setId(1L);
-        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
         profile.setId(1L);
 
         // Mock
@@ -89,13 +89,13 @@ public class ProfileServiceTest {
     @Test
     void addProfile_PlayerWithProfile_ThrowProfileAlreadyExistsException() {
         // Arrange
-        User user = new User("Glenn", "goodpassword", Arrays.asList("ROLE_PLAYER"), "normal", true);
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user.setId(1L);
-        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
         profile1.setId(1L);
         user.setProfile(profile1);
 
-        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, null);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
         profile2.setId(2L);
 
         // Mock
@@ -117,9 +117,9 @@ public class ProfileServiceTest {
         // Arrange
         List<Profile> profileList = new ArrayList<>();
 
-        User user = new User("Glenn", "goodpassword", Arrays.asList("ROLE_PLAYER"), "normal", true);
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user.setId(1L);
-        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
         profile.setId(1L);
         user.setProfile(profile);
 
@@ -142,9 +142,9 @@ public class ProfileServiceTest {
         // Arrange
         List<Profile> profileList = new ArrayList<>();
 
-        User user = new User("Glenn", "goodpassword", Arrays.asList("ROLE_ORGANISER"), "normal", true);
+        User user = new User("Glenn", "goodpassword", "ROLE_ORGANISER", "normal", true);
         user.setId(1L);
-        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, "Cuesports", user);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user);
         profile.setId(1L);
         user.setProfile(profile);
 
@@ -165,9 +165,9 @@ public class ProfileServiceTest {
     @Test
     void pointsSet_UpdatePlayerPoints_ReturnProfileWithUpdatedPoints() {
         // Arrange
-        User user = new User("Glenn", "goodpassword", Arrays.asList("ROLE_PLAYER"), "normal", true);
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user.setId(1L);
-        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
         profile.setId(1L);
         user.setProfile(profile);
 
@@ -188,9 +188,9 @@ public class ProfileServiceTest {
     @Test
     void pointsSet_UpdateOrganiserPoints_ReturnProfileWithNullPoints() {
         // Arrange
-        User user = new User("Glenn", "goodpassword", Arrays.asList("ROLE_ORGANISER"), "normal", true);
+        User user = new User("Glenn", "goodpassword", "ROLE_ORGANISER", "normal", true);
         user.setId(1L);
-        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, "Cuesports", user);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user);
         profile.setId(1L);
         user.setProfile(profile);
 
@@ -213,16 +213,16 @@ public class ProfileServiceTest {
         // Arrange
         List<Profile> leaderboard = new ArrayList<>();
 
-        User user1 = new User("Glenn", "goodpassword", Arrays.asList("ROLE_PLAYER"), "normal", true);
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user1.setId(1L);
-        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
         profile1.setId(1L);
         profile1.setPoints(1200);
         user1.setProfile(profile1);
 
-        User user2 = new User("Koopa", "goodpassword", Arrays.asList("ROLE_PLAYER"), "normal", true);
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
-        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
         profile2.setId(2L);
         profile2.setPoints(2300);
         user2.setProfile(profile2);
@@ -248,14 +248,14 @@ public class ProfileServiceTest {
         // Arrange
         List<Profile> leaderboard = new ArrayList<>();
 
-        User user1 = new User("Glenn", "goodpassword", Arrays.asList("ROLE_ORGANISER"), "normal", true);
+        User user1 = new User("Glenn", "goodpassword", "ROLE_ORGANISER", "normal", true);
         user1.setId(1L);
-        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, "Cuesports", user1);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user1);
         profile1.setId(1L);
         user1.setProfile(profile1);
-        User user2 = new User("Koopa", "goodpassword", Arrays.asList("ROLE_ORGANISER"), "normal", true);
+        User user2 = new User("Koopa", "goodpassword", "ROLE_ORGANISER", "normal", true);
         user2.setId(1L);
-        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, "Cuesports", user2);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user2);
         profile2.setId(1L);
         user2.setProfile(profile2);
 

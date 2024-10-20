@@ -1,7 +1,8 @@
 package csd.cuemaster.user;
+
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -9,6 +10,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import csd.cuemaster.profile.Profile;
 import jakarta.persistence.CascadeType;
@@ -45,47 +48,60 @@ public class User implements UserDetails {
     @Size(min = 5, max = 20, message = "Email address should be between 5 and 20 characters")
     private String username;
 
+    @JsonProperty(access = Access.WRITE_ONLY)
     @NotNull(message = "Password should not be null")
     @Size(min = 8, message = "Password should be at least 8 characters")
     private String password;
 
+    @JsonProperty(access = Access.WRITE_ONLY)
     @NotNull(message = "Authorities should not be null")
-    private List<String> roles;
+    private String authorities;
 
+    @JsonIgnore
     private boolean enabled;
+
+    @JsonIgnore
     private String provider;
+
+    @JsonIgnore
     private String activationToken;
+
+    @JsonIgnore
     private LocalDateTime expiryDate;
 
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonIgnore
     private Profile profile;
 
-    public User(String username, String password, List<String> roles, String provider, boolean enabled) {
+    public User(String username, String password, String authorities, String provider, boolean enabled) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.authorities = authorities;
         this.enabled = enabled;
         this.provider = provider;
     }
 
+    /*
+     * Return a collection of authorities (roles) granted to the user.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-            .map(SimpleGrantedAuthority::new)
-            .collect(Collectors.toList());
+        return Arrays.asList(new SimpleGrantedAuthority(authorities));
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
