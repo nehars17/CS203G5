@@ -147,6 +147,22 @@ Authorization: Basic org@gmail.com goodpassword
   "players": []
 }
 
+### Create a new tournament with invalid status
+POST http://localhost:8080/tournaments
+Content-Type: application/json
+
+{
+  "tournamentname": "New York Tournament",
+  "location": "New York",
+  "startDate": "2024-09-20",
+  "endDate": "2024-09-21",
+  "time": "10:00:00",
+  "status": "INVALID",
+  "description": "Test Tournament",
+  "winnerId": null,
+  "players": []
+}
+
 ### Retrieve all tournaments
 GET http://localhost:8080/tournaments
 Authorization: Basic org@gmail.com goodpassword
