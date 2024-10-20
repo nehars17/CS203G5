@@ -22,9 +22,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import csd.cuemaster.profile.Profile;
 import csd.cuemaster.profile.ProfileAlreadyExistsException;
+import csd.cuemaster.profile.ProfileIdNotFoundException;
 import csd.cuemaster.profile.ProfileRepository;
 import csd.cuemaster.profile.ProfileServiceImpl;
+import csd.cuemaster.profile.UserProfileNotFoundException;
 import csd.cuemaster.user.User;
+import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,7 +64,89 @@ public class ProfileServiceTest {
         // Assert
         assertNotNull(profileList);
         assertFalse(profileList.isEmpty());
-        }
+    }
+
+    // Test Case: User does not exist.
+    @Test
+    void getProfile_UserDoesNotExist_ThrowUserNotFoundException() {
+        // Arrange
+
+        // Act
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            profileService.getProfile(1L, 1L);
+        });
+
+        // Assert
+        assertEquals("User with UserID: 1 not found.", exception.getMessage());
+    }
+
+    // Test Case: Profile does not exist.
+    /* @Test
+    void getProfile_ProfileDoesNotExist_ThrowProfileIdNotFoundException() {
+        // Arrange
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+
+        // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
+
+        // Act
+        ProfileIdNotFoundException exception = assertThrows(ProfileIdNotFoundException.class, () -> {
+            profileService.getProfile(1L, 1L);
+        });
+
+        // Assert
+        assertEquals("Profile ID: 1 not found.", exception.getMessage());
+    } */
+
+    // Test Case: User profile does not exist.
+    /* @Test
+    void getProfile_UserProfileDoesNotExist_ThrowUserProfileNotFoundException() {
+        // Arrange
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
+        profile.setId(1L);
+
+        // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
+        when(profiles.findById(1L)).thenReturn(Optional.of(profile));
+
+        // Act
+        UserProfileNotFoundException exception = assertThrows(UserProfileNotFoundException.class, () -> {
+            profileService.getProfile(1L, 1L);
+        });
+
+        // Assert
+        assertEquals("User with User ID: 1 does not have a profile.", exception.getMessage());
+    } */
+
+    // Test Case: Change a player profile.
+    @Test
+    void updateProfile_ChangePlayerProfile_ReturnUpdatedProfile() {
+        // Arrange
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
+        profile1.setId(1L);
+        user.setProfile(profile1);
+
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user);
+        profile2.setId(1L);
+
+        // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
+        when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile1));
+        when(profiles.save(any(Profile.class))).thenReturn(profile2);
+
+        // Act
+        Profile updatedProfile = profileService.updateProfile(1L, profile2);
+
+        // Assert
+        assertNotNull(updatedProfile);
+        assertEquals(profile2, updatedProfile);
+        assertEquals("Koopa", updatedProfile.getFirstname());
+    }
 
     // Test Case: Add a player profile.
     @Test
@@ -83,7 +168,7 @@ public class ProfileServiceTest {
         assertNotNull(addedProfile);
         assertEquals(profile, addedProfile);
         assertEquals(1200, profile.getPoints());
-        }
+    }
 
     // Test Case: Add a player profile that already belongs to a user.
     @Test
@@ -109,7 +194,7 @@ public class ProfileServiceTest {
 
         // Assert
         assertEquals("User ID: 1 profile already exists.", exception.getMessage());
-        }
+    }
 
     // Test Case: One player in the list.
     @Test
@@ -242,7 +327,8 @@ public class ProfileServiceTest {
         assertEquals(profile2, leaderboard.get(0));
     }
 
-    // Test Case: Attempt to sort organisers which does not happen as they have no points.
+    // Test Case: Attempt to sort organisers which does not happen as they have no
+    // points.
     @Test
     void sort_UpdateOrganiserPoints_ReturnEmptyList() {
         // Arrange
