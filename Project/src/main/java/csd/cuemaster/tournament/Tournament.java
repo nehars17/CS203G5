@@ -92,6 +92,7 @@ public class Tournament {
     // Additional overloaded constructors if needed
     public Tournament(String tournamentname, String location, LocalDate startDate, LocalDate endDate, 
     LocalTime time, Status status, String description, Long winnerId, List<Long> players) {
+        this.tournamentname = tournamentname;
         this.location = location;
         this.startDate = startDate;
         this.endDate = endDate;
