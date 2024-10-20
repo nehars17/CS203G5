@@ -43,17 +43,7 @@ class UserServiceTest {
     void tearDown() {
         users.deleteAll();
     }
-    // @Test
-    // public void getUser_Success() throws Exception {
-    // URI uri = new URI(baseUrl + port + "/users");
-    // users.save(new User("bryan@gmail.com", "goodpassword",
-    // Arrays.asList("ROLE_ADMIN"), "Normal", true));
-    // var result = restTemplate.getForEntity(uri, User[].class);
-    // User[] user_array = result.getBody();
-
-    // assertEquals(200, result.getStatusCode().value());
-    // assertEquals(1, user_array.length);
-    // }
+  
     @Test
     public void testAddUser_NewUser_Success() {
         // Arrange
