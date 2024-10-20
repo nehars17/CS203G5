@@ -10,15 +10,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import csd.cuemaster.profile.ProfileAlreadyExistsException;
-
 /**
  * Centralize exception handling in this class.
  */
 @ControllerAdvice
 public class RestExceptionHandler{
-
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {

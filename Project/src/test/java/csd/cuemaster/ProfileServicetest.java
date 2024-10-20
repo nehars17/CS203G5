@@ -1,23 +1,22 @@
 package csd.cuemaster;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.util.*;
-
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import csd.cuemaster.profile.Profile;
@@ -188,7 +187,7 @@ public class ProfileServicetest {
         when(profiles.save(any(Profile.class))).thenReturn(profile);
 
         // Act
-        Profile addedProfile = profileService.addProfile(1L, profile);
+        Profile addedProfile = profileService.addProfile(user, profile);
 
         // Assert
         assertNotNull(addedProfile);
@@ -215,7 +214,7 @@ public class ProfileServicetest {
 
         // Act
         ProfileAlreadyExistsException exception = assertThrows(ProfileAlreadyExistsException.class, () -> {
-            profileService.addProfile(1L, profile2);
+            profileService.addProfile(user, profile2);
         });
 
         // Assert
