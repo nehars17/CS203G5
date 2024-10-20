@@ -32,10 +32,9 @@ public class MatchController {
     @PostMapping("/matches/create")
     public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
         
-        //Match createdMatch = 
-        matchService.createMatch(match);
+        Match createdMatch = matchService.createMatch(match);
         // return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
-        return ResponseEntity.ok("match created: id =" + match.getId());
+        return ResponseEntity.ok("match created: id =" + createdMatch.getId());
     }
     
     // public Match updateMatch(@PathVariable Long id, @Valid @RequestBody Match match) {
