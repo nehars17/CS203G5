@@ -27,7 +27,7 @@ public class SecurityConfig {
 
     private UserDetailsService userDetailsService;
     private final CustomAuthenticationSuccessHandler customSuccessHandler; // Add this line
-    
+
     @Value("${google.client-id}")
     private String client_id;
 
@@ -53,7 +53,7 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(encoder());
         return authProvider;
-       
+
     }
 
     @Bean
@@ -62,7 +62,6 @@ public class SecurityConfig {
     }
 
     private ClientRegistration googleClientRegistration() {
-        
 
         return ClientRegistration.withRegistrationId("google")
                 .clientId(client_id)
@@ -83,28 +82,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/users", "googlelogin/*", "/activate","/activate/*","/normallogin", "/loginSuccess","/profiles", "/user/**","/tournaments/*","/matches/*", "/matches","/tournaments","/leaderboard").permitAll()
-
-                        .requestMatchers(HttpMethod.POST,"/register").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/user/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT,"/user/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT,"/changepoints/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
-          
-                        .requestMatchers(HttpMethod.PUT,"/tournaments/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.POST,"/tournaments/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.DELETE,"/tournaments/*").hasRole("ORGANISER")
-
-                        .requestMatchers(HttpMethod.POST,"/matches/create").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.DELETE,"/matches/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.PUT,"/matches/**").hasRole("ORGANISER")
-
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/normallogin").permitAll())
+        .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/error").permitAll()
+                .requestMatchers("/normallogin/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*", "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches", "/tournaments", "/leaderboard").permitAll()
+                .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
+                .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
+                .requestMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated())
+                .formLogin().disable()   // Disable default form login
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/googlelogin/*")
                         .successHandler(customSuccessHandler)

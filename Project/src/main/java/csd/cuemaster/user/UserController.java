@@ -63,7 +63,7 @@ public class UserController {
         return message; // Return a view to show the activation status
     }
 
-    @GetMapping("/normallogin")
+    @PostMapping("/normallogin")
     public User retrieveUser(HttpSession session, @Valid @RequestBody User user) {
         String existingSession = (String) session.getAttribute("currentUser");
         if(existingSession!=null){
@@ -77,8 +77,8 @@ public class UserController {
         if(!LoggedInUser.isEnabled()){
             throw new AccountActivationException("Please activate account first");
         }
-        if(!LoggedInUser.getProvider().equals("google")){
-        } else {
+        if(LoggedInUser.getProvider().equals("google")){
+         
             throw new UsernameNotFoundException("Please login using Google");
         }
    
