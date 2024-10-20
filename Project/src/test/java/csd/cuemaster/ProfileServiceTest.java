@@ -31,7 +31,7 @@ import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class ProfileServiceTest {
+public class ProfileServicetest {
 
     @Mock
     private ProfileRepository profiles;
