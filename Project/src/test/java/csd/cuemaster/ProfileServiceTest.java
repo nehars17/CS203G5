@@ -69,7 +69,9 @@ public class ProfileServiceTest {
     // Test Case: User does not exist.
     @Test
     void getProfile_UserDoesNotExist_ThrowUserNotFoundException() {
-        // Arrange
+        // Arrange (Nothing to arrange.)
+
+        // Mock (Nothing to mock.)
 
         // Act
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
@@ -81,14 +83,14 @@ public class ProfileServiceTest {
     }
 
     // Test Case: Profile does not exist.
-    /* @Test
+    @Test
     void getProfile_ProfileDoesNotExist_ThrowProfileIdNotFoundException() {
         // Arrange
         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user.setId(1L);
 
         // Mock
-        when(users.findById(1L)).thenReturn(Optional.of(user));
+        when(users.existsById(1L)).thenReturn(true);
 
         // Act
         ProfileIdNotFoundException exception = assertThrows(ProfileIdNotFoundException.class, () -> {
@@ -97,10 +99,10 @@ public class ProfileServiceTest {
 
         // Assert
         assertEquals("Profile ID: 1 not found.", exception.getMessage());
-    } */
+    }
 
     // Test Case: User profile does not exist.
-    /* @Test
+    @Test
     void getProfile_UserProfileDoesNotExist_ThrowUserProfileNotFoundException() {
         // Arrange
         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
@@ -109,8 +111,8 @@ public class ProfileServiceTest {
         profile.setId(1L);
 
         // Mock
-        when(users.findById(1L)).thenReturn(Optional.of(user));
-        when(profiles.findById(1L)).thenReturn(Optional.of(profile));
+        when(users.existsById(1L)).thenReturn(true);
+        when(profiles.existsById(1L)).thenReturn(true);
 
         // Act
         UserProfileNotFoundException exception = assertThrows(UserProfileNotFoundException.class, () -> {
@@ -119,7 +121,31 @@ public class ProfileServiceTest {
 
         // Assert
         assertEquals("User with User ID: 1 does not have a profile.", exception.getMessage());
-    } */
+    }
+
+    // Test Case: Retrieve a user profile.
+    @Test
+    void getProfile_UserProfile_ReturnUserProfile() {
+        // Arrange
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
+        profile.setId(1L);
+        user.setProfile(profile);
+
+        // Mock
+        when(users.existsById(1L)).thenReturn(true);
+        when(profiles.existsById(1L)).thenReturn(true);
+        when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile));
+
+        // Act
+        Profile retrievedProfile = profileService.getProfile(1L, 1L);
+
+        // Assert
+        assertNotNull(retrievedProfile);
+        assertEquals(profile, retrievedProfile);
+        assertEquals("Glenn", retrievedProfile.getFirstname());
+    }
 
     // Test Case: Change a player profile.
     @Test
