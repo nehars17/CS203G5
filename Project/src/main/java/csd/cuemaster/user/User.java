@@ -3,7 +3,6 @@ package csd.cuemaster.user;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -11,8 +10,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -52,32 +49,25 @@ public class User implements UserDetails {
     private String username;
 
     @JsonProperty(access = Access.WRITE_ONLY)
-    @JsonProperty(access = Access.WRITE_ONLY)
     @NotNull(message = "Password should not be null")
     @Size(min = 8, message = "Password should be at least 8 characters")
     private String password;
 
     @JsonProperty(access = Access.WRITE_ONLY)
-    @JsonProperty(access = Access.WRITE_ONLY)
     @NotNull(message = "Authorities should not be null")
     private String authorities;
-    private String authorities;
 
-    @JsonIgnore
     @JsonIgnore
     private boolean enabled;
 
-    @JsonIgnore
 
     @JsonIgnore
     private String provider;
 
-    @JsonIgnore
 
     @JsonIgnore
     private String activationToken;
 
-    @JsonIgnore
 
     @JsonIgnore
     private LocalDateTime expiryDate;
@@ -86,7 +76,6 @@ public class User implements UserDetails {
     @JsonIgnore
     private Profile profile;
 
-    public User(String username, String password, String authorities, String provider, boolean enabled) {
     public User(String username, String password, String authorities, String provider, boolean enabled) {
         this.username = username;
         this.password = password;
@@ -105,10 +94,8 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Arrays.asList(new SimpleGrantedAuthority(authorities));
-        return Arrays.asList(new SimpleGrantedAuthority(authorities));
     }
 
-    @JsonIgnore
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
@@ -116,13 +103,12 @@ public class User implements UserDetails {
     }
 
     @JsonIgnore
-    @JsonIgnore
+    
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @JsonIgnore
     @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
