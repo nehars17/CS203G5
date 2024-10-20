@@ -18,10 +18,6 @@ import csd.cuemaster.profile.ProfileAlreadyExistsException;
 @ControllerAdvice
 public class RestExceptionHandler{
 
-    @ExceptionHandler(ProfileAlreadyExistsException.class)
-    public ResponseEntity<String> handleProfileAlreadyExists(ProfileAlreadyExistsException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -43,4 +39,5 @@ public class RestExceptionHandler{
         body.put("error", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
 }

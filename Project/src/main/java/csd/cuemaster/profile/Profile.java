@@ -62,6 +62,22 @@ public class Profile {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation){
+
+        this.firstname = firstname;
+        this.lastname = lastname; 
+        this.birthdate = birthdate;
+        this.birthlocation = birthlocation;
+    }
+
+    public Profile(String firstname, String lastname, LocalDate birthdate, String birthlocation, User user, Integer points){
+        this.firstname = firstname;
+        this.lastname = lastname; 
+        this.birthdate = birthdate;
+        this.birthlocation = birthlocation;
+        this.user=user;
+        this.points = points; 
+    }
 
     public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, User user){
 

@@ -13,12 +13,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import csd.cuemaster.user.UserNotFoundException;
+import csd.cuemaster.user.UserRepository;
+import csd.cuemaster.user.User;
+
 @RestController
 public class ProfileController {
     private ProfileService profileService; 
+    private UserRepository users;
+    private ProfileRepository profiles; 
 
-    public ProfileController (ProfileService profileService){
+    public ProfileController (ProfileService profileService, UserRepository users, ProfileRepository profiles){
         this.profileService = profileService;
+        this.users = users;
+        this.profiles = profiles; 
     }
 
     @GetMapping("/profiles")
@@ -39,7 +47,15 @@ public class ProfileController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("user/{user_id}/profile")
     public Profile postProfile(@PathVariable (value = "user_id") Long user_id, @Valid @RequestBody Profile profile){
-        return profileService.addProfile(user_id, profile);
+
+        User user = users.findById(user_id).orElseThrow(() -> new UserNotFoundException(user_id));
+
+        if(profiles.findByUserId(user_id).isPresent()){
+            
+            throw new ProfileAlreadyExistsException(user_id);
+        }
+
+        return profileService.addProfile(user, profile);
     }
 
     // @PostMapping("users/{user_id}/profile/profilephoto")

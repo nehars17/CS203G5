@@ -64,12 +64,12 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     @Override
-    public Profile addProfile(Long userId, Profile profile){ 
-        User user = users.findById(userId)           
-                        .orElseThrow(() -> new UserNotFoundException(userId));
+    public Profile addProfile(User user, Profile profile){ 
+        // User user = users.findById(userId)           
+        //                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        profiles.findByUserId(userId).ifPresent(existingProfile ->{
-                            throw new ProfileAlreadyExistsException(userId);});
+        // profiles.findByUserId(userId).ifPresent(existingProfile ->{
+        //                     throw new ProfileAlreadyExistsException(userId);});
         
         boolean isOrganizer = user.getAuthorities().stream()
                         .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANIZER"));  //getAuthorities return a Collections
