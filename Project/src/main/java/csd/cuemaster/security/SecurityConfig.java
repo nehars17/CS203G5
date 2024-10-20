@@ -82,30 +82,30 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-        .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/error").permitAll()
-                .requestMatchers("/normallogin/*").permitAll()
-                .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*", "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches", "/tournaments", "/leaderboard").permitAll()
-                .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
-                .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
-                .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
-                .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
-                .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
-                .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
-                .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
-                .requestMatchers("/h2-console/**").permitAll()
-                .anyRequest().authenticated())
-                .formLogin().disable()   // Disable default form login
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/normallogin/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*", "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches", "/tournaments", "/leaderboard").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(login -> login.disable())   // Disable default form login
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/googlelogin/*")
-                        .successHandler(customSuccessHandler)
+                                .loginPage("/googlelogin/*")
+                                .successHandler(customSuccessHandler)
 
-             
+
 
                 )
                 .logout(logout -> logout
@@ -114,13 +114,13 @@ public class SecurityConfig {
                         .permitAll())
 
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.NEVER) // Stateless session management for REST
-                                                                                // APIs
+                                .sessionCreationPolicy(SessionCreationPolicy.NEVER) // Stateless session management for REST
+                // APIs
 
                 )
                 .sessionManagement(session -> session
-                        .maximumSessions(1) // Limit to one session per user
-                        .maxSessionsPreventsLogin(true) // Prevent new login if session exists
+                                .maximumSessions(1) // Limit to one session per user
+                                .maxSessionsPreventsLogin(true) // Prevent new login if session exists
                 )
 
                 .httpBasic(Customizer.withDefaults())

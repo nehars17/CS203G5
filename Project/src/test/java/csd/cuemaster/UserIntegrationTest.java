@@ -20,11 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import csd.cuemaster.profile.ProfileRepository;
-import csd.cuemaster.user.EmailService;
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserRepository;
-import csd.cuemaster.user.UserServiceImpl;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class UserIntegrationTest {
@@ -37,17 +34,9 @@ class UserIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ProfileRepository profiles;
 
     @Autowired
     private UserRepository users;
-
-    @Autowired
-    private UserServiceImpl userService;
-
-    @Autowired
-    private EmailService emailService;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
@@ -125,6 +114,7 @@ class UserIntegrationTest {
         // You may also want to check the response body for specific error messages
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void accountActivation_Success() throws Exception {
         // First, save a user with a valid activation token
