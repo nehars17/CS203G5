@@ -59,10 +59,9 @@ public class Profile {
     
 
     @OneToOne
-    // the column "book_id" will be in the auto-generated table "review"
-    // nullable = false: add not-null constraint to the database column "book_id"
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
 
     public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, User user){
 

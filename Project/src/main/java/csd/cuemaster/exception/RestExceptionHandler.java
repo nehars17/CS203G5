@@ -10,11 +10,19 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import csd.cuemaster.profile.ProfileAlreadyExistsException;
+
 /**
  * Centralize exception handling in this class.
  */
 @ControllerAdvice
 public class RestExceptionHandler{
+
+    @ExceptionHandler(ProfileAlreadyExistsException.class)
+    public ResponseEntity<String> handleProfileAlreadyExists(ProfileAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
@@ -35,5 +43,4 @@ public class RestExceptionHandler{
         body.put("error", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
-
 }
