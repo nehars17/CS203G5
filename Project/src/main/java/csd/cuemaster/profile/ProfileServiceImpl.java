@@ -106,7 +106,7 @@ public class ProfileServiceImpl implements ProfileService{
     public List<Profile> getPlayers() {
         List<Profile> profileList = profiles.findAll();
         if (profileList == null || profileList.isEmpty()) {
-            return new ArrayList<>();
+            return new ArrayList<Profile>();
         }
         return profileList.stream()
         .filter(profile -> {
@@ -121,9 +121,6 @@ public class ProfileServiceImpl implements ProfileService{
     @Override
     public List<Profile> sort() {
         List<Profile> profileList = getPlayers();
-        if (profileList == null || profileList.isEmpty()) {
-            return new ArrayList<Profile>();
-        }
         profileList.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());
         return profileList;
     }
@@ -131,9 +128,11 @@ public class ProfileServiceImpl implements ProfileService{
     // Sets a player's points.
     @Override
     public Profile pointsSet(Long user_id, Integer points) {
+        User user = users.findById(user_id)
+        .orElseThrow(() -> new UserNotFoundException(user_id));
         Profile profile = profiles.findByUserId(user_id)
                 .orElseThrow(() -> new UserProfileNotFoundException(user_id));
-        User user = profile.getUser();
+        user = profile.getUser();
         if (user != null && user.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"))) {
             profile.setPoints(points);
