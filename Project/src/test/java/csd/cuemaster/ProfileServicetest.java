@@ -183,7 +183,6 @@ public class ProfileServicetest {
         profile.setId(1L);
 
         // Mock
-        when(users.findById(1L)).thenReturn(Optional.of(user));
         when(profiles.save(any(Profile.class))).thenReturn(profile);
 
         // Act
@@ -282,6 +281,7 @@ public class ProfileServicetest {
         user.setProfile(profile);
 
         // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
         when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile));
         when(profiles.save(any(Profile.class))).thenReturn(profile);
 
@@ -305,6 +305,7 @@ public class ProfileServicetest {
         user.setProfile(profile);
 
         // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
         when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile));
         when(profiles.save(any(Profile.class))).thenReturn(profile);
 
