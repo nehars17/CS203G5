@@ -54,7 +54,6 @@ public class User implements UserDetails {
     private String password;
 
     @JsonProperty(access = Access.WRITE_ONLY)
-    @NotNull(message = "Authorities should not be null")
     private String authorities;
 
     @JsonIgnore

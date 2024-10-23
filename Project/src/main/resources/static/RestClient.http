@@ -46,7 +46,7 @@ Content-Type: application/json
 {
     "username": "admin@gmail.com",
     "password": "goodpassword",
-    "authorities": "ADMIN"
+    "authorities": "ROLE_ADMIN"
 }
 
 
