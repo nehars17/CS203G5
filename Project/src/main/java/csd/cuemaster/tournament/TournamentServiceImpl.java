@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class TournamentServiceImpl implements TournamentService {
 
@@ -30,9 +32,11 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     // Update a tournament
+    @Transactional
     @Override
     public Tournament updateTournament(Long id, Tournament tournamentDetails) {
         return tournamentRepository.findById(id).map(tournament -> {
+            tournament.setTournamentname(tournamentDetails.getTournamentname());
             tournament.setLocation(tournamentDetails.getLocation());
             tournament.setStartDate(tournamentDetails.getStartDate());
             tournament.setEndDate(tournamentDetails.getEndDate());

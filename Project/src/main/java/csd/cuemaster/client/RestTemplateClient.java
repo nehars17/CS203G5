@@ -1,14 +1,14 @@
 package csd.cuemaster.client;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
-import java.util.Arrays;
 
 import csd.cuemaster.match.Match;
 import csd.cuemaster.profile.Profile;
@@ -19,8 +19,8 @@ public class RestTemplateClient {
     private final RestTemplate template;
 
     /**
-    //  * Add authentication information for the RestTemplate
-    //  */
+     * Add authentication information for the RestTemplate
+     */
     public RestTemplateClient(RestTemplateBuilder restTemplateBuilder) {
         this.template = restTemplateBuilder
                 .basicAuthentication("admin", "goodpassword")

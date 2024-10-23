@@ -43,7 +43,7 @@ public class Profile {
     @NotNull (message = "Location should not be null")
     private String birthlocation; 
 
-    private String profilephotopath;
+    // private String profilephotopath;
 
     private String organization;
 
@@ -59,10 +59,25 @@ public class Profile {
     
 
     @OneToOne
-    // the column "book_id" will be in the auto-generated table "review"
-    // nullable = false: add not-null constraint to the database column "book_id"
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation){
+
+        this.firstname = firstname;
+        this.lastname = lastname; 
+        this.birthdate = birthdate;
+        this.birthlocation = birthlocation;
+    }
+
+    public Profile(String firstname, String lastname, LocalDate birthdate, String birthlocation, User user, Integer points){
+        this.firstname = firstname;
+        this.lastname = lastname; 
+        this.birthdate = birthdate;
+        this.birthlocation = birthlocation;
+        this.user=user;
+        this.points = points; 
+    }
 
     public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, User user){
 

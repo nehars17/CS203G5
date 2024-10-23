@@ -25,7 +25,7 @@ Content-Type: application/json
 GET http://localhost:8080/users
 
 ###
-GET http://localhost:8080/normallogin
+POST http://localhost:8080/normallogin
 Content-Type: application/json
 
 {
@@ -40,13 +40,13 @@ GET http://localhost:8080/logout
 Content-Type: application/json
 
 ###
-GET http://localhost:8080/normallogin
+POST http://localhost:8080/normallogin
 Content-Type: application/json
 
 {
-    "username": "org@gmail.com",
+    "username": "admin@gmail.com",
     "password": "goodpassword",
-    "authorities": "ROLE_ORGANISER"
+    "authorities": "ADMIN"
 }
 
 
@@ -77,9 +77,9 @@ Authorization: Basic org@gmail.com goodpassword
 }
 
 ### (PLAYER PROFILE 1 )
-POST http://localhost:8080/user/3/profile
+POST http://localhost:8080/user/2/profile
 Content-Type: application/json
-Authorization: Basic nehars.rs@gmail.com goodpassword
+Authorization: Basic org@gmail.com goodpassword
 
 {
     "firstname": "Neha",
@@ -142,6 +142,22 @@ Authorization: Basic org@gmail.com goodpassword
   "endDate": "2024-09-21",
   "time": "10:00:00",
   "status": "UPCOMING",
+  "description": "Test Tournament",
+  "winnerId": null,
+  "players": []
+}
+
+### Create a new tournament with invalid status
+POST http://localhost:8080/tournaments
+Content-Type: application/json
+
+{
+  "tournamentname": "New York Tournament",
+  "location": "New York",
+  "startDate": "2024-09-20",
+  "endDate": "2024-09-21",
+  "time": "10:00:00",
+  "status": "INVALID",
   "description": "Test Tournament",
   "winnerId": null,
   "players": []

@@ -1,12 +1,8 @@
 package csd.cuemaster;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import csd.cuemaster.user.User;

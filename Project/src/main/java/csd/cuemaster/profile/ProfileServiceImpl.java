@@ -1,15 +1,16 @@
 package csd.cuemaster.profile;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import csd.cuemaster.user.*;
-// import csd.cuemaster.user.User.UserRole;
+import csd.cuemaster.user.User;
+import csd.cuemaster.user.UserNotFoundException;
+import csd.cuemaster.user.UserRepository;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
@@ -56,20 +57,21 @@ public class ProfileServiceImpl implements ProfileService{
                     throw new OrganizationCannotBeNullException();
                 }
                 profile.setOrganization(newProfileInfo.getOrganization());
+            }else {
+                profile.setOrganization(null);
             }
 
             return profiles.save(profile);
-        }).orElseThrow(() -> new UserProfileNotFoundException(userId));
+        }).orElse(null);
     }
 
     @Override
-    public Profile addProfile(Long userId, Profile profile){ 
-        User user = users.findById(userId)           
-                        .orElseThrow(() -> new UserNotFoundException(userId));
+    public Profile addProfile(User user, Profile profile){ 
+        // User user = users.findById(userId)           
+        //                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        if(profiles.findByUserId(userId).isPresent()){
-            throw new ProfileAlreadyExistsException(userId);
-        }
+        // profiles.findByUserId(userId).ifPresent(existingProfile ->{
+        //                     throw new ProfileAlreadyExistsException(userId);});
         
         boolean isOrganizer = user.getAuthorities().stream()
                         .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANIZER"));  //getAuthorities return a Collections
@@ -90,6 +92,7 @@ public class ProfileServiceImpl implements ProfileService{
             profile.setMatchWinCount(0);
             profile.setTournamentCount(0);
             profile.setTournamentWinCount(0);
+            profile.setOrganization(null);
         }
         return profiles.save(profile);
     }

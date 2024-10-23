@@ -1,109 +1,183 @@
-// package csd.cuemaster;
+package csd.cuemaster;
 
-// import java.util.Arrays;
+import java.util.Optional;
 
-// import org.junit.jupiter.api.AfterEach;
-// import static org.junit.jupiter.api.Assertions.assertFalse;
-// import static org.junit.jupiter.api.Assertions.assertNotEquals;
-// import static org.junit.jupiter.api.Assertions.assertNotNull;
-// import static org.junit.jupiter.api.Assertions.assertNull;
-// import org.junit.jupiter.api.Test;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-// import org.springframework.boot.test.web.client.TestRestTemplate;
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-// import csd.cuemaster.profile.ProfileRepository;
-// import csd.cuemaster.user.EmailService;
-// import csd.cuemaster.user.User;
-// import csd.cuemaster.user.UserRepository;
-// import csd.cuemaster.user.UserService;
+import csd.cuemaster.user.EmailService;
+import csd.cuemaster.user.User;
+import csd.cuemaster.user.UserRepository;
+import csd.cuemaster.user.UserServiceImpl;
 
-// @ExtendWith(MockitoExtension.class)
-// class UserServiceTest {
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
 
+    @Mock
+    private UserRepository users;
 
-// 	@Autowired
-// 	private ProfileRepository profiles;
+    @InjectMocks
+    private UserServiceImpl userService;
 
-// 	@Autowired
-// 	private UserRepository users;
+    @Mock
+    private EmailService emailService;
 
-// 	@Autowired
-//     private UserService userService;
-//     @Autowired
-//     private EmailService emailService;
-	
-//     @Autowired
-// 	private BCryptPasswordEncoder encoder;
+    @Mock
+    private BCryptPasswordEncoder encoder;
 
+    @AfterEach
+    void tearDown() {
+        users.deleteAll();
+    }
+  
+    @Test
+    public void testAddUser_NewUser_Success() {
+        // Arrange
+        User newUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", false);
 
-// 	@AfterEach
-// 	void tearDown() {
-// 		profiles.deleteAll();
-// 		users.deleteAll();
-// 	}
-// 	// @Test
-// 	// public void getUser_Success() throws Exception {
-// 	// URI uri = new URI(baseUrl + port + "/users");
-// 	// users.save(new User("bryan@gmail.com", "goodpassword",
-// 	// Arrays.asList("ROLE_ADMIN"), "Normal", true));
-// 	// var result = restTemplate.getForEntity(uri, User[].class);
-// 	// User[] user_array = result.getBody();
+        // Mock behavior
+        when(users.findByUsername(newUser.getUsername())).thenReturn(Optional.empty());
+        when(encoder.encode(newUser.getPassword())).thenReturn("hashedpassword");
+        when(users.save(any(User.class))).thenReturn(newUser);
 
-// 	// assertEquals(200, result.getStatusCode().value());
-// 	// assertEquals(1, user_array.length);
-// 	// }
-// 	@Test
-// 	public void testAddUser_Success() {
-// 		User newUser = new User("testuser@gmail.com", "password123", Arrays.asList("ROLE_PLAYER"), "normal", false);
-// 		User savedUser = userService.addUser(newUser);
+        // Act
+        User savedUser = userService.addUser(newUser);
 
-// 		assertNotNull(savedUser);
-// 		assertNotEquals("password123", savedUser.getPassword()); // Password should be hashed
-// 		assertNotNull(savedUser.getActivationToken());
-// 		assertFalse(savedUser.isEnabled()); // Should still be disabled before activation
-// 	}
+        // Assert
+        assertNotNull(savedUser);
+        assertEquals("hashedpassword", savedUser.getPassword()); // Password should be hashed
+        assertNotNull(savedUser.getActivationToken());
+        assertFalse(savedUser.isEnabled()); // Should still be disabled before activation
+    }
 
-// 	@Test
-// 	public void testAddUser_UserAlreadyExists() {
-// 		// Create a user and save it to the database
-// 		User existingUser = new User("testuser@gmail.com", "password123", Arrays.asList("ROLE_PLAYER"), "normal", true);
-// 		userService.addUser(existingUser);
+    @Test
+    public void testAddUser_UserAlreadyExists() {
+        // Arrange
+        User existingUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
 
-// 		// Try to register the same user again
-// 		User newUser = new User("testuser@gmail.com", "anotherPassword", Arrays.asList("ROLE_PLAYER"), "normal", false);
-// 		User result = userService.addUser(newUser);
+        // Mock behavior
+        when(users.findByUsername(existingUser.getUsername())).thenReturn(Optional.of(existingUser));
 
-// 		assertNull(result); // Should return null because user already exists
-// 	}
+        // Act
+        User newUser = new User("testuser@gmail.com", "anotherPassword", "ROLE_PLAYER", "normal", false);
+        User result = userService.addUser(newUser);
 
-// 	// @Test
-// 	// public void testGoogleLogin_NewUser() {
-// 	// 	String result = userService.googleLogin("newuser@gmail.com", "ROLE_GOOGLE_USER");
+        // Assert
+        assertNull(result); // Should return null because the user already exists
+        verify(users, never()).save(any(User.class)); // Verify that save() was never called
+    }
 
-// 	// 	assertEquals("newuser@gmail.com", result); // Should return email of the newly created user
-// 	// 	User createdUser = users.findByUsername("newuser@gmail.com").orElse(null);
-// 	// 	assertNotNull(createdUser);
-// 	// 	assertEquals("google", createdUser.getProvider());
-// 	// 	assertEquals(Arrays.asList("ROLE_GOOGLE_USER"), createdUser.getAuthorities());
-// 	// }
+    @Test
+    public void testGoogleLogin_NewUser_Success() {
+        // Arrange
+        when(users.findByUsername("newuser@gmail.com")).thenReturn(Optional.empty()); // Simulate no existing user
+        User newUser = new User("newuser@gmail.com", "nopassword", "ROLE_PLAYER", "google", true);
+        when(users.save(any(User.class))).thenReturn(newUser); // Mock user creation
 
-// 	// @Test
-// 	// public void testAccountActivation_Success() {
-// 	// 	User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), Arrays.asList("ROLE_PLAYER"),
-// 	// 			"normal", false);
-// 	// 	savedUser.setActivationToken("valid-token");
-// 	// 	users.save(savedUser);
+        // Act
+        String result = userService.googleLogin("newuser@gmail.com", "ROLE_PLAYER");
 
-// 	// 	String result = userService.accountActivation("valid-token");
+        // Assert
+        assertEquals("newuser@gmail.com", result); // Should return email of the newly created user
+        verify(users).save(any(User.class)); // Ensure the user is saved
 
-// 	// 	assertEquals("Account Activated", result);
-// 	// 	User activatedUser = users.findByUsername("testuser@gmail.com").orElse(null);
-// 	// 	assertNotNull(activatedUser);
-// 	// 	assertTrue(activatedUser.isEnabled()); // User should be activated
-// 	// 	assertNull(activatedUser.getActivationToken()); // Token should be cleared
-// 	// }
+        User createdUser = newUser; // Since we are mocking, use the newUser directly
+        assertNotNull(createdUser);
+        assertEquals("google", createdUser.getProvider());
+        assertEquals("ROLE_PLAYER", createdUser.getAuthorities().iterator().next().getAuthority());
+    }
 
-// }
+    @Test
+    public void testAccountActivation_Success() {
+        // Arrange
+        User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", false);
+        savedUser.setActivationToken("valid-token");
+
+        when(users.findByActivationToken("valid-token")).thenReturn(Optional.of(savedUser)); // Mock finding by token
+        when(users.save(any(User.class))).thenReturn(savedUser); // Mock saving the activated user
+
+        // Act
+        String result = userService.accountActivation("valid-token");
+
+        // Assert
+        assertEquals("Account Activated", result);
+        verify(users).save(savedUser); // Ensure the user was saved after activation
+
+        assertTrue(savedUser.isEnabled()); // User should be activated
+        assertNull(savedUser.getActivationToken()); // Token should be cleared
+    }
+    @Test
+    void testLoginUser_Success() {
+        User user = new User("testuser", "password123", "ROLE_PLAYER", "normal", false);
+        User savedUser = new User("testuser", encoder.encode("password123"), "ROLE_PLAYER", "normal", false);
+    
+        when(users.findByUsername("testuser")).thenReturn(Optional.of(savedUser));
+        when(encoder.matches(user.getPassword(), savedUser.getPassword())).thenReturn(true);
+    
+        User result = userService.loginUser(user);
+    
+        assertNotNull(result);
+        assertEquals("testuser", result.getUsername());
+    }
+    
+
+    @Test
+    void testLoginUser_IncorrectPassword() {
+        // Arrange
+        String username = "testuser";
+        String correctPassword = "password123";
+        String incorrectPassword = "wrongpassword"; // This will be used for the login attempt
+        String encodedPassword = encoder.encode(correctPassword); // Encode the correct password
+    
+        // Create a user with the correct password
+        User savedUser = new User(username, encodedPassword, "ROLE_PLAYER", "normal", false);
+    
+        // Mock the repository to return the saved user when the username is queried
+        when(users.findByUsername(username)).thenReturn(Optional.of(savedUser));
+    
+        // Create a user object for login attempt with the wrong password
+        User loginAttempt = new User(username, incorrectPassword, "ROLE_PLAYER", "normal", false);
+    
+        // Act
+        User result = userService.loginUser(loginAttempt);
+    
+        // Assert
+        assertNull(result); // The result should be null for an incorrect password
+    }
+    
+
+  
+
+    @Test
+    public void testGoogleLogin_ExistingUser() {
+        // Arrange
+        String email = "existinggoogleuser@gmail.com";
+        User existingUser = new User(email, null, "ROLE_PLAYER", "google", true);
+
+        // Mock repository to return an existing Google user
+        when(users.findByUsername(email)).thenReturn(Optional.of(existingUser));
+
+        // Act
+        String result = userService.googleLogin(email, "ROLE_PLAYER");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(email, result); // The result should be the user's email
+        verify(users, never()).save(any(User.class)); // No new user should be saved
+    }
+
+}

@@ -34,7 +34,7 @@ public class MatchController {
         
         Match createdMatch = matchService.createMatch(match);
         // return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
-        return ResponseEntity.ok("match created: id =" + match.getId());
+        return ResponseEntity.ok("match created: id =" + createdMatch.getId());
     }
     
     // public Match updateMatch(@PathVariable Long id, @Valid @RequestBody Match match) {
@@ -52,7 +52,8 @@ public class MatchController {
     @PutMapping("/matches/{matchId}")
     public ResponseEntity<String> updateMatch(@PathVariable Long matchId, @Valid @RequestBody Match match) {
         match.setId(matchId);
-        Match updatedMatch = matchService.updateMatch(matchId, match);
+        //Match updatedMatch = 
+        matchService.updateMatch(matchId, match);
         return ResponseEntity.ok("match updated: id =" + matchId);
     }
 

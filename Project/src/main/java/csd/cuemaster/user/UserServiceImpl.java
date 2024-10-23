@@ -1,11 +1,8 @@
 package csd.cuemaster.user;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -65,20 +62,7 @@ public class UserServiceImpl implements UserService {
         return users.save(user);
     }
 
-    // @Override
-    // public User addOrganiser(User user) {
-    //     if (users.findByUsername(user.getUsername()).isPresent()) {
-    //         return null; // User already exists
-    //     }
 
-    //     user.setPassword(encoder.encode(user.getPassword()));
-    //     user.setAuthorities("ROLE_ORGANISER");
-    //     user.setProvider("normal");
-    //     String token = generateActivationToken(); // Generate token
-    //     user.setActivationToken(token);
-    //     return users.save(user);
-
-    // }
 
     public String googleLogin(String email, String role) {
         // Create the authority from the role string

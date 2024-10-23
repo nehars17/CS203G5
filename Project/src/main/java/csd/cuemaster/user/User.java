@@ -1,9 +1,9 @@
 package csd.cuemaster.user;
 
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -45,7 +45,7 @@ public class User implements UserDetails {
     private Long id;
 
     @NotNull(message = "Email should not be null")
-    @Size(min = 5, max = 20, message = "Email address should be between 5 and 20 characters")
+    @Size(min = 5, max = 30, message = "Email address should be between 5 and 30 characters")
     private String username;
 
     @JsonProperty(access = Access.WRITE_ONLY)
@@ -60,11 +60,14 @@ public class User implements UserDetails {
     @JsonIgnore
     private boolean enabled;
 
+
     @JsonIgnore
     private String provider;
 
+
     @JsonIgnore
     private String activationToken;
+
 
     @JsonIgnore
     private LocalDateTime expiryDate;
@@ -77,10 +80,14 @@ public class User implements UserDetails {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
+        this.authorities = authorities;
         this.enabled = enabled;
         this.provider = provider;
     }
 
+    /*
+     * Return a collection of authorities (roles) granted to the user.
+     */
     /*
      * Return a collection of authorities (roles) granted to the user.
      */
@@ -96,6 +103,7 @@ public class User implements UserDetails {
     }
 
     @JsonIgnore
+    
     @Override
     public boolean isAccountNonLocked() {
         return true;
