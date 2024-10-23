@@ -112,11 +112,11 @@ public class ProfileServiceImpl implements ProfileService{
             return new ArrayList<Profile>();
         }
         return profileList.stream()
-        .filter(profile -> {
-            User user = profile.getUser();
-            return user != null && user.getAuthorities().stream()
-                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"));
-        })
+                .filter(profile -> {
+                    User user = profile.getUser();
+                    return user != null && user.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"));
+                })
                 .collect(Collectors.toList());
     }
 
@@ -132,7 +132,7 @@ public class ProfileServiceImpl implements ProfileService{
     @Override
     public Profile pointsSet(Long user_id, Integer points) {
         User user = users.findById(user_id)
-        .orElseThrow(() -> new UserNotFoundException(user_id));
+                .orElseThrow(() -> new UserNotFoundException(user_id));
         Profile profile = profiles.findByUserId(user_id)
                 .orElseThrow(() -> new UserProfileNotFoundException(user_id));
         user = profile.getUser();
