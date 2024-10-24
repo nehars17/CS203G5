@@ -12,7 +12,9 @@ const NavBar = () => {
             <Nav.Link href="/">Home</Nav.Link>
             <Nav.Link href="/tournaments">Tournaments</Nav.Link>
             {/* <Nav.Link href="/profile">Profile</Nav.Link> */}
-            <Nav.Link href="/register">Register</Nav.Link>
+            <Nav.Link href="/playerRegistration">Register Player</Nav.Link>
+            <Nav.Link href="/organiserRegistration">Register Organiser</Nav.Link>
+
             {/* <NavDropdown title="More" id="basic-nav-dropdown">
               <NavDropdown.Item href="#action1">Action 1</NavDropdown.Item>
               <NavDropdown.Item href="#action2">Action 2</NavDropdown.Item>
