@@ -25,8 +25,12 @@ Content-Type: application/json
 GET http://localhost:8080/users
 
 ###
+GET http://localhost:8080/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmdAZ21haWwuY29tIiwiaWF0IjoxNzI5NzY5MTI5LCJleHAiOjE3Mjk3NzI3Mjl9.ySwII1MGAmll8Myfd7uXytPzhl8nh3oKffiuEndFhj0
+###
 POST http://localhost:8080/normallogin
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmdAZ21haWwuY29tIiwiaWF0IjoxNzI5NzY5MTI5LCJleHAiOjE3Mjk3NzI3Mjl9.ySwII1MGAmll8Myfd7uXytPzhl8nh3oKffiuEndFhj0
 
 {
     "username": "nehars.rs@gmail.com",
@@ -42,6 +46,8 @@ Content-Type: application/json
 ###
 POST http://localhost:8080/normallogin
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmdAZ21haWwuY29tIiwiaWF0IjoxNzI5NzY5MTI5LCJleHAiOjE3Mjk3NzI3Mjl9.ySwII1MGAmll8Myfd7uXytPzhl8nh3oKffiuEndFhj0
+
 
 {
     "username": "admin@gmail.com",

@@ -8,15 +8,14 @@ const Register: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const userType="ROLE_ORGANISER";
+  const [error, setError] = useState(''); // To handle error messages
+  const userType = "ROLE_ORGANISER";
   const navigate = useNavigate();
-
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      console.error('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
     try {
@@ -28,13 +27,14 @@ const Register: React.FC = () => {
       navigate('/login');
     } catch (error) {
       console.error('Registration failed', error);
+      setError('Registration failed, please try again.');
     }
   };
 
   const onSuccess = async (response: any) => {
     const userInfoResponse = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${response.credential}`);
     const userInfo = await userInfoResponse.json();
-    const email = userInfo.email
+    const email = userInfo.email;
 
     try {
       const res = await fetch('http://localhost:8080/googlelogin', {
@@ -45,21 +45,19 @@ const Register: React.FC = () => {
         },
         body: JSON.stringify({
           tokenId: response.credential,
-          email: email, 
-          role:userType
-
+          email: email,
+          role: userType
         }),
       });
       const data = await res.json();
       console.log(data);
-      if (data.role === 'ROLE_PLAYER') {
-        navigate('/playerDashboard');
-      }
-      if (data.role === 'ROLE_ORGANISER') {
-        navigate('/organiserDashboard');
-      }
+      localStorage.setItem('token', data.token); // Store token
+
+      navigate('/organiserProfile');
+
     } catch (error) {
       console.error('Error during Google login:', error);
+      setError('Google login failed, please try again.');
     }
   };
 
@@ -99,14 +97,16 @@ const Register: React.FC = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </Form.Group>
-           
+
+            {error && <div className="alert alert-danger mt-3">{error}</div>} {/* Error message */}
+
             <Button variant="primary" type="submit" className="w-100 mt-4">
               Register
             </Button>
             <div className="mt-3">
               <GoogleLogin
                 onSuccess={onSuccess}
-               
+                onError={() => setError('Google login failed, please try again.')} // Handle Google login failure
               />
             </div>
             <div className="text-center mt-3">

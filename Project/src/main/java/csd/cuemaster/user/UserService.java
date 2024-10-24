@@ -10,7 +10,7 @@ public interface UserService {
     // User addOrganiser(User user);
     User updateUser(Long id, User user);
     public User loginUser(User user);
-    public String googleLogin(String email, String role);
+    public User googleLogin(String email, String role);
     public String accountActivation(String token);
 
     /**

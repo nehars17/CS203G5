@@ -89,10 +89,10 @@ class UserServiceTest {
         when(users.save(any(User.class))).thenReturn(newUser); // Mock user creation
 
         // Act
-        String result = userService.googleLogin("newuser@gmail.com", "ROLE_PLAYER");
+        User result = userService.googleLogin("newuser@gmail.com", "ROLE_PLAYER");
 
         // Assert
-        assertEquals("newuser@gmail.com", result); // Should return email of the newly created user
+        assertEquals("newuser@gmail.com", result.getUsername()); // Should return email of the newly created user
         verify(users).save(any(User.class)); // Ensure the user is saved
 
         User createdUser = newUser; // Since we are mocking, use the newUser directly
@@ -172,11 +172,11 @@ class UserServiceTest {
         when(users.findByUsername(email)).thenReturn(Optional.of(existingUser));
 
         // Act
-        String result = userService.googleLogin(email, "ROLE_PLAYER");
+        User result = userService.googleLogin(email, "ROLE_PLAYER");
 
         // Assert
         assertNotNull(result);
-        assertEquals(email, result); // The result should be the user's email
+        assertEquals(email, result.getUsername()); // The result should be the user's email
         verify(users, never()).save(any(User.class)); // No new user should be saved
     }
 
