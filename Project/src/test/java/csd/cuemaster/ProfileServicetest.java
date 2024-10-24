@@ -28,6 +28,9 @@ import csd.cuemaster.profile.UserProfileNotFoundException;
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
+import csd.cuemaster.match.Match;
+import csd.cuemaster.match.MatchNotFoundException;
+import csd.cuemaster.match.MatchRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class ProfileServicetest {
@@ -36,6 +39,8 @@ public class ProfileServicetest {
     private ProfileRepository profiles;
     @Mock
     private UserRepository users;
+    @Mock
+    private MatchRepository matches;
 
     @InjectMocks
     private ProfileServiceImpl profileService;
@@ -366,9 +371,9 @@ public class ProfileServicetest {
         profile1.setId(1L);
         user1.setProfile(profile1);
         User user2 = new User("Koopa", "goodpassword", "ROLE_ORGANISER", "normal", true);
-        user2.setId(1L);
+        user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user2);
-        profile2.setId(1L);
+        profile2.setId(2L);
         user2.setProfile(profile2);
 
         leaderboard.add(profile1);
@@ -383,5 +388,97 @@ public class ProfileServicetest {
         // Assert
         assertNotNull(leaderboard);
         assertTrue(leaderboard.isEmpty());
+    }
+
+    // Test Case: Get two player profiles from a match.
+    @Test
+    void getProfilesFromMatches_TwoPlayerProfiles_ReturnList() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        List <Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertFalse(retrievedProfiles.isEmpty());
+        assertEquals(2, retrievedProfiles.size());
+    }
+
+    // Test Case: Get one player profile from a match.
+    @Test
+    void getProfilesFromMatches_OnePlayerProfile_ReturnList() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        List <Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertFalse(retrievedProfiles.isEmpty());
+        assertEquals(1, retrievedProfiles.size());
+    }
+
+    // Test Case: No player profiles.
+    @Test
+    void getProfilesFromMatches_ZeroPlayerProfiles_ReturnEmptyList() {
+        // Arrange
+        Match match = new Match();
+        match.setId(1L);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        List <Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertTrue(retrievedProfiles.isEmpty());
+    }
+
+    // Test Case: Match does not exist.
+    @Test
+    void getProfilesFromMatches_MatchDoesNotExist_ThrowMatchNotFoundException() {
+        // Arrange (Nothing to arrange.)
+
+        // Mock (Nothing to mock.)
+
+        // Act
+        MatchNotFoundException exception = assertThrows(MatchNotFoundException.class, () -> {
+            profileService.getProfilesFromMatches(1L);
+        });
+
+        // Assert
+        assertEquals("Could not find match 1.", exception.getMessage());
     }
 }

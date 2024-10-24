@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
+import csd.cuemaster.match.Match;
+import csd.cuemaster.match.MatchNotFoundException;
+import csd.cuemaster.match.MatchRepository;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
@@ -19,6 +22,8 @@ public class ProfileServiceImpl implements ProfileService{
     private ProfileRepository profiles;
     @Autowired
     private UserRepository users;
+    @Autowired
+    private MatchRepository matches;
 
     @Override 
     public List<Profile> getAllProfile(){
@@ -144,11 +149,31 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     /* @Override
-    public void updateRank(List<Profile> sortedplayers) {
-        int currentRank = 1;
-            for (Profile profile : sortedplayers) {
-                profile.setRank(currentRank);
-                currentRank++;
-            }
+    public void updateRank() {
+        List<Profile> sortedPlayers = sort();
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            Profile profile = sortedPlayers.get(i);
+            profile.setRank(i + 1);
+        }
     } */
+
+    public List<Profile> getProfilesFromMatches(Long match_id) {
+        Match match = matches.findById(match_id).orElseThrow(()-> new MatchNotFoundException(match_id));
+        List<Profile> retrieved = new ArrayList<>();
+        User user1 = match.getUser1();
+        if (user1 != null) {
+            Profile profile1 = user1.getProfile();
+                if (profile1 != null) {
+                    retrieved.add(profile1);
+                }
+        }
+        User user2 = match.getUser2();
+        if (user2 != null) {
+            Profile profile2 = user2.getProfile();
+                if (profile2 != null) {
+                    retrieved.add(profile2);
+                }
+        }
+        return retrieved;
+    }
 }
