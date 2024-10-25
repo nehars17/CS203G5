@@ -3,8 +3,12 @@ import { Button, Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import API from '../../services/api';
 
+interface UserData {
+  username: string;
+}
+
 const Home: React.FC = () => {
-  const [userData, setUserData] = useState<{ username: string } | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -14,26 +18,25 @@ const Home: React.FC = () => {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
     });
     navigate('/login');
   };
 
   const fetchUserProfile = async () => {
     try {
-      const response = await API.get('/me', {
+      const response = await API.get<UserData>('/me', {
         headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       });
-      const data = response.data; // No need to use await here
-      console.log(data);
-      setUserData(data); // Update state or perform actions with the user data
+      const data = response.data; // Assuming response.data is of type UserData
+      setUserData(data); // Update state with user data
     } catch (error) {
       console.error('Failed to fetch profile', error);
+      setUserData(null); // Optionally reset user data on error
     }
   };
-  
 
   useEffect(() => {
     fetchUserProfile();

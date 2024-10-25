@@ -8,8 +8,9 @@ const Home: React.FC = () => {
             <p style={styles.subTitle}>Manage your tournaments, profile, and stay updated with the leaderboard!</p>
             <div style={styles.linksContainer}>
                 <Link to="/login" style={styles.link}>Login</Link>
-                <Link to="/register" style={styles.link}>Register</Link>
-                <Link to="/matches" style={styles.link}>Tournament Matches</Link>
+                <Link to="/playerRegistration" style={styles.link}>Register Player</Link>
+                <Link to="/organiserRegistration" style={styles.link}>Register Organiser</Link>
+                <Link to="/tournaments" style={styles.link}>Tournaments</Link>
                 <Link to="/leaderboard" style={styles.link}>Leaderboard</Link>
                 {/* <Link to="/profile" style={styles.link}>Profile</Link> */}
             </div>

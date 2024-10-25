@@ -122,7 +122,11 @@ const Login: React.FC = () => {
           </div>
           <div className="text-center mt-3">
             <small>
-              Don't have an account? <a href="/register">Register</a>
+              Don't have an account? 
+              <br></br>
+              <a href="/playerRegistration">Player Registration</a>
+              <br></br>
+              <a href="/organiserRegistration">Organiser Registration</a>
             </small>
           </div>
         </Card.Body>

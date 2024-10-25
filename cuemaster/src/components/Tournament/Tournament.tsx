@@ -10,18 +10,32 @@ interface Tournament {
 
 const Tournaments: React.FC = () => {
     const [tournaments, setTournaments] = useState<Tournament[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchTournaments = async () => {
             try {
-                const response = await API.get('/tournaments');  // Assuming this is your backend API endpoint
+                const response = await API.get<Tournament[]>('/tournaments'); // Type assertion for the response
                 setTournaments(response.data);
             } catch (error) {
                 console.error('Error fetching tournaments', error);
+                setError('Failed to fetch tournaments. Please try again later.');
+            } finally {
+                setLoading(false); // Set loading to false after the fetch is complete
             }
         };
+
         fetchTournaments();
     }, []);
+
+    if (loading) {
+        return <div>Loading tournaments...</div>; // Loading state
+    }
+
+    if (error) {
+        return <div>{error}</div>; // Error message
+    }
 
     return (
         <div style={styles.container}>
