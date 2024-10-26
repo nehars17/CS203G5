@@ -16,10 +16,12 @@ const Login: React.FC = () => {
         username: email,
         password: password,
       });
-      const { token } = response.data;
+      const { token, id:userId} = response.data;
+      console.log('Response from API:', response);
       setAuthToken(token); // Set token in axios
       localStorage.setItem('token', token); // Store token in localStorage
-      navigate('/profile');
+      localStorage.setItem('userId', userId);
+      navigate(`/create-profile/${userId}`);
     } catch (error) {
       console.error('Login failed', error);
     }

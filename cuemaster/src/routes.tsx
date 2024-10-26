@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/User/Login';
-import Register from './components/User/Register';
+import RegisterPlayer from './components/User/RegisterPlayer';
+import RegisterOrganiser from './components/User/RegisterOrganiser';
 import CreateProfile from './components/Profile/CreateProfile';
 import Profile from './components/Profile/Profile';
 import Matches from './components/Matches/Matches';

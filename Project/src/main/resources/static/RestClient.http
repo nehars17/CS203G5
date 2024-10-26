@@ -64,7 +64,7 @@ GET http://localhost:8080/user/2/profile/1
 Content-Type: application/json
 
 ### (ORG PROFILE)
-POST http://localhost:8080/user/2/profile
+POST http://localhost:8080/user/1/profile
 Content-Type: application/json
 Authorization: Basic org@gmail.com goodpassword
 

@@ -44,8 +44,9 @@ public class ProfileController {
         return profileService.updateProfile(user_id, newProfileInfo);
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
+   
     @PostMapping("user/{user_id}/profile")
+    @ResponseStatus(HttpStatus.CREATED)
     public Profile postProfile(@PathVariable (value = "user_id") Long user_id, @Valid @RequestBody Profile profile){
 
         User user = users.findById(user_id).orElseThrow(() -> new UserNotFoundException(user_id));

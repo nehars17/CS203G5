@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import API from '../../services/api';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Form, Button, Card, Container } from 'react-bootstrap';
 
@@ -10,7 +10,7 @@ const CreateProfile: React.FC = () => {
     const [birthDate, setBirthDate] = useState('');
     const [birthLocation, setBirthLocation] = useState('');
     const navigate = useNavigate();
-    const location = useLocation();
+    const userId = localStorage.getItem('userId');   
 
     // useEffect(() => {
     //   const token = localStorage.getItem('token');
@@ -38,17 +38,28 @@ const CreateProfile: React.FC = () => {
             return;
         }
 
+        console.log("Before submission:");
+        console.log("First Name:", firstName);
+        console.log("Last Name:", lastName);
+        console.log("Birth Date:", birthDate);
+        console.log("Birth Location:", birthLocation);
+
         const formattedBirthDate = formatDate(birthDate);
-        const userId = location.state?.userId;
 
         const profileData = {
-            firstName,
-            lastName,
-            birthDate: formattedBirthDate,
-            birthLocation,
+            firstname: firstName,
+            lastname: lastName,
+            birthdate: formattedBirthDate,
+            birthlocation: birthLocation,
         };
 
-        try{     
+        console.log("User ID:", userId);
+        console.log("Profile Data:", profileData);
+        try{    
+
+            if (!userId) {
+                throw new Error("User ID is not available.");
+            }
             const response = await API.post(`/user/${userId}/profile`, profileData);
 
             console.log("Profile created successfully:", response.data);  
