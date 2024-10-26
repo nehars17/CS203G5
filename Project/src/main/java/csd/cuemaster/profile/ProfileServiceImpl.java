@@ -157,6 +157,7 @@ public class ProfileServiceImpl implements ProfileService{
         }
     } */
 
+    // Retrieves player profiles from a given match.
     public List<Profile> getProfilesFromMatches(Long match_id) {
         Match match = matches.findById(match_id).orElseThrow(()-> new MatchNotFoundException(match_id));
         List<Profile> retrieved = new ArrayList<>();
@@ -175,5 +176,26 @@ public class ProfileServiceImpl implements ProfileService{
                 }
         }
         return retrieved;
+    }
+
+    // Calculate the expected score of a given player in a given match.
+    public double calculateExpectedScore(Long match_id, Long user_id) {
+        List<Profile> players = getProfilesFromMatches(match_id);
+        if (players.size() < 2) {
+            throw new IllegalArgumentException("Match " + match_id + " does not have enough players to calculate expected score.");
+        }
+        Integer pointsA = players.get(0).getPoints();
+        Integer pointsB = players.get(1).getPoints();
+        double expectedScoreA = 1.0 / (1 + Math.pow(10, (pointsB - pointsA) / 400.0));
+        double expectedScoreB = 1.0 / (1 + Math.pow(10, (pointsA - pointsB) / 400.0));
+        User user = users.findById(user_id)
+                .orElseThrow(() -> new UserNotFoundException(user_id));
+        if (user.getProfile() == players.get(0)) {
+            return expectedScoreA;
+        } else if (user.getProfile() == players.get(1)) {
+            return expectedScoreB;
+        } else {
+            throw new IllegalArgumentException("Player " + user_id + " is not in the match.");
+        }
     }
 }

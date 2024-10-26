@@ -414,7 +414,7 @@ public class ProfileServicetest {
         when(matches.findById(1L)).thenReturn(Optional.of(match));
 
         // Act
-        List <Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
+        List<Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
 
         // Assert
         assertNotNull(retrievedProfiles);
@@ -440,7 +440,7 @@ public class ProfileServicetest {
         when(matches.findById(1L)).thenReturn(Optional.of(match));
 
         // Act
-        List <Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
+        List<Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
 
         // Assert
         assertNotNull(retrievedProfiles);
@@ -459,7 +459,7 @@ public class ProfileServicetest {
         when(matches.findById(1L)).thenReturn(Optional.of(match));
 
         // Act
-        List <Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
+        List<Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
 
         // Assert
         assertNotNull(retrievedProfiles);
@@ -480,5 +480,103 @@ public class ProfileServicetest {
 
         // Assert
         assertEquals("Could not find match 1.", exception.getMessage());
+    }
+
+    // Test Case: Get the expected score of a player from a match.
+    @Test
+    void CalculateExpectedScore_PlayerA_ReturnScore() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+        profile1.setPoints(1200);
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+        profile2.setPoints(2300);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+        when(users.findById(1L)).thenReturn(Optional.of(user1));
+
+        // Act
+        double score = profileService.calculateExpectedScore(1L, 1L);
+
+        // Assert
+        assertNotNull(score);
+        assertEquals(0.00177, score);
+    }
+
+    // Test Case: Not enough players in a match.
+    @Test
+    void CalculateExpectedScore_NotEnoughPlayers_ThrowIllegalArgumentException() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            profileService.calculateExpectedScore(1L, 1L);
+        });
+
+        // Assert
+        assertEquals("Match 1 does not have enough players to calculate expected score.", exception.getMessage());
+    }
+
+    // Test Case: Player does not exist in a match.
+    @Test
+    void CalculateExpectedScore_PlayerNotFound_ThrowIllegalArgumentException() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+        User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user3.setId(3L);
+        Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", user3);
+        profile3.setId(3L);
+        user3.setProfile(profile3);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+        when(users.findById(3L)).thenReturn(Optional.of(user3));
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            profileService.calculateExpectedScore(1L, 3L);
+        });
+
+        // Assert
+        assertEquals("Player 3 is not in the match.", exception.getMessage());
     }
 }

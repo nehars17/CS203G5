@@ -14,4 +14,5 @@ public interface ProfileService {
     Profile pointsSet(Long user_id, Integer points);
     // void updateRank();
     List<Profile> getProfilesFromMatches(Long match_id);
+    double calculateExpectedScore(Long match_id, Long user_id);
 }
