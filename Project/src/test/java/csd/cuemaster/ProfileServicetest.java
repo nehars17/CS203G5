@@ -484,7 +484,7 @@ public class ProfileServicetest {
 
     // Test Case: Get the expected score of a player from a match.
     @Test
-    void CalculateExpectedScore_PlayerA_ReturnScore() {
+    void calculateExpectedScore_PlayerA_ReturnScore() {
         // Arrange
         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user1.setId(1L);
@@ -518,7 +518,7 @@ public class ProfileServicetest {
 
     // Test Case: Not enough players in a match.
     @Test
-    void CalculateExpectedScore_NotEnoughPlayers_ThrowIllegalArgumentException() {
+    void calculateExpectedScore_NotEnoughPlayers_ThrowIllegalArgumentException() {
         // Arrange
         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user1.setId(1L);
@@ -544,7 +544,7 @@ public class ProfileServicetest {
 
     // Test Case: Player does not exist in a match.
     @Test
-    void CalculateExpectedScore_PlayerNotFound_ThrowIllegalArgumentException() {
+    void calculateExpectedScore_PlayerNotFound_ThrowIllegalArgumentException() {
         // Arrange
         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user1.setId(1L);
@@ -574,6 +574,74 @@ public class ProfileServicetest {
         // Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             profileService.calculateExpectedScore(1L, 3L);
+        });
+
+        // Assert
+        assertEquals("Player 3 is not in the match.", exception.getMessage());
+    }
+
+    // Test Case: Get the new points of the players after a match.
+    @Test
+    void calculateNewPoints_PlayerAWins_ReturnList() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+        profile1.setPoints(1200);
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+        profile2.setPoints(2300);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+        when(users.findById(1L)).thenReturn(Optional.of(user1));
+        when(users.findById(2L)).thenReturn(Optional.of(user2));
+
+        // Act
+        List<Profile> updatedProfiles = profileService.calculateNewPoints(1L, 1L);
+
+        // Assert
+        assertNotNull(updatedProfiles);
+        assertEquals(1231, updatedProfiles.get(0).getPoints());
+        assertEquals(2268, updatedProfiles.get(1).getPoints());
+    }
+
+    // Test Case: Winner does not exist in a match.
+    @Test
+    void calculateNewPoints_WinnerNotFound_ThrowIllegalArgumentException() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            profileService.calculateNewPoints(1L, 3L);
         });
 
         // Assert

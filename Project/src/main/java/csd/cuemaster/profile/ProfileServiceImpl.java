@@ -198,4 +198,36 @@ public class ProfileServiceImpl implements ProfileService{
             throw new IllegalArgumentException("Player " + user_id + " is not in the match.");
         }
     }
+
+    // Calculate the new points of the players after a winner is declared.
+    public List<Profile> calculateNewPoints(Long match_id, Long winner_id) {
+        Match match = matches.findById(match_id).orElseThrow(()-> new MatchNotFoundException(match_id));
+        Long user_id1 = match.getUser1().getId();
+        Long user_id2 = match.getUser2().getId();
+        if (winner_id != user_id1 && winner_id != user_id2) {
+            throw new IllegalArgumentException("Player " + winner_id + " is not in the match.");
+        }
+        List<Profile> players = getProfilesFromMatches(match_id);
+        Integer originalPointsA = players.get(0).getPoints();
+        Integer originalPointsB = players.get(1).getPoints();
+        double expectedScoreA = calculateExpectedScore(match_id, user_id1);
+        double expectedScoreB = calculateExpectedScore(match_id, user_id2);
+
+        // Set new points based on the winner.
+        int K_FACTOR = 32;
+        int WIN = 1;
+        int LOSE = 0;
+        if (winner_id == user_id1) {
+            Integer newPointsA = (int) (originalPointsA + K_FACTOR * (WIN - expectedScoreA));
+            Integer newPointsB = (int) (originalPointsB + K_FACTOR * (LOSE - expectedScoreB));
+            players.get(0).setPoints(newPointsA);
+            players.get(1).setPoints(newPointsB);
+        } else if (winner_id == user_id2) {
+            Integer newPointsA = (int) (originalPointsA + K_FACTOR * (LOSE - expectedScoreA));
+            Integer newPointsB = (int) (originalPointsB + K_FACTOR * (WIN - expectedScoreB));
+            players.get(0).setPoints(newPointsA);
+            players.get(1).setPoints(newPointsB);
+        }
+        return players;
+    }
 }
