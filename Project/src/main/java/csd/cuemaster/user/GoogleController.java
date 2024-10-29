@@ -56,7 +56,7 @@ public class GoogleController {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
             // Generate a JWT token for the user
-            String jwtToken = jwtService.generateToken(googleUser);
+            String jwtToken = jwtService.generateToken(googleUser,googleUser.getId());
             System.out.println("Generated JWT: " + jwtToken);
             // Get the user's role
             String userRole = googleUser.getAuthorities().iterator().next().getAuthority();

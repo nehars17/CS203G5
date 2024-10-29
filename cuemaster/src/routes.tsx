@@ -61,7 +61,7 @@ const AppRoutes: React.FC = () => {
                <Route
                     path="/adminDashboard"
                     element={
-                        isUserAuthenticated && userId === '1' ? ( // Check if authenticated and user_id is '1'
+                        isUserAuthenticated && userId === 1 ? ( // Check if authenticated and user_id is '1'
                             <AdminDashboard />
                         ) : (
                             <Navigate to="/login" />

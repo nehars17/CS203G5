@@ -1,9 +1,5 @@
 package csd.cuemaster.services;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,8 +9,16 @@ import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+
 @Service
 public class JwtService {
+
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
@@ -30,12 +34,12 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(UserDetails userDetails, Long user_id) {
+        return generateToken(new HashMap<>(), userDetails, user_id);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, Long user_id) {
+        return buildToken(extraClaims, userDetails, jwtExpiration, user_id);
     }
 
     public long getExpirationTime() {
@@ -45,14 +49,18 @@ public class JwtService {
     private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
-            long expiration
+            long expiration,
+            Long user_id // Correctly passing user_id here
     ) {
+        Map<String, Object> claims = new HashMap<>(extraClaims);
+        claims.put("sub", userDetails.getUsername());
+        claims.put("user_id", user_id);
+        claims.put("iat", new Date(System.currentTimeMillis()));
+        claims.put("exp", new Date(System.currentTimeMillis() + expiration));
+
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setClaims(claims) // Include all claims together
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
