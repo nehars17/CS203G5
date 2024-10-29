@@ -52,7 +52,7 @@ const Register: React.FC = () => {
       const data = await res.json();
       localStorage.setItem('token', data.token); // Store token
       console.log(data);
-      navigate('/playerDashboard');
+      navigate('/playerProfile');
      
     } catch (error) {
       console.error('Error during Google login:', error);
