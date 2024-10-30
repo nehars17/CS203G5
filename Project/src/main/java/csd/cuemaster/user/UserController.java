@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import csd.cuemaster.services.EmailService;
 import csd.cuemaster.services.JwtService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.ElementCollection;

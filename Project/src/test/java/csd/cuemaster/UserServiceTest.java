@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import csd.cuemaster.user.EmailService;
+import csd.cuemaster.services.EmailService;
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserRepository;
 import csd.cuemaster.user.UserServiceImpl;

@@ -1,4 +1,4 @@
-package csd.cuemaster.user;
+package csd.cuemaster.services;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
