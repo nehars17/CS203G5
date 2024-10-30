@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import csd.cuemaster.user.User;
@@ -33,7 +35,6 @@ class UserIntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
 
     @Autowired
     private UserRepository users;
@@ -69,7 +70,6 @@ class UserIntegrationTest {
         URI uri = new URI(baseUrl + port + "/register");
         String jsonPayload = "{ \"username\": \"newuser@gmail.com\", \"password\": \"goodpassword\", \"authorities\": \"ROLE_PLAYER\"}";
         // Clear previous users to avoid conflicts
-       
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
@@ -109,7 +109,6 @@ class UserIntegrationTest {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-
         assertEquals(409, response.statusCode()); // Assuming 201 Created
         // You may also want to check the response body for specific error messages
     }
@@ -140,29 +139,47 @@ class UserIntegrationTest {
     @Test
     public void loginUser_Success() throws Exception {
         URI uri = new URI(baseUrl + port + "/normallogin");
-
+    
         // Simulate the user being saved
         users.save(new User("testuser2@gmail.com", encoder.encode("goodpassword"), "ROLE_PLAYER", "normal", true));
-
+    
         String jsonPayload = "{ \"username\": \"testuser2@gmail.com\", \"password\": \"goodpassword\", \"authorities\": \"ROLE_PLAYER\"}";
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                 .build();
-
+    
         // Use HttpClient to send the request
         HttpClient client = HttpClient.newHttpClient();
-        System.out.println(request);
-
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-
+    
+        // Check the response status
         assertEquals(200, response.statusCode());
-        User responseBody = new ObjectMapper().readValue(response.body(), User.class);
+    
+        // Parse the response body into a Map
+        Map<String, Object> responseBody = new ObjectMapper().readValue(response.body(), new TypeReference<Map<String, Object>>() {});
+    
+        // Ensure the response body is not null
         assertNotNull(responseBody);
-        assertEquals("testuser2@gmail.com", responseBody.getUsername());
+    
+        // Deserialize the user from the map to a User object
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> userMap = (Map<String, Object>) responseBody.get("user");
+        User user = mapper.convertValue(userMap, User.class);
+    
+        // Verify the username from the User object
+        assertEquals("testuser2@gmail.com", user.getUsername());
+    
+        // Verify the JWT token
+        String token = (String) responseBody.get("token");
+        assertNotNull(token);  // You can also validate the structure of the token here
+    
+        // Verify the role
+        String role = (String) responseBody.get("role");
+        assertEquals("ROLE_PLAYER", role);
     }
+    
 
     @Test
     public void loginUser_IncorrectPassword() throws Exception {
@@ -186,5 +203,4 @@ class UserIntegrationTest {
         // Check the error message in the response body if necessary
     }
 
-    
 }
