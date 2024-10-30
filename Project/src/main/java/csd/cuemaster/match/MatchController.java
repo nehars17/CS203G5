@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +20,6 @@ public class MatchController {
     
     @Autowired
     private MatchService matchService;
-
-    //create match
-    // @PostMapping("/matches/create")
-    // public Match createMatch(@Valid @RequestBody Match match) {
-    //     return matchService.createMatch(match);     
-    // }
 
     //create match
     @PostMapping("/matches/create")
@@ -91,7 +84,9 @@ public class MatchController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/matches/{matchId}/declareWinner/{winnerId}")
+
+    //need fixing
+    @PostMapping("/matches/{matchId}/winner/{winnerId}")
     public ResponseEntity<Match> declareWinner(@PathVariable Long matchId, @PathVariable Long winnerId) {
         try {
             Match updatedMatch = matchService.declareWinner(matchId, winnerId);
@@ -103,16 +98,6 @@ public class MatchController {
         }
     }
 
-    // Exceptions handler
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
 
 
 }

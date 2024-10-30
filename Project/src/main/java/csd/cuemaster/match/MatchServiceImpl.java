@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import csd.cuemaster.tournament.*;
-import csd.cuemaster.user.*;
+import csd.cuemaster.tournament.TournamentRepository;
+import csd.cuemaster.user.UserRepository;
 
 @Service
 public class MatchServiceImpl implements MatchService {
@@ -20,12 +20,12 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     private UserRepository userRepository; 
 
-    // public MatchServiceImpl(MatchRepository matchRepository) {
-    //     this.matchResponsitory = matchRepository;
-    // }
-    //create new match
-    @Override
-    public Match createMatch(Match match) {
+    /**
+     * Prevent organizer from creating a match without a tournament and players
+     * Will return a resourceNotFoundException if tournament and either users does not exist
+     * @param match
+     */
+    private void matchConditionsCheck(Match match) {
         if (match.getTournament() == null || !tournamentRepository.existsById(match.getTournament().getId())) {
             throw new ResourceNotFoundException("Tournament with ID " + match.getTournament().getId() + " does not exist");
         }
@@ -35,6 +35,14 @@ public class MatchServiceImpl implements MatchService {
         if (!userRepository.existsById(match.getUser2().getId())) {
             throw new ResourceNotFoundException("User with ID " + match.getUser2().getId() + " does not exist");
         }
+    }
+
+    /**
+     * Comment
+     */
+    @Override
+    public Match createMatch(Match match) {
+        matchConditionsCheck(match);
         
         return matchRepository.save(match);
     }
@@ -42,6 +50,7 @@ public class MatchServiceImpl implements MatchService {
     //update exisiting match
     @Override
     public Match updateMatch(Long matchId, Match match) {
+        
         Match existingMatch = matchRepository.findById(matchId).orElse(null);
         if (existingMatch == null) {
             throw new RuntimeException("Match not found with id: " + matchId); // Consider a custom exception
@@ -57,11 +66,6 @@ public class MatchServiceImpl implements MatchService {
         existingMatch.setUser2Score(match.getUser2Score());
 
         return matchRepository.save(existingMatch);
-        // if (!matchRepository.existsById(matchId)) {
-        //     return null;
-        // }
-        // match.setId(matchId);
-        // return matchRepository.save(match);
     }
 
     @Override
@@ -87,6 +91,7 @@ public class MatchServiceImpl implements MatchService {
         return matchRepository.findByTournamentId(tournamentId);
     }
 
+    //need fixing
     // Set the winner of the match
     @Override
     public Match declareWinner(Long matchId, Long winnerId) {

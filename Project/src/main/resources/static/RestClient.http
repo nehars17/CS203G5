@@ -233,10 +233,10 @@ Authorization: Basic org@gmail.com goodpassword
         "id": 1
     },
     "user1": {
-        "id": 3
+        "id": 2
     },
     "user2": {
-        "id": 4
+        "id": 1
     },
     "matchDate": "2024-10-02",
     "matchTime": "12:00",
