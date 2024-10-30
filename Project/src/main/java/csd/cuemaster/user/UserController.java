@@ -106,8 +106,8 @@ public ResponseEntity<Map<String, Object>> authenticatedUser() {
                 new UsernamePasswordAuthenticationToken(
                     loggedInUser.getUsername(),
                     user.getPassword()));
-        String jwtToken = jwtService.generateToken(loggedInUser,loggedInUser.getId());
         String role = loggedInUser.getAuthorities().isEmpty() ? null : loggedInUser.getAuthorities().iterator().next().getAuthority();
+        String jwtToken = jwtService.generateToken(loggedInUser,loggedInUser.getId(),role);
         System.out.println(jwtToken);
         // Prepare the response map
         Map<String, Object> response = new HashMap<>();

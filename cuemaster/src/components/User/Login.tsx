@@ -33,6 +33,7 @@ const Login: React.FC = () => {
 
       // Navigate based on role
       if (data.role === 'ROLE_PLAYER') {
+        
         navigate('/playerProfile');
       } else if (data.role === 'ROLE_ORGANISER') {
         navigate('/organiserProfile');

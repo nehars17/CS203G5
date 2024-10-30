@@ -6,8 +6,9 @@ const secretKey = '3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e0
 interface DecodedToken {
     sub: string; // Adjust according to your token structure
     exp: number; // Token expiration time
-    user_id:number;
-    // Add other fields from your JWT payload as necessary
+    user_id:number; //user_id
+    role:string;
+    // authority:string; // Add other fields from your JWT payload as necessary
 }
 
 export const isAuthenticated = (): boolean => {
@@ -42,6 +43,24 @@ export const getUserIdFromToken = (): number | null => {
         const decoded = jwt.decode(jwtToken) as DecodedToken;
         console.log(decoded.user_id)
         return decoded.user_id; // Return user ID from the decoded token
+    } catch (error) {
+        console.error('Failed to decode token', error);
+        return null; // Return null if decoding fails
+    }
+};
+
+
+export const getUserRole = (): string | null => {
+    const jwtToken = localStorage.getItem('token');
+  
+    if (!jwtToken) {
+        return null; // Return null if there's no token
+    }
+  
+    try {
+        const decoded = jwt.decode(jwtToken) as DecodedToken;
+        console.log(decoded.role)
+        return decoded.role; // Return user ID from the decoded token
     } catch (error) {
         console.error('Failed to decode token', error);
         return null; // Return null if decoding fails

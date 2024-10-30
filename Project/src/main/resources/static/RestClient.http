@@ -26,7 +26,7 @@ GET http://localhost:8080/users
 
 ###
 GET http://localhost:8080/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmdAZ21haWwuY29tIiwiaWF0IjoxNzI5NzY5MTI5LCJleHAiOjE3Mjk3NzI3Mjl9.ySwII1MGAmll8Myfd7uXytPzhl8nh3oKffiuEndFhj0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VyX2lkIjoxLCJleHAiOjE3MzAyNzc4MDIsImlhdCI6MTczMDI3NDIwMn0.jzzkYQeQ3E58aXlourK4LJG5V4GLlNhkXdkd6XRrlt4
 ###
 POST http://localhost:8080/normallogin
 Content-Type: application/json

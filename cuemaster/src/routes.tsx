@@ -13,12 +13,13 @@ import PrivateRoute from './components/PrivateRoute';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import Home from './components/Home/Home';
 import About from './pages/About';
-import { isAuthenticated, getUserIdFromToken } from './components/authUtils';
+import { isAuthenticated, getUserIdFromToken, getUserRole } from './components/authUtils';
 import { Navigate } from 'react-router-dom';
 
 const AppRoutes: React.FC = () => {
     const isUserAuthenticated = isAuthenticated();
     const userId = getUserIdFromToken();
+    const isRole = getUserRole();
 
     return (
         <Router>
@@ -32,6 +33,8 @@ const AppRoutes: React.FC = () => {
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/matches" element={<Matches />} />
                 <Route path="*" element={<Error404 />} />
+             
+
 
                 {/* Private Routes */}
                 <Route
@@ -45,7 +48,7 @@ const AppRoutes: React.FC = () => {
                 <Route
                     path="/playerProfile"
                     element={
-                        <PrivateRoute isAuthenticated={isUserAuthenticated}>
+                        <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_PLAYER"}>
                             <Profile />
                         </PrivateRoute>
                     }

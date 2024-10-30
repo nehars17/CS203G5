@@ -34,12 +34,12 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails, Long user_id) {
-        return generateToken(new HashMap<>(), userDetails, user_id);
+    public String generateToken(UserDetails userDetails, Long user_id,String role) {
+        return generateToken(new HashMap<>(), userDetails, user_id,role);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, Long user_id) {
-        return buildToken(extraClaims, userDetails, jwtExpiration, user_id);
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, Long user_id,String role) {
+        return buildToken(extraClaims, userDetails, jwtExpiration, user_id, role);
     }
 
     public long getExpirationTime() {
@@ -50,11 +50,14 @@ public class JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails,
             long expiration,
-            Long user_id // Correctly passing user_id here
+            Long user_id, // Correctly passing user_id here
+            String role
     ) {
         Map<String, Object> claims = new HashMap<>(extraClaims);
         claims.put("sub", userDetails.getUsername());
         claims.put("user_id", user_id);
+        claims.put("role", role);
+
         claims.put("iat", new Date(System.currentTimeMillis()));
         claims.put("exp", new Date(System.currentTimeMillis() + expiration));
 
