@@ -2,6 +2,7 @@ package csd.cuemaster.profile;
 
 import java.util.List;
 
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -10,14 +11,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
 import csd.cuemaster.user.User;
 
 @RestController
+@MultipartConfig
 public class ProfileController {
     private ProfileService profileService; 
     private UserRepository users;
@@ -47,7 +52,7 @@ public class ProfileController {
    
     @PostMapping("user/{user_id}/profile")
     @ResponseStatus(HttpStatus.CREATED)
-    public Profile postProfile(@PathVariable (value = "user_id") Long user_id, @Valid @RequestBody Profile profile){
+    public Profile postProfile(@PathVariable (value = "user_id") Long user_id,@RequestPart("profile") @Valid  Profile profile, @RequestPart("profilePhoto") MultipartFile profilePhoto){
 
         User user = users.findById(user_id).orElseThrow(() -> new UserNotFoundException(user_id));
 
@@ -56,7 +61,7 @@ public class ProfileController {
             throw new ProfileAlreadyExistsException(user_id);
         }
 
-        return profileService.addProfile(user, profile);
+        return profileService.addProfile(user, profile, profilePhoto);
     }
 
     // @PostMapping("users/{user_id}/profile/profilephoto")

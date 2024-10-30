@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/User/Login';
 import RegisterPlayer from './components/User/RegisterPlayer';
 import RegisterOrganiser from './components/User/RegisterOrganiser';
-import CreateProfile from './components/Profile/CreateProfile';
+import CreateProfile from './components/Profile/CreatePlayerProfile';
 import Profile from './components/Profile/Profile';
 import Matches from './components/Matches/Matches';
 import Leaderboard from './components/Leaderboard/Leaderboard';

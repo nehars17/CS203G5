@@ -1,5 +1,9 @@
 package csd.cuemaster.profile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -7,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserNotFoundException;
@@ -66,12 +71,20 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     @Override
-    public Profile addProfile(User user, Profile profile){ 
+    public Profile addProfile(User user, Profile profile, MultipartFile profilephoto){ 
         // User user = users.findById(userId)           
         //                 .orElseThrow(() -> new UserNotFoundException(userId));
 
         // profiles.findByUserId(userId).ifPresent(existingProfile ->{
         //                     throw new ProfileAlreadyExistsException(userId);});
+
+        if(profilephoto != null && !profilephoto.isEmpty()){
+
+            String photoPath = saveImageAndFilename(user.getId(), profilephoto);
+            profile.setProfilephotopath(photoPath);
+        }else {
+            throw new ProfilePhotoRequiredException();
+        }
         
         boolean isOrganizer = user.getAuthorities().stream()
                         .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANIZER"));  //getAuthorities return a Collections
@@ -97,12 +110,37 @@ public class ProfileServiceImpl implements ProfileService{
         return profiles.save(profile);
     }
 
-    // @Override
-    // public String addProfilePhoto(Long userID, byte[] image){
-    //     try{
-    //         St
-    //     }
-    // } getAllProfile()
+    public String saveImageAndFilename(Long userId, MultipartFile image){
+
+        Path directoryPath = Paths.get("C:\\CS203G5\\Project\\profilePhoto");                                                    //The application will look for the folder where the project is run, so everyone can run w/o changing the path
+        System.out.println("Current working directory: " + Paths.get("").toAbsolutePath());
+        try{
+
+            if (Files.notExists(directoryPath)){
+                Files.createDirectories(directoryPath);
+            }
+
+            String filename = "ProfilePhoto_" + userId + ".jpg"; // Consistent filename
+            Path filePath = directoryPath.resolve(filename); // Full path to save the image
+    
+            // Transfer the file to the path, overwriting any existing file
+            image.transferTo(filePath.toFile()); // This will overwrite if the file exists
+    
+            System.out.println("Photo saved successfully: " + filePath);
+
+            return filePath.toString();
+        }catch (IOException e){
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save profile photo", e);
+        }
+    }
+
+
+
+
+
+
+
 
     // Returns a list of all players.
     @Override

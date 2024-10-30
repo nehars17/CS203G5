@@ -43,7 +43,7 @@ public class Profile {
     @NotNull (message = "Location should not be null")
     private String birthlocation; 
 
-    // private String profilephotopath;
+    private String profilephotopath;
 
     private String organization;
 
@@ -62,12 +62,13 @@ public class Profile {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation){
+    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, String profilephotopath){
 
         this.firstname = firstname;
         this.lastname = lastname; 
         this.birthdate = birthdate;
         this.birthlocation = birthlocation;
+        this.profilephotopath = profilephotopath;
     }
 
     public Profile(String firstname, String lastname, LocalDate birthdate, String birthlocation, User user, Integer points){
