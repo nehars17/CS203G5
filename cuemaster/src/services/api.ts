@@ -13,4 +13,20 @@ export const setAuthToken = (token: string | null) => {
     }
 };
 
+export const deleteTournament = async (id: number) => {
+    try {
+        const authToken = localStorage.getItem('authToken'); // Or wherever you store your token
+        const response = await API.delete(`/tournaments/${id}`, {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+            withCredentials: true,
+        });
+        console.log('Deletion response:', response); // Log the response
+    } catch (error) {
+        console.error('Error deleting tournament:', error);
+        throw error; // Throw error to be caught in handleDelete
+    }
+};
+
 export default API;

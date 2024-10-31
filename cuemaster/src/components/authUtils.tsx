@@ -66,3 +66,8 @@ export const getUserRole = (): string | null => {
         return null; // Return null if decoding fails
     }
 };
+
+export const getAuthToken = () => {
+    return localStorage.getItem('token'); // Adjust according to your setup
+};
+

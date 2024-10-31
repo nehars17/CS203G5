@@ -82,7 +82,7 @@ const AppRoutes: React.FC = () => {
                     }
                 />
                 <Route
-                    path="/tournaments/update-tournament"
+                    path="/tournaments/update-tournament/:id"
                     element={
                         <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>
                             <UpdateTournament />

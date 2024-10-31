@@ -72,6 +72,7 @@ public class Tournament {
     public enum Status {
         UPCOMING,
         ONGOING,
+        COMPLETED,
         CANCELLED,
         ROUND_OF_32,
         ROUND_OF_16,
