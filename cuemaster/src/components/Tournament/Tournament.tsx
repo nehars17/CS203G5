@@ -35,23 +35,7 @@ const Tournaments: React.FC = () => {
         };
 
         fetchTournaments();
-    }, []);
-
-    const handleDelete = async (id: number) => {
-        if (window.confirm('Are you sure you want to delete this tournament?')) {
-            try {
-                await deleteTournament(id);
-                // Update state to remove the deleted tournament from the list
-                setTournaments(prevTournaments => prevTournaments.filter(tournament => tournament.id !== id));
-                console.log(`Tournament with id ${id} deleted from frontend state.`); // Log for confirmation
-            } catch (error) {
-                console.error('Error deleting tournament:', error);
-                setError('Failed to delete tournament. Please try again later.');
-            }
-        }
-    };
-     
-    
+    }, []);    
 
     if (loading) {
         return <div>Loading tournaments...</div>;
@@ -60,6 +44,20 @@ const Tournaments: React.FC = () => {
     if (error) {
         return <div>{error}</div>;
     }
+
+    const handleDelete = async (id: number) => {
+        if (window.confirm('Are you sure you want to delete this tournament?')) {
+            try {
+                await deleteTournament(id); // Ensure this function makes a DELETE request to the backend.
+                // Update state only after successful delete
+                setTournaments(prevTournaments => prevTournaments.filter(tournament => tournament.id !== id));
+                console.log(`Tournament with id ${id} deleted from frontend state.`); // Log for confirmation
+            } catch (error) {
+                console.error('Error deleting tournament:', error);
+                setError('Failed to delete tournament. Please try again later.');
+            }
+        }
+    };    
 
     return (
         <div style={styles.container}>
