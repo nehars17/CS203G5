@@ -17,6 +17,7 @@ const NavBar: React.FC = () => {
                             <>
                                 <Nav.Link href="/home">Home</Nav.Link>
                                 <Nav.Link href="/playerProfile">Profile</Nav.Link>
+                                <Nav.Link href="/tournaments">Tournaments</Nav.Link>
                             </>
                         ) : (
                             // Links for non-authenticated users

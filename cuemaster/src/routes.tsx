@@ -7,6 +7,8 @@ import Profile from './components/Profile/Profile';
 import Matches from './components/Matches/Matches';
 import Leaderboard from './components/Leaderboard/Leaderboard';
 import Tournament from './components/Tournament/Tournament';
+import CreateTournament from './components/Tournament/CreateTournament';
+import UpdateTournament from './components/Tournament/UpdateTournament';
 import NavBar from './components/NavBar/NavBar';
 import Error404 from './pages/Error404';
 import PrivateRoute from './components/PrivateRoute';
@@ -69,6 +71,22 @@ const AppRoutes: React.FC = () => {
                         ) : (
                             <Navigate to="/login" />
                         )
+                    }
+                />
+                <Route
+                    path="/tournaments/create-tournament"
+                    element={
+                        <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>
+                            <CreateTournament />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/tournaments/update-tournament"
+                    element={
+                        <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>
+                            <UpdateTournament />
+                        </PrivateRoute>
                     }
                 />
             </Routes>
