@@ -2,6 +2,7 @@ package csd.cuemaster.tournament;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -88,4 +89,17 @@ public class TournamentController {
         //     throw new TournamentNotFoundException(id);
         // }
     }
+
+    @PostMapping("/tournaments/{id}/join")
+    public ResponseEntity<Tournament> joinTournament(@PathVariable Long id, @RequestBody Long playerId) {
+        Tournament updatedTournament = tournamentService.joinTournament(id, playerId);
+        return ResponseEntity.ok(updatedTournament);
+    }
+
+    @PostMapping("/tournaments/{id}/leave")
+    public ResponseEntity<Tournament> leaveTournament(@PathVariable Long id, @RequestBody Long playerId) {
+        Tournament updatedTournament = tournamentService.leaveTournament(id, playerId);
+        return ResponseEntity.ok(updatedTournament);
+    }
+
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import API, { deleteTournament } from '../../services/api';
+import API, { deleteTournament, joinTournament, leaveTournament } from '../../services/api';
 import { Link } from 'react-router-dom';
-import { isAuthenticated, getUserRole } from '../authUtils';
+import { isAuthenticated, getUserRole, getUserIdFromToken } from '../authUtils';
 
 interface Tournament {
     id: number;
@@ -12,6 +12,8 @@ interface Tournament {
     location: string;
     status: string;
     description: string;
+    winnerId: number | null; // Assuming winnerId can be null
+    players: number[];       // Array of player IDs
 }
 
 const Tournaments: React.FC = () => {
@@ -20,22 +22,78 @@ const Tournaments: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const isUserAuthenticated = isAuthenticated();
     const userRole = getUserRole();
+    const playerId = getUserIdFromToken(); // Get the player ID from the token
+
+    const fetchTournaments = async () => {
+        try {
+            const response = await API.get<Tournament[]>('/tournaments');
+            setTournaments(response.data);
+        } catch (error) {
+            console.error('Error fetching tournaments', error);
+            setError('Failed to fetch tournaments. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchTournaments = async () => {
-            try {
-                const response = await API.get<Tournament[]>('/tournaments');
-                setTournaments(response.data);
-            } catch (error) {
-                console.error('Error fetching tournaments', error);
-                setError('Failed to fetch tournaments. Please try again later.');
-            } finally {
-                setLoading(false);
-            }
-        };
+        fetchTournaments(); // Call fetchTournaments when the component mounts
+    }, []);        
 
-        fetchTournaments();
-    }, []);    
+    const handleDelete = async (id: number) => {
+        if (window.confirm('Are you sure you want to delete this tournament?')) {
+            try {
+                await deleteTournament(id);
+                setTournaments(prevTournaments => prevTournaments.filter(tournament => tournament.id !== id));
+                console.log(`Tournament with id ${id} deleted from frontend state.`);
+                await fetchTournaments();
+            } catch (error) {
+                console.error('Error deleting tournament:', error);
+                setError('Failed to delete tournament. Please try again later.');
+            }
+        }
+    };
+
+    const handleJoin = async (id: number) => {
+        if (!playerId) {
+            console.error('Player ID is not available. Unable to join tournament.');
+            return;
+        }
+
+        try {
+            await joinTournament(id, playerId);
+            setTournaments(prevTournaments =>
+                prevTournaments.map(tournament =>
+                    tournament.id === id ? { ...tournament, players: [...tournament.players, playerId] } : tournament
+                )
+            );
+            console.log(`Player ${playerId} joined tournament ${id}.`);
+        } catch (error) {
+            console.error('Error joining tournament:', error);
+            setError('Failed to join tournament. Please try again later.');
+        }
+    };
+
+    const handleLeave = async (id: number) => {
+        if (!playerId) {
+            console.error('Player ID is not available. Unable to leave tournament.');
+            return;
+        }
+
+        try {
+            await leaveTournament(id, playerId);
+            setTournaments(prevTournaments =>
+                prevTournaments.map(tournament =>
+                    tournament.id === id ? { ...tournament, players: tournament.players.filter(player => player !== playerId) } : tournament
+                )
+            );
+            console.log(`Player ${playerId} left tournament ${id}.`);
+        } catch (error) {
+            console.error('Error leaving tournament:', error);
+            setError('Failed to leave tournament. Please try again later.');
+        }
+    };
+    
 
     if (loading) {
         return <div>Loading tournaments...</div>;
@@ -44,20 +102,6 @@ const Tournaments: React.FC = () => {
     if (error) {
         return <div>{error}</div>;
     }
-
-    const handleDelete = async (id: number) => {
-        if (window.confirm('Are you sure you want to delete this tournament?')) {
-            try {
-                await deleteTournament(id); // Ensure this function makes a DELETE request to the backend.
-                // Update state only after successful delete
-                setTournaments(prevTournaments => prevTournaments.filter(tournament => tournament.id !== id));
-                console.log(`Tournament with id ${id} deleted from frontend state.`); // Log for confirmation
-            } catch (error) {
-                console.error('Error deleting tournament:', error);
-                setError('Failed to delete tournament. Please try again later.');
-            }
-        }
-    };    
 
     return (
         <div style={styles.container}>
@@ -79,6 +123,25 @@ const Tournaments: React.FC = () => {
                         <p><strong>Location:</strong> {tournament.location}</p>
                         <p><strong>Status:</strong> {tournament.status}</p>
                         <p><strong>Description:</strong> {tournament.description}</p>
+                        <p><strong>WinnerID:</strong> {tournament.winnerId}</p>
+                        <p><strong>Players:</strong> {tournament.players.length > 0 ? tournament.players.join(', ') : 'No players'}</p>
+
+
+                        {/* Render Join button only for authenticated players not already in the tournament */}
+                        {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && !tournament.players.includes(playerId) && (
+                            <button onClick={() => handleJoin(tournament.id)} style={styles.joinButton}>
+                                Join
+                            </button>
+                        )}
+
+                        {/* Render Leave button only for authenticated players in the tournament */}
+                        {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && tournament.players.includes(playerId) && (
+                            <button onClick={() => handleLeave(tournament.id)} style={styles.leaveButton}>
+                                Leave
+                            </button>
+                        )}
+
+
 
                         {/* Render buttons only for authenticated organizers */}
                         {isUserAuthenticated && userRole === "ROLE_ORGANISER" && (
@@ -148,6 +211,24 @@ const styles = {
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',
+    },
+    joinButton: {
+        padding: '8px 12px',
+        backgroundColor: '#007bff',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        marginTop: '10px',
+    },
+    leaveButton: {
+        padding: '8px 12px',
+        backgroundColor: '#dc3545',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        marginTop: '10px',
     },
 };
 
