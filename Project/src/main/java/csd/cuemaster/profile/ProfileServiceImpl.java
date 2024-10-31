@@ -199,8 +199,8 @@ public class ProfileServiceImpl implements ProfileService{
         }
     }
 
-    // Calculate the new points of the players after a winner is declared.
-    public List<Profile> calculateNewPoints(Long match_id, Long winner_id) {
+    // Update player statistics after a winner is declared.
+    public List<Profile> updatePlayerStatistics(Long match_id, Long winner_id) {
         Match match = matches.findById(match_id).orElseThrow(()-> new MatchNotFoundException(match_id));
         Long user_id1 = match.getUser1().getId();
         Long user_id2 = match.getUser2().getId();
@@ -213,21 +213,32 @@ public class ProfileServiceImpl implements ProfileService{
         double expectedScoreA = calculateExpectedScore(match_id, user_id1);
         double expectedScoreB = calculateExpectedScore(match_id, user_id2);
 
-        // Set new points based on the winner.
-        int K_FACTOR = 32;
-        int WIN = 1;
-        int LOSE = 0;
+        // Update player statistics based on the winner.
+        final int K_FACTOR = 32;
+        final int WIN = 1;
+        final int LOSE = 0;
         if (winner_id == user_id1) {
+            // Set new points based on the winner.
             Integer newPointsA = (int) (originalPointsA + K_FACTOR * (WIN - expectedScoreA));
             Integer newPointsB = (int) (originalPointsB + K_FACTOR * (LOSE - expectedScoreB));
             players.get(0).setPoints(newPointsA);
             players.get(1).setPoints(newPointsB);
+
+            // Set match win count for the winner.
+            Integer matchWins = players.get(0).getMatchWinCount();
+            players.get(0).setMatchWinCount(matchWins + 1);
         } else if (winner_id == user_id2) {
+            // Set new points based on the winner.
             Integer newPointsA = (int) (originalPointsA + K_FACTOR * (LOSE - expectedScoreA));
             Integer newPointsB = (int) (originalPointsB + K_FACTOR * (WIN - expectedScoreB));
             players.get(0).setPoints(newPointsA);
             players.get(1).setPoints(newPointsB);
+
+            // Set match win count for the winner.
+            Integer matchWins = players.get(1).getMatchWinCount();
+            players.get(1).setMatchWinCount(matchWins + 1);
         }
+        profiles.saveAll(players);
         return players;
     }
 }

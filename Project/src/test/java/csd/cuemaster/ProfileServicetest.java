@@ -582,7 +582,7 @@ public class ProfileServicetest {
 
     // Test Case: Get the new points of the players after a match.
     @Test
-    void calculateNewPoints_PlayerAWins_ReturnList() {
+    void updatePlayerStatistics_PlayerAWins_ReturnList() {
         // Arrange
         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user1.setId(1L);
@@ -608,7 +608,7 @@ public class ProfileServicetest {
         when(users.findById(2L)).thenReturn(Optional.of(user2));
 
         // Act
-        List<Profile> updatedProfiles = profileService.calculateNewPoints(1L, 1L);
+        List<Profile> updatedProfiles = profileService.updatePlayerStatistics(1L, 1L);
 
         // Assert
         assertNotNull(updatedProfiles);
@@ -618,7 +618,7 @@ public class ProfileServicetest {
 
     // Test Case: Winner does not exist in a match.
     @Test
-    void calculateNewPoints_WinnerNotFound_ThrowIllegalArgumentException() {
+    void updatePlayerStatistics_WinnerNotFound_ThrowIllegalArgumentException() {
         // Arrange
         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user1.setId(1L);
@@ -641,7 +641,7 @@ public class ProfileServicetest {
 
         // Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            profileService.calculateNewPoints(1L, 3L);
+            profileService.updatePlayerStatistics(1L, 3L);
         });
 
         // Assert
