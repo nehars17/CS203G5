@@ -64,20 +64,20 @@ public class UserServiceImpl implements UserService {
 
 
 
-    public String googleLogin(String email, String role) {
+    public User googleLogin(String email, String role) {
         // Create the authority from the role string
-    
         User existingUser = users.findByUsername(email)
             .orElseGet(() -> {
+                if(role!=null){
                 User newUser = new User(email, encoder.encode("nopassword"), role, "google", true);
                 return users.save(newUser);
+                }
+                else{
+                    return null;
+                }
             });
-    
-        // Convert the user's roles to SimpleGrantedAuthority
-      
-    
-        // Now you can use the authorities as needed
-        return existingUser.getUsername();
+
+        return existingUser;
     }
     
 

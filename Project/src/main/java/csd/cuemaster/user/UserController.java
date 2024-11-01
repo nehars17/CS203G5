@@ -1,9 +1,15 @@
 package csd.cuemaster.user;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import csd.cuemaster.services.EmailService;
+import csd.cuemaster.services.JwtService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.ElementCollection;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+
 @RestController
 public class UserController {
     @Autowired
@@ -25,12 +34,30 @@ public class UserController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtService jwtService;
 
     @ElementCollection
     @GetMapping("/users")
     public List<User> getUsers() {
         return userService.listUsers();
     }
+
+    @GetMapping("/me")
+public ResponseEntity<Map<String, Object>> authenticatedUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (!(authentication.getPrincipal() instanceof User)) {
+        throw new UsernameNotFoundException("User not found");
+    }
+    User currentUser = (User) authentication.getPrincipal();
+    Map<String, Object> response = new HashMap<>();
+    response.put("username", currentUser.getUsername());
+    return ResponseEntity.ok(response);
+}
+
 
     /**
      * Using BCrypt encoder to encrypt the password for storage
@@ -40,11 +67,11 @@ public class UserController {
      */
 
     @PostMapping("/register")
-    public User addUser(@Valid @RequestBody User user,HttpServletRequest request) {
+    public User addUser(@Valid @RequestBody User user, HttpServletRequest request) {
         User savedUser = userService.addUser(user);
         if (savedUser == null) {
             throw new UserExistsException(user.getUsername());
-            
+
         }
         String activationLink = "http://localhost:8080/activate?token=" + savedUser.getActivationToken();
         try {
@@ -56,45 +83,50 @@ public class UserController {
 
     }
 
-
     @GetMapping("/activate")
     public String activateAccount(@RequestParam("token") String token) {
         String message = userService.accountActivation(token);
         return message; // Return a view to show the activation status
     }
 
-    @PostMapping("/normallogin")
-    public User retrieveUser(HttpSession session, @Valid @RequestBody User user) {
-        String existingSession = (String) session.getAttribute("currentUser");
-        if(existingSession!=null){
-            throw new UserSessionExistException("Please Logout First");
-        }
-        User LoggedInUser = userService.loginUser(user);
-        if (LoggedInUser==null) {
-            throw new UsernameNotFoundException("Username or Password Incorrect");
 
+    @PostMapping("/normallogin")
+    public ResponseEntity<Map<String, Object>> retrieveUser(HttpSession session, @Valid @RequestBody User user) {
+        User loggedInUser = userService.loginUser(user);
+        if (loggedInUser == null) {
+            throw new UsernameNotFoundException("Username or Password Incorrect");
         }
-        if(!LoggedInUser.isEnabled()){
+        if (!loggedInUser.isEnabled()) {
             throw new AccountActivationException("Please activate account first");
         }
-        if(LoggedInUser.getProvider().equals("google")){
-         
+        if (loggedInUser.getProvider().equals("google")) {
             throw new UsernameNotFoundException("Please login using Google");
         }
-   
-        session.setAttribute("currentUser", LoggedInUser.getUsername());
-        return LoggedInUser;
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    loggedInUser.getUsername(),
+                    user.getPassword()));
+        String role = loggedInUser.getAuthorities().isEmpty() ? null : loggedInUser.getAuthorities().iterator().next().getAuthority();
+        String jwtToken = jwtService.generateToken(loggedInUser,loggedInUser.getId(),role);
+        System.out.println(jwtToken);
+        // Prepare the response map
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", loggedInUser);
+        response.put("token", jwtToken);
+        response.put("role", role);
 
-       
+
+        return ResponseEntity.ok(response);
     }
-    @GetMapping("/logout")
-    public ResponseEntity<?> logout(HttpSession session) {
-        // Invalidate the session to log the user out
-        session.setAttribute("currentUser", null);
-        return ResponseEntity.ok().build();
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpSession session) {
+        session.invalidate(); // Invalidate the session
+        return ResponseEntity.ok("Logged out successfully!");
     }
+
     @DeleteMapping("/user/{user_id}/account")
-    public void deleteAccount(@PathVariable (value = "user_id") Long user_id){
+    public void deleteAccount(@PathVariable(value = "user_id") Long user_id) {
         userService.deleteUser(user_id);
     }
 

@@ -1,0 +1,37 @@
+{"properties": [
+  {
+    "name": "spring.session.store-type",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.session.store-type'"
+  },
+  {
+    "name": "spring.session.store-type",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.session.store-type'"
+  },
+  {
+    "name": "security.jwt.secret-key",
+    "type": "java.lang.String",
+    "description": "A description for 'security.jwt.secret-key'"
+  },
+  {
+    "name": "security.jwt.expiration-time",
+    "type": "java.lang.String",
+    "description": "A description for 'security.jwt.expiration-time'"
+  },
+  {
+    "name": "security.jwt.expiration-time",
+    "type": "java.lang.String",
+    "description": "A description for 'security.jwt.expiration-time'"
+  },
+  {
+    "name": "google.client-id",
+    "type": "java.lang.String",
+    "description": "A description for 'google.client-id'"
+  },
+  {
+    "name": "google.client-secret",
+    "type": "java.lang.String",
+    "description": "A description for 'google.client-secret'"
+  }
+]}
