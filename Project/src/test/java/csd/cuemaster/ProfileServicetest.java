@@ -590,12 +590,14 @@ public class ProfileServicetest {
         profile1.setId(1L);
         user1.setProfile(profile1);
         profile1.setPoints(1200);
+        profile1.setMatchWinCount(0);
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
         profile2.setId(2L);
         user2.setProfile(profile2);
         profile2.setPoints(2300);
+        profile2.setMatchWinCount(0);
 
         Match match = new Match();
         match.setId(1L);
@@ -614,6 +616,8 @@ public class ProfileServicetest {
         assertNotNull(updatedProfiles);
         assertEquals(1231, updatedProfiles.get(0).getPoints());
         assertEquals(2268, updatedProfiles.get(1).getPoints());
+        assertEquals(1, updatedProfiles.get(0).getMatchWinCount());
+        assertEquals(0, updatedProfiles.get(1).getMatchWinCount());
     }
 
     // Test Case: Winner does not exist in a match.
