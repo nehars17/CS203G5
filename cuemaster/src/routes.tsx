@@ -13,6 +13,7 @@ import Error404 from './pages/Error404';
 
 import Home from './components/Home/Home';
 import About from './pages/About';
+import ProfileDashboard from './components/Profile/ProfileDashboard';
 
 
 
@@ -27,7 +28,7 @@ const AppRoutes: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/playerRegistration" element={<RegisterPlayer />} />
                 <Route path="/organiserRegistration" element={<RegisterOrganiser />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/profiles" element={<ProfileDashboard />} />
                 <Route path="/matches" element={<Matches />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/tournaments" element={<Tournament />} />  {/* Add the route here */}

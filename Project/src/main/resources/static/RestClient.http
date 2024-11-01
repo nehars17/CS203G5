@@ -16,9 +16,19 @@ POST http://localhost:8080/register
 Content-Type: application/json
 
 {
-    "username": "ssam57@myyahoo.com",
+    "username": "bryanng435@gmail.com",
     "password": "goodpassword",
     "authorities":"ROLE_PLAYER"
+}
+
+###
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+    "username": "bryanng0906@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_ORGANIZER"
 }
 
 ###
@@ -64,7 +74,7 @@ GET http://localhost:8080/user/2/profile/1
 Content-Type: application/json
 
 ### (ORG PROFILE)
-POST http://localhost:8080/user/1/profile
+POST http://localhost:8080/user/3/profile
 Content-Type: application/json
 Authorization: Basic org@gmail.com goodpassword
 
@@ -77,7 +87,7 @@ Authorization: Basic org@gmail.com goodpassword
 }
 
 ### (PLAYER PROFILE 1 )
-POST http://localhost:8080/user/2/profile
+POST http://localhost:8080/user/4/profile
 Content-Type: application/json
 Authorization: Basic org@gmail.com goodpassword
 

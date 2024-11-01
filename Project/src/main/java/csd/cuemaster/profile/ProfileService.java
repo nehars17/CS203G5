@@ -12,6 +12,7 @@ public interface ProfileService {
     Profile updateProfile(Long userId, Profile newProfileInfo);
     Profile addProfile(User user, Profile profile,MultipartFile image);
     List<Profile> getPlayers();
+    List<Profile> getOrganisers();
     List<Profile> sort();
     Profile pointsSet(Long user_id, Integer points);
     // void updateRank(List<Profile> sortedplayers);

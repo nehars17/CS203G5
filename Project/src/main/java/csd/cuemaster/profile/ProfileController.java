@@ -2,10 +2,13 @@ package csd.cuemaster.profile;
 
 import java.util.List;
 
+
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,58 +19,72 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
 
 import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
+import csd.cuemaster.imageservice.ImageService;
 import csd.cuemaster.user.User;
 
 @RestController
 @MultipartConfig
 public class ProfileController {
-    private ProfileService profileService; 
+    private ProfileService profileService;
     private UserRepository users;
-    private ProfileRepository profiles; 
+    private ProfileRepository profiles;
 
-    public ProfileController (ProfileService profileService, UserRepository users, ProfileRepository profiles){
+    @Autowired
+    private ImageService imageService;
+
+    public ProfileController(ProfileService profileService, UserRepository users, ProfileRepository profiles) {
         this.profileService = profileService;
         this.users = users;
-        this.profiles = profiles; 
+        this.profiles = profiles;
     }
 
+    // @GetMapping("/profilePhotos/{filename:.+}")
+    // public ResponseEntity<Resource> getImage(@PathVariable String filename) {
+    //     return imageService.getImage(filename);
+    // }
+
     @GetMapping("/profiles")
-    public List<Profile> getAllProfiles() {
+    public List<Profile> getAllProfiles(@RequestParam(required = false) String role) {
+        if (role != null && role.equals("Player")) {
+            System.out.println("player");
+            return profileService.getPlayers();
+        } else if (role != null && role.equals("Organizer")) {
+            System.out.println("organizer");
+            return profileService.getOrganisers();
+        }
         return profileService.getAllProfile();
     }
 
     @GetMapping("/user/{user_id}/profile/{profile_id}")
-    public Profile getUserProfile(@PathVariable (value = "user_id") Long user_id,@PathVariable Long profile_id) {
-        return profileService.getProfile(user_id,profile_id);
+    public Profile getUserProfile(@PathVariable(value = "user_id") Long user_id, @PathVariable Long profile_id) {
+        return profileService.getProfile(user_id, profile_id);
     }
-    
+
     @PutMapping("/user/{user_id}/profile/edit")
-    public Profile putExistingProfile(@PathVariable (value = "user_id") Long user_id, @Valid @RequestBody Profile newProfileInfo) { 
+    public Profile putExistingProfile(@PathVariable(value = "user_id") Long user_id,
+            @Valid @RequestBody Profile newProfileInfo) {
         return profileService.updateProfile(user_id, newProfileInfo);
     }
 
-   
     @PostMapping("user/{user_id}/profile")
     @ResponseStatus(HttpStatus.CREATED)
-    public Profile postProfile(@PathVariable (value = "user_id") Long user_id,@RequestPart("profile") @Valid  Profile profile, @RequestPart("profilePhoto") MultipartFile profilePhoto){
+    public Profile postProfile(@PathVariable(value = "user_id") Long user_id,
+            @RequestPart("profile") @Valid Profile profile, @RequestPart("profilePhoto") MultipartFile profilePhoto) {
 
         User user = users.findById(user_id).orElseThrow(() -> new UserNotFoundException(user_id));
 
-        if(profiles.findByUserId(user_id).isPresent()){
-            
+        if (profiles.findByUserId(user_id).isPresent()) {
+
             throw new ProfileAlreadyExistsException(user_id);
         }
 
         return profileService.addProfile(user, profile, profilePhoto);
     }
 
-    // @PostMapping("users/{user_id}/profile/profilephoto")
-    // public String postMethodName(@PathVariable (value = "user_id") Long user_id,  @RequestBody byte[] imageData) {
-    //     return profileService.addProfilePhoto(user_id,imageData);
-    // }
 
     // Returns a sorted list of players.
     @GetMapping("/leaderboard")
@@ -79,7 +96,7 @@ public class ProfileController {
 
     // Changes a player's points.
     @PutMapping("/changepoints/{user_id}")
-    public Profile changePoints(@PathVariable (value = "user_id") Long user_id, @RequestBody Profile profile) {
+    public Profile changePoints(@PathVariable(value = "user_id") Long user_id, @RequestBody Profile profile) {
         Integer newpoints = profile.getPoints();
         return profileService.pointsSet(user_id, newpoints);
     }

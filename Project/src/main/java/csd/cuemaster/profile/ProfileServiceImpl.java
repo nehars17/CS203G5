@@ -13,12 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import csd.cuemaster.imageservice.ImageService;
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
+
+    @Autowired
+    private ImageService imageService;
     
     @Autowired
     private ProfileRepository profiles;
@@ -56,7 +60,7 @@ public class ProfileServiceImpl implements ProfileService{
             profile.setBirthlocation(newProfileInfo.getBirthlocation());
 
             boolean isOrganizer = user.getAuthorities().stream()
-                                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANIZER"));  //getAuthorities return a Collections
+                                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANISER"));  //getAuthorities return a Collections
             if (isOrganizer){
                 if (newProfileInfo.getOrganization() == null || newProfileInfo.getOrganization().isEmpty()){
                     throw new OrganizationCannotBeNullException();
@@ -80,7 +84,7 @@ public class ProfileServiceImpl implements ProfileService{
 
         if(profilephoto != null && !profilephoto.isEmpty()){
 
-            String photoPath = saveImageAndFilename(user.getId(), profilephoto);
+            String photoPath = imageService.saveImage(user.getId(), profilephoto);
             profile.setProfilephotopath(photoPath);
         }else {
             throw new ProfilePhotoRequiredException();
@@ -110,32 +114,6 @@ public class ProfileServiceImpl implements ProfileService{
         return profiles.save(profile);
     }
 
-    public String saveImageAndFilename(Long userId, MultipartFile image){
-
-        Path directoryPath = Paths.get("C:\\CS203G5\\Project\\profilePhoto");                                                    //The application will look for the folder where the project is run, so everyone can run w/o changing the path
-        System.out.println("Current working directory: " + Paths.get("").toAbsolutePath());
-        try{
-
-            if (Files.notExists(directoryPath)){
-                Files.createDirectories(directoryPath);
-            }
-
-            String filename = "ProfilePhoto_" + userId + ".jpg"; // Consistent filename
-            Path filePath = directoryPath.resolve(filename); // Full path to save the image
-    
-            // Transfer the file to the path, overwriting any existing file
-            image.transferTo(filePath.toFile()); // This will overwrite if the file exists
-    
-            System.out.println("Photo saved successfully: " + filePath);
-
-            return filePath.toString();
-        }catch (IOException e){
-            e.printStackTrace();
-            throw new RuntimeException("Failed to save profile photo", e);
-        }
-    }
-
-
 
 
 
@@ -154,6 +132,21 @@ public class ProfileServiceImpl implements ProfileService{
             User user = profile.getUser();
             return user != null && user.getAuthorities().stream()
                     .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"));
+        })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Profile> getOrganisers() {
+        List<Profile> profileList = profiles.findAll();
+        if (profileList == null || profileList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return profileList.stream()
+        .filter(profile -> {
+            User user = profile.getUser();
+            return user != null && user.getAuthorities().stream()
+                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ORGANISER"));
         })
                 .collect(Collectors.toList());
     }
