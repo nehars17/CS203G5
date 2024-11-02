@@ -21,9 +21,11 @@ public class CueMasterApplication {
         if (!users.findByUsername(adminEmail).isPresent()) {
             User user = new User("admin@gmail.com", encoder.encode("goodpassword"), "ROLE_ADMIN", "normal", true);
             User user2 = new User("org@gmail.com", encoder.encode("goodpassword"), "ROLE_ORGANISER", "normal", true);
+            User user3 = new User("nehars.rs@gmail.com", encoder.encode("goodpassword"), "ROLE_PLAYER", "normal", true);
 
             users.save(user);
             users.save(user2);
+            users.save(user3);
             System.out.println("[Add user]: " + user.getUsername());
         } else {
             System.out.println("[User exists]: " + adminEmail);

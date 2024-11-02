@@ -1,9 +1,10 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { isAuthenticated } from '../authUtils'; // Import your authentication check function
+import { isAuthenticated, getUserRole } from '../authUtils'; // Import your authentication check function
 
 const NavBar: React.FC = () => {
     const isUserAuthenticated = isAuthenticated();
+    const userRole = getUserRole();
 
     return (
         <Navbar bg="light" expand="lg">
@@ -15,18 +16,32 @@ const NavBar: React.FC = () => {
                         {isUserAuthenticated ? (
                             // Links for authenticated users
                             <>
-                                <Nav.Link href="/home">Home</Nav.Link>
-                                <Nav.Link href="/playerProfile">Profile</Nav.Link>
+                                {userRole === "ROLE_ADMIN" && (
+                                    <Nav.Link href="/adminDashboard">Admin Dashboard</Nav.Link>
+                                )}
+                                {userRole === "ROLE_PLAYER" && (
+                                    <>  <Nav.Link href="/home">Home</Nav.Link>
+
+                                        <Nav.Link href="/playerProfile">Profile</Nav.Link>
+                                        {/* <Nav.Link href="/playerDashboard">Player Dashboard</Nav.Link> */}
+                                    </>
+                                )}
+                                {userRole === "ROLE_ORGANISER" && (
+                                    <>
+                                        <Nav.Link href="/home">Home</Nav.Link>
+                                        <Nav.Link href="/organiserProfile">Profile</Nav.Link>
+                                        {/* <Nav.Link href="/organiserDashboard">Organiser Dashboard</Nav.Link> */}
+                                    </>
+                                )}
                             </>
                         ) : (
                             // Links for non-authenticated users
                             <>
                                 <Nav.Link href="/">Home</Nav.Link>
                                 <Nav.Link href="/tournaments">Tournaments</Nav.Link>
-                                <Nav.Link href="/leaderboard">leaderboard</Nav.Link>
+                                <Nav.Link href="/leaderboard">Leaderboard</Nav.Link>
                                 <Nav.Link href="/playerRegistration">Player Registration</Nav.Link>
                                 <Nav.Link href="/organiserRegistration">Organiser Registration</Nav.Link>
-
                                 <Nav.Link href="/login">Login</Nav.Link>
                             </>
                         )}

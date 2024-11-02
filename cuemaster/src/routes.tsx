@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/User/Login';
 import RegisterPlayer from './components/User/RegisterPlayer';
 import RegisterOrganiser from './components/User/RegisterOrganiser';
+import EmailAuthForm from './components/User/EmailAuthForm';
+
 import Profile from './components/Profile/Profile';
 import Matches from './components/Matches/Matches';
 import Leaderboard from './components/Leaderboard/Leaderboard';
@@ -32,6 +34,8 @@ const AppRoutes: React.FC = () => {
                 <Route path="/tournaments" element={<Tournament />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/matches" element={<Matches />} />
+                <Route path="/emailauth" element={<EmailAuthForm />} />
+
                 <Route path="*" element={<Error404 />} />
              
 

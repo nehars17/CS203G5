@@ -29,17 +29,8 @@ const Login: React.FC = () => {
       }
 
       const data = await res.json();
-      localStorage.setItem('token', data.token); // Store token
-
-      // Navigate based on role
-      if (data.role === 'ROLE_PLAYER') {
-        
-        navigate('/playerProfile');
-      } else if (data.role === 'ROLE_ORGANISER') {
-        navigate('/organiserProfile');
-      } else {
-        navigate('/adminDashboard');
-      }
+      navigate('/emailauth', { state: { data } });
+      
     } catch (error) {
       console.error('Login failed:', error);
       setError('Login failed, please check your credentials and try again.'); // Set error message

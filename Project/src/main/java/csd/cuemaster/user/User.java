@@ -33,7 +33,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name="[User]")
-@Getter
+@Getter 
 @Setter
 @ToString
 @AllArgsConstructor
@@ -68,6 +68,9 @@ public class User implements UserDetails {
 
     @JsonIgnore
     private String activationToken;
+
+    @JsonIgnore
+    private String AuthCode;
 
 
     @JsonIgnore

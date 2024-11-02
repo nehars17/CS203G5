@@ -25,4 +25,16 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public void send2FAEmail(String recipientEmail, String code) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        
+        helper.setTo(recipientEmail);
+        helper.setSubject("Account Activation");
+        helper.setText("<p>Here is your 2FA Code :</p>"
+                + code, true);
+
+        mailSender.send(message);
+    }
 }

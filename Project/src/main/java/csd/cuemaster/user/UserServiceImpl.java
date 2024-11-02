@@ -1,6 +1,7 @@
 package csd.cuemaster.user;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,6 +24,13 @@ public class UserServiceImpl implements UserService {
         return UUID.randomUUID().toString(); // You can store this in the database with a timestamp
     }
 
+    public String generate2FACode() {
+        Random rand = new Random();
+        int code = rand.nextInt(900000) + 100000;
+        System.out.println(code);
+        return String.valueOf(code);
+    }
+
     @Override
     public List<User> listUsers() {
         return users.findAll();
@@ -39,7 +47,11 @@ public class UserServiceImpl implements UserService {
         User foundUser = users.findByUsername(user.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if (encoder.matches(user.getPassword(), foundUser.getPassword())) {
+            String code = generate2FACode();
+            foundUser.setAuthCode(code);
+            users.save(foundUser);
             return foundUser;
+            
         } else {
             return null; // Incorrect password
         }
@@ -62,24 +74,37 @@ public class UserServiceImpl implements UserService {
         return users.save(user);
     }
 
-
-
     public User googleLogin(String email, String role) {
         // Create the authority from the role string
         User existingUser = users.findByUsername(email)
-            .orElseGet(() -> {
-                if(role!=null){
-                User newUser = new User(email, encoder.encode("nopassword"), role, "google", true);
-                return users.save(newUser);
-                }
-                else{
-                    return null;
-                }
-            });
+                .orElseGet(() -> {
+                    if (role != null) {
+                        User newUser = new User(email, encoder.encode("nopassword"), role, "google", true);
+                        return users.save(newUser);
+                    } else {
+                        return null;
+                    }
+                });
 
         return existingUser;
     }
-    
+
+    @Override
+    public boolean EmailAuth(String username, String code) {
+        User foundUser = users.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        System.out.println(foundUser.getAuthCode());
+        if(foundUser.getAuthCode()==null){
+            return true;
+        }
+        if (foundUser.getAuthCode().equals(code)) {
+            foundUser.setAuthCode(null);
+            users.save(foundUser);
+            return true;
+        }
+        return false;
+
+    }
 
     @Override
     public String accountActivation(String token) {
@@ -104,8 +129,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long userId) {
-        User user = users.findById(userId)           
-                        .orElseThrow(() -> new UserNotFoundException(userId));
+        User user = users.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
         users.delete(user);
     }
 

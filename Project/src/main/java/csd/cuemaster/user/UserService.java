@@ -12,6 +12,8 @@ public interface UserService {
     public User loginUser(User user);
     public User googleLogin(String email, String role);
     public String accountActivation(String token);
+    public boolean EmailAuth(String username,String code);
+
 
     /**
      * Change method's signature: do not return a value for delete operation

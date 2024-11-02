@@ -1,10 +1,12 @@
 package csd.cuemaster.user;
 
+import java.security.cert.LDAPCertStoreParameters;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import csd.cuemaster.services.EmailService;
 import csd.cuemaster.services.JwtService;
@@ -47,17 +51,16 @@ public class UserController {
     }
 
     @GetMapping("/me")
-public ResponseEntity<Map<String, Object>> authenticatedUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (!(authentication.getPrincipal() instanceof User)) {
-        throw new UsernameNotFoundException("User not found");
+    public ResponseEntity<Map<String, Object>> authenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication.getPrincipal() instanceof User)) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        User currentUser = (User) authentication.getPrincipal();
+        Map<String, Object> response = new HashMap<>();
+        response.put("username", currentUser.getUsername());
+        return ResponseEntity.ok(response);
     }
-    User currentUser = (User) authentication.getPrincipal();
-    Map<String, Object> response = new HashMap<>();
-    response.put("username", currentUser.getUsername());
-    return ResponseEntity.ok(response);
-}
-
 
     /**
      * Using BCrypt encoder to encrypt the password for storage
@@ -89,7 +92,6 @@ public ResponseEntity<Map<String, Object>> authenticatedUser() {
         return message; // Return a view to show the activation status
     }
 
-
     @PostMapping("/normallogin")
     public ResponseEntity<Map<String, Object>> retrieveUser(HttpSession session, @Valid @RequestBody User user) {
         User loggedInUser = userService.loginUser(user);
@@ -102,22 +104,59 @@ public ResponseEntity<Map<String, Object>> authenticatedUser() {
         if (loggedInUser.getProvider().equals("google")) {
             throw new UsernameNotFoundException("Please login using Google");
         }
+
+        try {
+            emailService.send2FAEmail(loggedInUser.getUsername(), loggedInUser.getAuthCode());
+        } catch (MessagingException e) {
+            throw new AccountActivationException("unable to send email");
+        }
+
+        String role = loggedInUser.getAuthorities().iterator().next().getAuthority();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", loggedInUser);
+        response.put("role", role);
+        return ResponseEntity.ok(response);
+
+    }
+
+   @PostMapping("/verify-code")
+    public ResponseEntity<Map<String, Object>> verifyCode(@Valid @RequestBody Map<String, Object> payload) {
+    // Extract user object and code from payload
+    System.out.println(payload.get("user"));
+    User loggedInUser = new ObjectMapper().convertValue(payload.get("user"), User.class);
+    String code = (String) payload.get("code");
+    String role = (String) payload.get("role");
+    System.out.println(loggedInUser.getId());
+    boolean isValid = userService.EmailAuth(loggedInUser.getUsername(), code);
+    if (isValid) {
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                    loggedInUser.getUsername(),
-                    user.getPassword()));
-        String role = loggedInUser.getAuthorities().isEmpty() ? null : loggedInUser.getAuthorities().iterator().next().getAuthority();
-        String jwtToken = jwtService.generateToken(loggedInUser,loggedInUser.getId(),role);
+                        loggedInUser.getUsername(),
+                        "goodpassword"
+                )
+        );
+
+        // String role = loggedInUser.getAuthorities().iterator().next().getAuthority();
+
+        String jwtToken = jwtService.generateToken(loggedInUser, loggedInUser.getId(), role);
         System.out.println(jwtToken);
-        // Prepare the response map
         Map<String, Object> response = new HashMap<>();
         response.put("user", loggedInUser);
         response.put("token", jwtToken);
         response.put("role", role);
 
-
         return ResponseEntity.ok(response);
+    } 
+    else {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Invalid code, please try again.");
+        System.out.println("IM CALLED");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
+}
+
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {

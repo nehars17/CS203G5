@@ -70,6 +70,7 @@ public class SecurityConfig {
                         "/tournaments", "/leaderboard", "/me").permitAll()
                 .requestMatchers(HttpMethod.GET, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
+                .requestMatchers(HttpMethod.POST, "/verify-code").permitAll()
                 .requestMatchers(HttpMethod.POST, "/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
