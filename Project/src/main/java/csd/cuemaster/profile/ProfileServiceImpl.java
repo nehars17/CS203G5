@@ -14,6 +14,9 @@ import csd.cuemaster.user.UserRepository;
 import csd.cuemaster.match.Match;
 import csd.cuemaster.match.MatchNotFoundException;
 import csd.cuemaster.match.MatchRepository;
+import csd.cuemaster.tournament.Tournament;
+import csd.cuemaster.tournament.TournamentNotFoundException;
+import csd.cuemaster.tournament.TournamentRepository;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
@@ -24,6 +27,8 @@ public class ProfileServiceImpl implements ProfileService{
     private UserRepository users;
     @Autowired
     private MatchRepository matches;
+    @Autowired
+    private TournamentRepository tournaments;
 
     @Override 
     public List<Profile> getAllProfile(){
@@ -240,5 +245,20 @@ public class ProfileServiceImpl implements ProfileService{
         }
         profiles.saveAll(players);
         return players;
+    }
+
+    // Retrieves player profiles from a given tournament.
+    public List<Profile> getProfilesFromTournaments(Long tournament_id) {
+        Tournament tournament = tournaments.findById(tournament_id).orElseThrow(()-> new TournamentNotFoundException(tournament_id));
+        List<Profile> retrieved = new ArrayList<>();
+        List<Long> players = tournament.getPlayers();
+        for (Long player : players) {
+            User user = users.findById(player).orElseThrow(()-> new UserNotFoundException(player));
+            Profile profile = user.getProfile();
+            if (profile != null) {
+                retrieved.add(profile);
+            }
+        }
+        return retrieved;
     }
 }

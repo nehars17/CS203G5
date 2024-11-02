@@ -16,4 +16,5 @@ public interface ProfileService {
     List<Profile> getProfilesFromMatches(Long match_id);
     double calculateExpectedScore(Long match_id, Long user_id);
     List<Profile> updatePlayerStatistics(Long match_id, Long winner_id);
+    List<Profile> getProfilesFromTournaments(Long tournament_id);
 }

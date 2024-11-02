@@ -25,12 +25,16 @@ import csd.cuemaster.profile.ProfileIdNotFoundException;
 import csd.cuemaster.profile.ProfileRepository;
 import csd.cuemaster.profile.ProfileServiceImpl;
 import csd.cuemaster.profile.UserProfileNotFoundException;
+import csd.cuemaster.tournament.TournamentNotFoundException;
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
 import csd.cuemaster.match.Match;
 import csd.cuemaster.match.MatchNotFoundException;
 import csd.cuemaster.match.MatchRepository;
+import csd.cuemaster.tournament.Tournament;
+import csd.cuemaster.tournament.TournamentNotFoundException;
+import csd.cuemaster.tournament.TournamentRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class ProfileServicetest {
@@ -41,6 +45,8 @@ public class ProfileServicetest {
     private UserRepository users;
     @Mock
     private MatchRepository matches;
+    @Mock
+    private TournamentRepository tournaments;
 
     @InjectMocks
     private ProfileServiceImpl profileService;
@@ -426,15 +432,15 @@ public class ProfileServicetest {
     @Test
     void getProfilesFromMatches_OnePlayerProfile_ReturnList() {
         // Arrange
-        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
-        user1.setId(1L);
-        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
-        profile1.setId(1L);
-        user1.setProfile(profile1);
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
+        profile.setId(1L);
+        user.setProfile(profile);
 
         Match match = new Match();
         match.setId(1L);
-        match.setUser1(user1);
+        match.setUser1(user);
 
         // Mock
         when(matches.findById(1L)).thenReturn(Optional.of(match));
@@ -513,7 +519,7 @@ public class ProfileServicetest {
 
         // Assert
         assertNotNull(score);
-        assertEquals(0.00177, score);
+        assertEquals(0.0017751227458097578, score);
     }
 
     // Test Case: Not enough players in a match.
@@ -650,5 +656,100 @@ public class ProfileServicetest {
 
         // Assert
         assertEquals("Player 3 is not in the match.", exception.getMessage());
+    }
+
+    // Test Case: Get two player profiles from a tournament.
+    @Test
+    void getProfilesFromTournaments_TwoPlayerProfiles_ReturnList() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+        tournament.getPlayers().add(1L);
+        tournament.getPlayers().add(2L);
+
+        // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user1));
+        when(users.findById(2L)).thenReturn(Optional.of(user2));
+        when(tournaments.findById(1L)).thenReturn(Optional.of(tournament));
+
+        // Act
+        List<Profile> retrievedProfiles = profileService.getProfilesFromTournaments(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertFalse(retrievedProfiles.isEmpty());
+        assertEquals(2, retrievedProfiles.size());
+    }
+
+    // Test Case: Get one player profile from a tournament.
+    @Test
+    void getProfilesFromTournaments_OnePlayerProfile_ReturnList() {
+        // Arrange
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
+        profile.setId(1L);
+        user.setProfile(profile);
+
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+        tournament.getPlayers().add(1L);
+
+        // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
+        when(tournaments.findById(1L)).thenReturn(Optional.of(tournament));
+
+        // Act
+        List<Profile> retrievedProfiles = profileService.getProfilesFromTournaments(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertFalse(retrievedProfiles.isEmpty());
+        assertEquals(1, retrievedProfiles.size());
+    }
+
+    // Test Case: No player profiles.
+    @Test
+    void getProfilesFromTournaments_ZeroPlayerProfiles_ReturnEmptyList() {
+        // Arrange
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+
+        // Mock
+        when(tournaments.findById(1L)).thenReturn(Optional.of(tournament));
+
+        // Act
+        List<Profile> retrievedProfiles = profileService.getProfilesFromTournaments(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertTrue(retrievedProfiles.isEmpty());
+    }
+
+    // Test Case: Tournament does not exist.
+    @Test
+    void getProfilesFromTournaments_TournamentDoesNotExist_ThrowTournamentNotFoundException() {
+        // Arrange (Nothing to arrange.)
+
+        // Mock (Nothing to mock.)
+
+        // Act
+        TournamentNotFoundException exception = assertThrows(TournamentNotFoundException.class, () -> {
+            profileService.getProfilesFromTournaments(1L);
+        });
+
+        // Assert
+        assertEquals("Could not find tournament 1", exception.getMessage());
     }
 }
