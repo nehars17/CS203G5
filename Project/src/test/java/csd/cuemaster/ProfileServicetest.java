@@ -396,6 +396,104 @@ public class ProfileServicetest {
         assertTrue(leaderboard.isEmpty());
     }
 
+    // Test Case: Set player ranks based on points.
+    @Test
+    void setRank_SetPlayerRanks_ReturnRankMap() {
+        // Arrange
+        List<Profile> leaderboard = new ArrayList<>();
+
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        profile1.setPoints(1200);
+        user1.setProfile(profile1);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        profile2.setPoints(2300);
+        user2.setProfile(profile2);
+
+        leaderboard.add(profile1);
+        leaderboard.add(profile2);
+
+        // Mock
+        when(profiles.findAll()).thenReturn(leaderboard);
+
+        // Act
+        Map<Long, Integer> rankMap = profileService.setRank();
+
+        // Assert
+        assertNotNull(rankMap);
+        assertFalse(rankMap.isEmpty());
+        assertEquals(2, rankMap.get(1L));
+        assertEquals(1, rankMap.get(2L));
+    }
+
+    // Test Case: Players with same points.
+    @Test
+    void setRank_SamePoints_ReturnRankMap() {
+        // Arrange
+        List<Profile> leaderboard = new ArrayList<>();
+
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        profile1.setPoints(1200);
+        user1.setProfile(profile1);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        profile2.setPoints(2300);
+        user2.setProfile(profile2);
+
+        User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user3.setId(3L);
+        Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", user3);
+        profile3.setId(3L);
+        profile3.setPoints(2300);
+        user3.setProfile(profile3);
+
+        leaderboard.add(profile1);
+        leaderboard.add(profile2);
+        leaderboard.add(profile3);
+
+        // Mock
+        when(profiles.findAll()).thenReturn(leaderboard);
+
+        // Act
+        Map<Long, Integer> rankMap = profileService.setRank();
+
+        // Assert
+        assertNotNull(rankMap);
+        assertFalse(rankMap.isEmpty());
+        assertEquals(3, rankMap.get(1L));
+        assertEquals(1, rankMap.get(2L));
+        assertEquals(1, rankMap.get(3L));
+    }
+
+    // Test Case: No players.
+    @Test
+    void setRank_NoPlayers_ReturnEmptyMap() {
+        // Arrange
+        List<Profile> leaderboard = new ArrayList<>();
+
+        // Mock
+        when(profiles.findAll()).thenReturn(leaderboard);
+
+        // Act
+        Map<Long, Integer> rankMap = profileService.setRank();
+
+        // Assert
+        assertNotNull(rankMap);
+        assertTrue(rankMap.isEmpty());
+    }
+
     // Test Case: Get two player profiles from a match.
     @Test
     void getProfilesFromMatches_TwoPlayerProfiles_ReturnList() {
@@ -405,6 +503,7 @@ public class ProfileServicetest {
         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
         profile1.setId(1L);
         user1.setProfile(profile1);
+
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
@@ -498,6 +597,7 @@ public class ProfileServicetest {
         profile1.setId(1L);
         user1.setProfile(profile1);
         profile1.setPoints(1200);
+
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
@@ -557,11 +657,13 @@ public class ProfileServicetest {
         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
         profile1.setId(1L);
         user1.setProfile(profile1);
+
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
         profile2.setId(2L);
         user2.setProfile(profile2);
+
         User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user3.setId(3L);
         Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", user3);
@@ -597,6 +699,7 @@ public class ProfileServicetest {
         user1.setProfile(profile1);
         profile1.setPoints(1200);
         profile1.setMatchWinCount(0);
+
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
@@ -635,6 +738,7 @@ public class ProfileServicetest {
         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
         profile1.setId(1L);
         user1.setProfile(profile1);
+
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
@@ -667,6 +771,7 @@ public class ProfileServicetest {
         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
         profile1.setId(1L);
         user1.setProfile(profile1);
+
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);

@@ -67,7 +67,6 @@ public class ProfileController {
     @GetMapping("/leaderboard")
     public List<Profile> getLeaderboard() {
         List<Profile> sortedProfileList = profileService.sort();
-        // profileService.updateRank();
         return sortedProfileList;
     }
 

@@ -1,6 +1,8 @@
 package csd.cuemaster.profile;
 
 import java.util.List;
+import java.util.Map;
+
 import csd.cuemaster.user.*;
 
 public interface ProfileService {
@@ -11,8 +13,8 @@ public interface ProfileService {
     // String addProfilePhoto(Long userID, byte[] image);
     List<Profile> getPlayers();
     List<Profile> sort();
+    Map<Long, Integer> setRank();
     Profile pointsSet(Long user_id, Integer points);
-    // void updateRank();
     List<Profile> getProfilesFromMatches(Long match_id);
     double calculateExpectedScore(Long match_id, Long user_id);
     List<Profile> updatePlayerStatistics(Long match_id, Long winner_id);

@@ -2,6 +2,8 @@ package csd.cuemaster.profile;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,7 +121,7 @@ public class ProfileServiceImpl implements ProfileService{
     public List<Profile> getPlayers() {
         List<Profile> profileList = profiles.findAll();
         if (profileList == null || profileList.isEmpty()) {
-            return new ArrayList<Profile>();
+            return profileList;
         }
         return profileList.stream()
                 .filter(profile -> {
@@ -138,6 +140,35 @@ public class ProfileServiceImpl implements ProfileService{
         return profileList;
     }
 
+    // Sets all players ranks based on the sorted points.
+    @Override
+    public Map<Long, Integer> setRank() {
+        List<Profile> sortedPlayers = sort();
+        Map<Long, Integer> rankMap = new HashMap<>();
+        if (sortedPlayers == null || sortedPlayers.isEmpty()) {
+            return rankMap;
+        }
+        int currentRank = 1;
+        Profile currentPlayer = sortedPlayers.get(0);
+        Long player_id = currentPlayer.getId();
+        rankMap.put(player_id, currentRank);
+        for (int i = 1; i < sortedPlayers.size(); i++) {
+            currentPlayer = sortedPlayers.get(i);
+            player_id = currentPlayer.getId();
+            Integer p1 = currentPlayer.getPoints();
+            Integer p2 = sortedPlayers.get(i - 1).getPoints();
+
+            // Check for ties.
+            if (i > 0 && p1.equals(p2)) {
+                rankMap.put(player_id, currentRank);
+            } else {
+                currentRank = i + 1;
+                rankMap.put(player_id, currentRank);
+            }
+        }
+        return rankMap;
+    }
+
     // Sets a player's points.
     @Override
     public Profile pointsSet(Long user_id, Integer points) {
@@ -152,15 +183,6 @@ public class ProfileServiceImpl implements ProfileService{
         }
         return profiles.save(profile);
     }
-
-    /* @Override
-    public void updateRank() {
-        List<Profile> sortedPlayers = sort();
-        for (int i = 0; i < sortedPlayers.size(); i++) {
-            Profile profile = sortedPlayers.get(i);
-            profile.setRank(i + 1);
-        }
-    } */
 
     // Retrieves player profiles from a given match.
     public List<Profile> getProfilesFromMatches(Long match_id) {
