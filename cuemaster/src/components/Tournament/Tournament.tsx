@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import API, { joinTournament, leaveTournament } from '../../services/api';
+import API from '../../services/api';
 import { Link } from 'react-router-dom';
 import { isAuthenticated, getUserRole, getUserIdFromToken } from '../authUtils';
 
@@ -84,6 +84,40 @@ const Tournaments: React.FC = () => {
         } catch (error) {
             console.error('Error leaving tournament:', error);
             setError('Failed to leave tournament. Please try again later.');
+        }
+    };
+
+    const joinTournament = async (tournamentId: number, playerId: number) => {
+        try {
+            const authToken = localStorage.getItem('authToken'); // Or wherever you store your token
+            const response = await API.post(`/tournaments/${tournamentId}/join`, { playerId }, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                withCredentials: true,
+            });
+            console.log('Join response:', response); // Log the response
+            return response; // Return the response to be used in the component
+        } catch (error) {
+            console.error('Error joining tournament:', error);
+            throw error; // Throw error to be caught in handleJoin
+        }
+    };
+    
+    const leaveTournament = async (tournamentId: number, playerId: number) => {
+        try {
+            const authToken = localStorage.getItem('authToken'); // Or wherever you store your token
+            const response = await API.post(`/tournaments/${tournamentId}/leave`, { playerId }, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                withCredentials: true,
+            });
+            console.log('Leave response:', response); // Log the response
+            return response; // Return the response to be used in the component
+        } catch (error) {
+            console.error('Error leaving tournament:', error);
+            throw error; // Throw error to be caught in handleLeave
         }
     };
     
