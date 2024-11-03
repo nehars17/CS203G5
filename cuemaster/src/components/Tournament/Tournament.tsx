@@ -20,6 +20,7 @@ const Tournaments: React.FC = () => {
     const [tournaments, setTournaments] = useState<Tournament[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [filter, setFilter] = useState<string>('ALL'); // New filter state
     const isUserAuthenticated = isAuthenticated();
     const userRole = getUserRole();
     const playerId = getUserIdFromToken(); // Get the player ID from the token
@@ -38,7 +39,13 @@ const Tournaments: React.FC = () => {
 
     useEffect(() => {
         fetchTournaments(); // Call fetchTournaments when the component mounts
-    }, []);        
+    }, []);
+
+    // Filter function to filter tournaments based on selected status
+    const filteredTournaments = tournaments.filter((tournament) => {
+        if (filter === 'ALL') return true;
+        return tournament.status === filter;
+    });
 
     const handleJoin = async (id: number) => {
         if (!playerId) {
@@ -91,7 +98,24 @@ const Tournaments: React.FC = () => {
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.title}>All Tournaments</h1>
+            <h1 style={styles.title}>Tournaments</h1>
+
+            {/* Filter Tabs */}
+            <div style={styles.tabs}>
+                {['ALL', 'UPCOMING', 'ONGOING', 'COMPLETED'].map((status) => (
+                    <button
+                        key={status}
+                        onClick={() => setFilter(status)}
+                        style={{
+                            ...styles.tab,
+                            ...(filter === status ? styles.activeTab : {})
+                        }}
+                    >
+                        {status}
+                    </button>
+                ))}
+            </div>
+
 
             {/* Show Create Tournament button only for authenticated organizers */}
             {isUserAuthenticated && userRole === "ROLE_ORGANISER" && (
@@ -99,9 +123,9 @@ const Tournaments: React.FC = () => {
                     Create Tournament
                 </Link>
             )}
-            
+
             <ul style={styles.tournamentList}>
-                {tournaments.map((tournament) => (
+                {filteredTournaments.map((tournament) => (  // Use filteredTournaments here
                     <li key={tournament.id} style={styles.tournamentItem}>
                         <h3>{tournament.tournamentname}</h3>
                         <p><strong>Date:</strong> {tournament.startDate} to {tournament.endDate}</p>
@@ -140,7 +164,6 @@ const Tournaments: React.FC = () => {
                                 </Link>
                             </div>
                         )}
-
                     </li>
                 ))}
             </ul>
@@ -157,6 +180,22 @@ const styles = {
         fontSize: '2rem',
         marginBottom: '20px',
     },
+    tabs: {
+        display: 'flex',
+        gap: '10px',
+    },
+    tab: {
+        padding: '8px 16px',
+        border: '1px solid #ddd',
+        borderRadius: '5px',
+        backgroundColor: '#f0f0f0',
+        cursor: 'pointer',
+    },
+    activeTab: {
+        backgroundColor: '#007bff',
+        color: '#fff',
+        border: '1px solid #007bff', 
+    },
     createButton: {
         display: 'inline-block',
         marginBottom: '20px',
@@ -165,6 +204,10 @@ const styles = {
         color: '#fff',
         textDecoration: 'none',
         borderRadius: '5px',
+    },
+    filterDropdown: {
+        marginBottom: '20px',
+        padding: '8px 12px',
     },
     tournamentList: {
         listStyle: 'none',
