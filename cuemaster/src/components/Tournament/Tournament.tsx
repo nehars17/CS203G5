@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import API, { deleteTournament, joinTournament, leaveTournament } from '../../services/api';
+import API, { joinTournament, leaveTournament } from '../../services/api';
 import { Link } from 'react-router-dom';
 import { isAuthenticated, getUserRole, getUserIdFromToken } from '../authUtils';
 
@@ -39,20 +39,6 @@ const Tournaments: React.FC = () => {
     useEffect(() => {
         fetchTournaments(); // Call fetchTournaments when the component mounts
     }, []);        
-
-    const handleDelete = async (id: number) => {
-        if (window.confirm('Are you sure you want to delete this tournament?')) {
-            try {
-                await deleteTournament(id);
-                setTournaments(prevTournaments => prevTournaments.filter(tournament => tournament.id !== id));
-                console.log(`Tournament with id ${id} deleted from frontend state.`);
-                await fetchTournaments();
-            } catch (error) {
-                console.error('Error deleting tournament:', error);
-                setError('Failed to delete tournament. Please try again later.');
-            }
-        }
-    };
 
     const handleJoin = async (id: number) => {
         if (!playerId) {
@@ -149,9 +135,9 @@ const Tournaments: React.FC = () => {
                                 <Link to={`/tournaments/update-tournament/${tournament.id}`} className="update-button" style={styles.updateButton}>
                                     Update
                                 </Link>
-                                <button onClick={() => handleDelete(tournament.id)} style={styles.deleteButton}>
+                                <Link to={`/tournaments/delete-tournament/${tournament.id}`} className="delete-button" style={styles.deleteButton}>
                                     Delete
-                                </button>
+                                </Link>
                             </div>
                         )}
 

@@ -218,7 +218,7 @@ Authorization: Basic org@gmail.com goodpassword
 }
 
 ### Delete a tournament
-DELETE http://localhost:8080/tournaments/2
+DELETE http://localhost:8080/tournaments/31
 Authorization: Basic org@gmail.com goodpassword
 
 
