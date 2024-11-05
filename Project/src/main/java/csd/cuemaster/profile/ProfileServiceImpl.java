@@ -241,32 +241,29 @@ public class ProfileServiceImpl implements ProfileService{
         double expectedScoreB = calculateExpectedScore(match_id, user_id2);
 
         // Update player statistics based on the winner.
-        final int K_FACTOR = 32;
-        final int WIN = 1;
-        final int LOSE = 0;
         if (winner_id == user_id1) {
-            // Set new points based on the winner.
-            Integer newPointsA = (int) (originalPointsA + K_FACTOR * (WIN - expectedScoreA));
-            Integer newPointsB = (int) (originalPointsB + K_FACTOR * (LOSE - expectedScoreB));
-            players.get(0).setPoints(newPointsA);
-            players.get(1).setPoints(newPointsB);
-
-            // Set match win count for the winner.
-            Integer matchWins = players.get(0).getMatchWinCount();
-            players.get(0).setMatchWinCount(matchWins + 1);
+            updatePlayerStats(players.get(0), originalPointsA, expectedScoreA, true);
+            updatePlayerStats(players.get(1), originalPointsB, expectedScoreB, false);
         } else if (winner_id == user_id2) {
-            // Set new points based on the winner.
-            Integer newPointsA = (int) (originalPointsA + K_FACTOR * (LOSE - expectedScoreA));
-            Integer newPointsB = (int) (originalPointsB + K_FACTOR * (WIN - expectedScoreB));
-            players.get(0).setPoints(newPointsA);
-            players.get(1).setPoints(newPointsB);
-
-            // Set match win count for the winner.
-            Integer matchWins = players.get(1).getMatchWinCount();
-            players.get(1).setMatchWinCount(matchWins + 1);
+            updatePlayerStats(players.get(0), originalPointsA, expectedScoreA, false);
+            updatePlayerStats(players.get(1), originalPointsB, expectedScoreB, true);
         }
         profiles.saveAll(players);
         return players;
+    }
+
+    // Helper method for updating player statistics.
+    private void updatePlayerStats(Profile player, Integer originalPoints, double expectedScore, boolean isWinner) {
+        int K_FACTOR = 32;
+        int result = isWinner ? 1 : 0;
+        Integer newPoints = (int) (originalPoints + K_FACTOR * (result - expectedScore));
+        player.setPoints(newPoints);
+
+        // Update match win count for the winner.
+        if (isWinner) {
+            Integer matchWins = player.getMatchWinCount();
+            player.setMatchWinCount(matchWins + 1);
+        }
     }
 
     // Retrieves player profiles from a given tournament.
