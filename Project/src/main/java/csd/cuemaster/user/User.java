@@ -1,10 +1,12 @@
 package csd.cuemaster.user;
 
-
+import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,8 +15,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import csd.cuemaster.models.TOTPToken;
 import csd.cuemaster.profile.Profile;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,8 +36,8 @@ import lombok.ToString;
 // Other imports...
 
 @Entity
-@Table(name="[User]")
-@Getter 
+@Table(name = "[User]")
+@Getter
 @Setter
 @ToString
 @AllArgsConstructor
@@ -61,17 +65,21 @@ public class User implements UserDetails {
     @JsonIgnore
     private boolean enabled;
 
-
     @JsonIgnore
     private String provider;
-
 
     @JsonIgnore
     private String activationToken;
 
     @JsonIgnore
-    private String AuthCode;
+    private Key secret;
 
+
+    
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "json")
+    @JsonIgnore
+    private TOTPToken totpToken;
 
     @JsonIgnore
     private LocalDateTime expiryDate;
@@ -107,7 +115,7 @@ public class User implements UserDetails {
     }
 
     @JsonIgnore
-    
+
     @Override
     public boolean isAccountNonLocked() {
         return true;

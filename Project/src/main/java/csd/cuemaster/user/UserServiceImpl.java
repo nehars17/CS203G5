@@ -1,18 +1,26 @@
 package csd.cuemaster.user;
 
+import java.security.Key;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import csd.cuemaster.models.TOTPToken;
+import csd.cuemaster.services.TOTPService;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private UserRepository users;
     private BCryptPasswordEncoder encoder;
+
+    @Autowired
+    private TOTPService totpService;
 
     public UserServiceImpl(UserRepository users, BCryptPasswordEncoder encoder) {
         this.users = users;
@@ -37,21 +45,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User forgotPassword(String username) throws Exception {
+
+        User foundUser = users.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        
+        Key secretKey = totpService.generateSecret();
+        TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
+        foundUser.setSecret(secretKey);
+        foundUser.setTotpToken(totpCode);
+        System.out.println(foundUser.getSecret());
+        users.save(foundUser);
+        return foundUser;
+    }
+
+    @Override
     public User getUser(Long id) {
 
         return users.findById(id).orElse(null);
     }
 
     @Override
-    public User loginUser(User user) {
+    public User loginUser(User user) throws Exception {
         User foundUser = users.findByUsername(user.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if (encoder.matches(user.getPassword(), foundUser.getPassword())) {
-            String code = generate2FACode();
-            foundUser.setAuthCode(code);
+            Key secretKey = totpService.generateSecret();
+            System.out.println(secretKey);
+            TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
+            foundUser.setSecret(secretKey);
+            foundUser.setTotpToken(totpCode);
+            System.out.println(foundUser.getSecret());
             users.save(foundUser);
             return foundUser;
-            
+
         } else {
             return null; // Incorrect password
         }
@@ -90,20 +117,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean EmailAuth(String username, String code) {
+    public User EmailAuth(String code, String username) throws Exception {
         User foundUser = users.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        System.out.println(foundUser.getAuthCode());
-        if(foundUser.getAuthCode()==null){
-            return true;
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (code.equals(foundUser.getTotpToken().getCode())) {
+            boolean valid = totpService.validateTOTPToken(foundUser.getSecret(), foundUser.getTotpToken());
+            if (valid) {
+                foundUser.setTotpToken(null);
+                foundUser.setSecret(null);
+                users.save(foundUser);
+                return foundUser;
+            }
         }
-        if (foundUser.getAuthCode().equals(code)) {
-            foundUser.setAuthCode(null);
-            users.save(foundUser);
-            return true;
-        }
-        return false;
 
+        return null;
     }
 
     @Override
@@ -123,8 +150,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Long id, User user) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void updatePassword(Long userId, User user) {
+        User foundUser = users.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        foundUser.setPassword(encoder.encode(user.getPassword()));
+        users.save(user);
+    }
+
+    @Override
+    public String resetPassword(Long userId, String newPassword, String token) throws Exception {
+        User foundUser = users.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        TOTPToken totpToken = foundUser.getTotpToken();
+
+        if (totpToken != null && token.equals(totpToken.getCode())) {
+            boolean valid = totpService.validateTOTPToken(foundUser.getSecret(), totpToken);
+            if (valid) {
+                foundUser.setPassword(encoder.encode(newPassword));
+                foundUser.setTotpToken(null);
+                foundUser.setSecret(null);
+                users.save(foundUser);
+                return "Password updated successfully.";
+            } else {
+                return "Invalid or expired token.";
+            }
+        } else {
+            return "Token mismatch or token not found.";
+        }
     }
 
     @Override

@@ -112,6 +112,9 @@ const Login: React.FC = () => {
 
             />
           </div>
+          <br></br>
+          <a href="/forgotPassword">Forgot Password?</a>
+
           <div className="text-center mt-3">
             <small>
               Don't have an account? 

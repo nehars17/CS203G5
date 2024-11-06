@@ -121,7 +121,7 @@ class UserServiceTest {
         assertNull(savedUser.getActivationToken()); // Token should be cleared
     }
     @Test
-    void testLoginUser_Success() {
+    void testLoginUser_Success() throws Exception {
         User user = new User("testuser", "password123", "ROLE_PLAYER", "normal", false);
         User savedUser = new User("testuser", encoder.encode("password123"), "ROLE_PLAYER", "normal", false);
     
@@ -136,7 +136,7 @@ class UserServiceTest {
     
 
     @Test
-    void testLoginUser_IncorrectPassword() {
+    void testLoginUser_IncorrectPassword() throws Exception {
         // Arrange
         String username = "testuser";
         String correctPassword = "password123";

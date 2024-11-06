@@ -1,6 +1,5 @@
 package csd.cuemaster.user;
 
-import java.security.cert.LDAPCertStoreParameters;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +92,8 @@ public class UserController {
     }
 
     @PostMapping("/normallogin")
-    public ResponseEntity<Map<String, Object>> retrieveUser(HttpSession session, @Valid @RequestBody User user) {
+    public ResponseEntity<Map<String, Object>> retrieveUser(HttpSession session, @Valid @RequestBody User user)
+            throws Exception {
         User loggedInUser = userService.loginUser(user);
         if (loggedInUser == null) {
             throw new UsernameNotFoundException("Username or Password Incorrect");
@@ -106,7 +106,7 @@ public class UserController {
         }
 
         try {
-            emailService.send2FAEmail(loggedInUser.getUsername(), loggedInUser.getAuthCode());
+            emailService.send2FAEmail(loggedInUser.getUsername(), loggedInUser.getTotpToken().getCode());
         } catch (MessagingException e) {
             throw new AccountActivationException("unable to send email");
         }
@@ -120,48 +120,73 @@ public class UserController {
 
     }
 
-   @PostMapping("/verify-code")
-    public ResponseEntity<Map<String, Object>> verifyCode(@Valid @RequestBody Map<String, Object> payload) {
-    // Extract user object and code from payload
-    System.out.println(payload.get("user"));
-    User loggedInUser = new ObjectMapper().convertValue(payload.get("user"), User.class);
-    String code = (String) payload.get("code");
-    String role = (String) payload.get("role");
-    System.out.println(loggedInUser.getId());
-    boolean isValid = userService.EmailAuth(loggedInUser.getUsername(), code);
-    if (isValid) {
+    @PostMapping("/verify-code")
+    public ResponseEntity<Map<String, Object>> verifyCode(@Valid @RequestBody Map<String, Object> payload)
+            throws Exception {
+        // Extract user object and code from payload
+        User userDetails = new ObjectMapper().convertValue(payload.get("user"), User.class);
+        String code = (String) payload.get("code");
+        String role = (String) payload.get("role");
+        User loggedInUser = userService.EmailAuth(code, userDetails.getUsername());
+        System.out.println(loggedInUser);
+        if (loggedInUser != null) {
+            System.out.println("Im here");
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    loggedInUser.getUsername(), null);
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loggedInUser.getUsername(),
-                        "goodpassword"
-                )
-        );
-
-        // String role = loggedInUser.getAuthorities().iterator().next().getAuthority();
-
-        String jwtToken = jwtService.generateToken(loggedInUser, loggedInUser.getId(), role);
-        System.out.println(jwtToken);
-        Map<String, Object> response = new HashMap<>();
-        response.put("user", loggedInUser);
-        response.put("token", jwtToken);
-        response.put("role", role);
-
-        return ResponseEntity.ok(response);
-    } 
-    else {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("message", "Invalid code, please try again.");
-        System.out.println("IM CALLED");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            String jwtToken = jwtService.generateToken(loggedInUser, loggedInUser.getId(), role);
+            System.out.println(jwtToken);
+            Map<String, Object> response = new HashMap<>();
+            response.put("user", loggedInUser);
+            response.put("token", jwtToken);
+            response.put("role", role);
+            System.out.println(role);
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Invalid code, please try again.");
+            System.out.println("IM CALLED");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
     }
-}
-
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         session.invalidate(); // Invalidate the session
         return ResponseEntity.ok("Logged out successfully!");
+    }
+
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<String> ForgotPassword(HttpSession session, @Valid @RequestBody  Map<String, Object> payload) throws Exception {
+        String username = (String) payload.get("username");
+
+        User foundUser = userService.forgotPassword(username);
+        System.out.println(foundUser);
+        if (foundUser != null) {
+            emailService.sendPasswordResetEmail(username, foundUser.getId(), foundUser.getTotpToken().getCode());
+            return ResponseEntity.ok("Password reset link has been sent to your email.");
+
+        }
+
+        return ResponseEntity.ok("User not found");
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> ResetPassword(@Valid @RequestBody Map<String, Object> payload) throws Exception {
+        String token = (String) payload.get("token");
+        String newPassword = (String) payload.get("password");
+        String user_id = (String) payload.get("user_id");
+        Long id = Long.valueOf(user_id);
+        String message = userService.resetPassword(id, newPassword, token);
+        return ResponseEntity.ok(message);
+
+    }
+
+    @PostMapping("/update/{user_id}/password")
+    public void updatePassword(@PathVariable(value = "user_id") Long user_id, @Valid @RequestBody User user) {
+        userService.updatePassword(user_id, user);
+
     }
 
     @DeleteMapping("/user/{user_id}/account")

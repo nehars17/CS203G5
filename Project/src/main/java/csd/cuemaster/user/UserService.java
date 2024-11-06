@@ -8,13 +8,13 @@ public interface UserService {
     User getUser(Long id);
     User addUser(User user);
     // User addOrganiser(User user);
-    User updateUser(Long id, User user);
-    public User loginUser(User user);
-    public User googleLogin(String email, String role);
-    public String accountActivation(String token);
-    public boolean EmailAuth(String username,String code);
-
-
+    User loginUser(User user) throws Exception;
+    User googleLogin(String email, String role);
+    String accountActivation(String token);
+    User EmailAuth(String code, String username) throws Exception;
+    void updatePassword(Long id, User user);
+    String resetPassword(Long id, String newPassword,String token) throws Exception;
+    User forgotPassword(String username) throws Exception;
     /**
      * Change method's signature: do not return a value for delete operation
      * @param id

@@ -14,6 +14,9 @@ import Error404 from './pages/Error404';
 import PrivateRoute from './components/PrivateRoute';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import Home from './components/Home/Home';
+import ResetPassword from './components/User/ResetPassword';
+import ForgotPassword from './components/User/ForgotPassword';
+
 import About from './pages/About';
 import { isAuthenticated, getUserIdFromToken, getUserRole } from './components/authUtils';
 import { Navigate } from 'react-router-dom';
@@ -35,6 +38,8 @@ const AppRoutes: React.FC = () => {
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/matches" element={<Matches />} />
                 <Route path="/emailauth" element={<EmailAuthForm />} />
+                <Route path="/resetPassword" element={<ResetPassword />} />
+                <Route path="/forgotPassword" element={<ForgotPassword />} />
 
                 <Route path="*" element={<Error404 />} />
              
