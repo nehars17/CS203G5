@@ -160,7 +160,12 @@ const Tournaments: React.FC = () => {
 
             <ul style={styles.tournamentList}>
                 {filteredTournaments.map((tournament) => (  // Use filteredTournaments here
-                    <li key={tournament.id} style={styles.tournamentItem}>
+                    <li
+                    key={tournament.id}
+                    style={styles.tournamentItem}
+                    onMouseEnter={(e) => e.currentTarget.style.boxShadow = styles.tournamentItemHover.boxShadow}
+                    onMouseLeave={(e) => e.currentTarget.style.boxShadow = styles.tournamentItem.boxShadow}
+                    >
                         <h3>{tournament.tournamentname}</h3>
                         <p><strong>Date:</strong> {tournament.startDate} to {tournament.endDate}</p>
                         <p><strong>Time:</strong> {tournament.time}</p>
@@ -191,7 +196,7 @@ const Tournaments: React.FC = () => {
                         {isUserAuthenticated && userRole === "ROLE_ORGANISER" && (
                             <div style={styles.buttonContainer}>
                                 <Link to={`/tournaments/update-tournament/${tournament.id}`} className="update-button" style={styles.updateButton}>
-                                    Update
+                                    Edit
                                 </Link>
                                 <Link to={`/tournaments/delete-tournament/${tournament.id}`} className="delete-button" style={styles.deleteButton}>
                                     Delete
@@ -211,24 +216,31 @@ const styles = {
         textAlign: 'center' as const,
     },
     title: {
-        fontSize: '2rem',
+        fontSize: '2.5rem',
+        fontWeight: 'bold',
+        color: '#333',
         marginBottom: '20px',
     },
     tabs: {
         display: 'flex',
+        justifyContent: 'center',
         gap: '10px',
+        marginBottom: '20px',
     },
     tab: {
-        padding: '8px 16px',
+        padding: '10px 20px',
         border: '1px solid #ddd',
         borderRadius: '5px',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#e0e0e0',
         cursor: 'pointer',
+        fontWeight: 'bold',
+        color: '#555',
+        transition: 'background-color 0.3s, color 0.3s',
     },
     activeTab: {
         backgroundColor: '#007bff',
         color: '#fff',
-        border: '1px solid #007bff', 
+        border: '1px solid #007bff',
     },
     createButton: {
         display: 'inline-block',
@@ -238,34 +250,55 @@ const styles = {
         color: '#fff',
         textDecoration: 'none',
         borderRadius: '5px',
-    },
-    filterDropdown: {
-        marginBottom: '20px',
-        padding: '8px 12px',
+        fontWeight: 'bold',
+        transition: 'background-color 0.3s',
+        cursor: 'pointer',
     },
     tournamentList: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)', // Ensures 3 items per row on larger screens
+        gap: '20px',
         listStyle: 'none',
         padding: 0,
     },
     tournamentItem: {
-        marginBottom: '15px',
         padding: '20px',
         border: '1px solid #ddd',
-        borderRadius: '5px',
-        backgroundColor: '#f9f9f9',
+        borderRadius: '8px',
+        backgroundColor: '#fff',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'box-shadow 0.3s',
+        textAlign: 'left' as const, // Align details to the left
+    },
+    tournamentItemHover: {
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15)',
+    },
+    tournamentHeading: {
+        fontSize: '1.5rem',
+        fontWeight: 'bold',
+        marginBottom: '10px',
+        color: '#333',
+        textAlign: 'center' as const, // Center-align the tournament name
+    },
+    tournamentDetails: {
+        fontSize: '1rem',
+        color: '#555',
+        marginBottom: '8px',
     },
     buttonContainer: {
         display: 'flex',
-        justifyContent: 'flex-end',
-        marginTop: '10px',
+        justifyContent: 'space-between',
+        marginTop: '15px',
     },
     updateButton: {
-        marginRight: '10px',
         padding: '8px 12px',
         backgroundColor: '#28a745',
         color: '#fff',
         textDecoration: 'none',
         borderRadius: '5px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s',
     },
     deleteButton: {
         padding: '8px 12px',
@@ -273,7 +306,10 @@ const styles = {
         color: '#fff',
         border: 'none',
         borderRadius: '5px',
+        fontWeight: 'bold',
         cursor: 'pointer',
+        transition: 'background-color 0.3s',
+        textDecoration: 'none', // Remove underline
     },
     joinButton: {
         padding: '8px 12px',
@@ -281,18 +317,23 @@ const styles = {
         color: '#fff',
         border: 'none',
         borderRadius: '5px',
+        fontWeight: 'bold',
         cursor: 'pointer',
+        transition: 'background-color 0.3s',
         marginTop: '10px',
     },
     leaveButton: {
         padding: '8px 12px',
-        backgroundColor: '#dc3545',
+        backgroundColor: '#ff6b6b',
         color: '#fff',
         border: 'none',
         borderRadius: '5px',
+        fontWeight: 'bold',
         cursor: 'pointer',
+        transition: 'background-color 0.3s',
         marginTop: '10px',
     },
+
 };
 
 export default Tournaments;
