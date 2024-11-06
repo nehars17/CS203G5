@@ -116,7 +116,7 @@ public class ProfileServiceImpl implements ProfileService{
     //     }
     // } getAllProfile()
 
-    // Returns a list of all players.
+    // Return a list of all players.
     @Override
     public List<Profile> getPlayers() {
         List<Profile> profileList = profiles.findAll();
@@ -132,7 +132,7 @@ public class ProfileServiceImpl implements ProfileService{
                 .collect(Collectors.toList());
     }
 
-    // Sorts all players based on points.
+    // Sort all players based on points.
     @Override
     public List<Profile> sort() {
         List<Profile> profileList = getPlayers();
@@ -140,7 +140,7 @@ public class ProfileServiceImpl implements ProfileService{
         return profileList;
     }
 
-    // Sets all players ranks based on the sorted points.
+    // Set all players ranks based on the sorted points.
     @Override
     public Map<Long, Integer> setRank() {
         List<Profile> sortedPlayers = sort();
@@ -169,7 +169,7 @@ public class ProfileServiceImpl implements ProfileService{
         return rankMap;
     }
 
-    // Sets a player's points.
+    // Set a player's points.
     @Override
     public Profile pointsSet(Long userId, Integer points) {
         User user = users.findById(userId)
@@ -184,7 +184,7 @@ public class ProfileServiceImpl implements ProfileService{
         return profiles.save(profile);
     }
 
-    // Retrieves player profiles from a given match.
+    // Retrieve player profiles from a given match.
     public List<Profile> getProfilesFromMatches(Long matchId) {
         Match match = matches.findById(matchId).orElseThrow(() -> new MatchNotFoundException(matchId));
         List<Profile> retrieved = new ArrayList<>();
@@ -232,7 +232,7 @@ public class ProfileServiceImpl implements ProfileService{
         return players;
     }
 
-    // Retrieves player profiles from a given tournament.
+    // Retrieve player profiles from a given tournament.
     public List<Profile> getProfilesFromTournaments(Long tournamentId) {
         Tournament tournament = tournaments.findById(tournamentId).orElseThrow(()-> new TournamentNotFoundException(tournamentId));
         List<Profile> retrieved = new ArrayList<>();
@@ -272,7 +272,7 @@ public class ProfileServiceImpl implements ProfileService{
         } else {
             throw new IllegalArgumentException("Player " + user.getId() + " is not in the match.");
         }
-}
+    }
 
     // Helper method to update player statistics.
     private void updatePlayerStats(Profile player, Integer originalPoints, double expectedScore, boolean isWinner) {
