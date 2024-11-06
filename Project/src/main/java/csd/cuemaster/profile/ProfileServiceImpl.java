@@ -150,20 +150,20 @@ public class ProfileServiceImpl implements ProfileService{
         }
         int currentRank = 1;
         Profile currentPlayer = sortedPlayers.get(0);
-        Long player_id = currentPlayer.getId();
-        rankMap.put(player_id, currentRank);
+        Long playerId = currentPlayer.getId();
+        rankMap.put(playerId, currentRank);
         for (int i = 1; i < sortedPlayers.size(); i++) {
             currentPlayer = sortedPlayers.get(i);
-            player_id = currentPlayer.getId();
+            playerId = currentPlayer.getId();
             Integer p1 = currentPlayer.getPoints();
             Integer p2 = sortedPlayers.get(i - 1).getPoints();
 
             // Check for ties.
             if (i > 0 && p1.equals(p2)) {
-                rankMap.put(player_id, currentRank);
+                rankMap.put(playerId, currentRank);
             } else {
                 currentRank = i + 1;
-                rankMap.put(player_id, currentRank);
+                rankMap.put(playerId, currentRank);
             }
         }
         return rankMap;
@@ -171,11 +171,11 @@ public class ProfileServiceImpl implements ProfileService{
 
     // Sets a player's points.
     @Override
-    public Profile pointsSet(Long user_id, Integer points) {
-        User user = users.findById(user_id)
-                .orElseThrow(() -> new UserNotFoundException(user_id));
-        Profile profile = profiles.findByUserId(user_id)
-                .orElseThrow(() -> new UserProfileNotFoundException(user_id));
+    public Profile pointsSet(Long userId, Integer points) {
+        User user = users.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        Profile profile = profiles.findByUserId(userId)
+                .orElseThrow(() -> new UserProfileNotFoundException(userId));
         user = profile.getUser();
         if (user != null && user.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"))) {
@@ -185,66 +185,46 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     // Retrieves player profiles from a given match.
-    public List<Profile> getProfilesFromMatches(Long match_id) {
-        Match match = matches.findById(match_id).orElseThrow(()-> new MatchNotFoundException(match_id));
+    public List<Profile> getProfilesFromMatches(Long matchId) {
+        Match match = matches.findById(matchId).orElseThrow(() -> new MatchNotFoundException(matchId));
         List<Profile> retrieved = new ArrayList<>();
-        User user1 = match.getUser1();
-        if (user1 != null) {
-            Profile profile1 = user1.getProfile();
-                if (profile1 != null) {
-                    retrieved.add(profile1);
-                }
-        }
-        User user2 = match.getUser2();
-        if (user2 != null) {
-            Profile profile2 = user2.getProfile();
-                if (profile2 != null) {
-                    retrieved.add(profile2);
-                }
-        }
+        addProfileIfExists(match.getUser1(), retrieved);
+        addProfileIfExists(match.getUser2(), retrieved);
         return retrieved;
     }
 
     // Calculate the expected score of a given player in a given match.
-    public double calculateExpectedScore(Long match_id, Long user_id) {
-        List<Profile> players = getProfilesFromMatches(match_id);
-        if (players.size() < 2) {
-            throw new IllegalArgumentException("Match " + match_id + " does not have enough players to calculate expected score.");
-        }
+    public double calculateExpectedScore(Long matchId, Long userId) {
+        List<Profile> players = getProfilesFromMatches(matchId);
+        validatePlayersInMatch(players, matchId);
         Integer pointsA = players.get(0).getPoints();
         Integer pointsB = players.get(1).getPoints();
-        double expectedScoreA = 1.0 / (1 + Math.pow(10, (pointsB - pointsA) / 400.0));
-        double expectedScoreB = 1.0 / (1 + Math.pow(10, (pointsA - pointsB) / 400.0));
-        User user = users.findById(user_id)
-                .orElseThrow(() -> new UserNotFoundException(user_id));
-        if (user.getProfile() == players.get(0)) {
-            return expectedScoreA;
-        } else if (user.getProfile() == players.get(1)) {
-            return expectedScoreB;
-        } else {
-            throw new IllegalArgumentException("Player " + user_id + " is not in the match.");
-        }
+        double expectedScoreA = calculateExpectedScore(pointsA, pointsB);
+        double expectedScoreB = calculateExpectedScore(pointsB, pointsA);
+        User user = users.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        return getPlayerExpectedScore(user, players, expectedScoreA, expectedScoreB);
     }
 
     // Update player statistics after a winner is declared.
-    public List<Profile> updatePlayerStatistics(Long match_id, Long winner_id) {
-        Match match = matches.findById(match_id).orElseThrow(()-> new MatchNotFoundException(match_id));
-        Long user_id1 = match.getUser1().getId();
-        Long user_id2 = match.getUser2().getId();
-        if (winner_id != user_id1 && winner_id != user_id2) {
-            throw new IllegalArgumentException("Player " + winner_id + " is not in the match.");
+    public List<Profile> updatePlayerStatistics(Long matchId, Long winnerId) {
+        Match match = matches.findById(matchId).orElseThrow(()-> new MatchNotFoundException(matchId));
+        Long userId1 = match.getUser1().getId();
+        Long userId2 = match.getUser2().getId();
+        if (winnerId != userId1 && winnerId != userId2) {
+            throw new IllegalArgumentException("Player " + winnerId + " is not in the match.");
         }
-        List<Profile> players = getProfilesFromMatches(match_id);
+        List<Profile> players = getProfilesFromMatches(matchId);
         Integer originalPointsA = players.get(0).getPoints();
         Integer originalPointsB = players.get(1).getPoints();
-        double expectedScoreA = calculateExpectedScore(match_id, user_id1);
-        double expectedScoreB = calculateExpectedScore(match_id, user_id2);
+        double expectedScoreA = calculateExpectedScore(matchId, userId1);
+        double expectedScoreB = calculateExpectedScore(matchId, userId2);
 
         // Update player statistics based on the winner.
-        if (winner_id == user_id1) {
+        if (winnerId == userId1) {
             updatePlayerStats(players.get(0), originalPointsA, expectedScoreA, true);
             updatePlayerStats(players.get(1), originalPointsB, expectedScoreB, false);
-        } else if (winner_id == user_id2) {
+        } else if (winnerId == userId2) {
             updatePlayerStats(players.get(0), originalPointsA, expectedScoreA, false);
             updatePlayerStats(players.get(1), originalPointsB, expectedScoreB, true);
         }
@@ -252,7 +232,49 @@ public class ProfileServiceImpl implements ProfileService{
         return players;
     }
 
-    // Helper method for updating player statistics.
+    // Retrieves player profiles from a given tournament.
+    public List<Profile> getProfilesFromTournaments(Long tournamentId) {
+        Tournament tournament = tournaments.findById(tournamentId).orElseThrow(()-> new TournamentNotFoundException(tournamentId));
+        List<Profile> retrieved = new ArrayList<>();
+        List<Long> players = tournament.getPlayers();
+        for (Long player : players) {
+            User user = users.findById(player).orElseThrow(()-> new UserNotFoundException(player));
+            addProfileIfExists(user, retrieved);
+        }
+        return retrieved;
+    }
+
+    // Helper method to add profiles to the list if not null.
+    private void addProfileIfExists(User user, List<Profile> profiles) {
+        if (user != null && (user.getProfile() != null)) {
+            profiles.add(user.getProfile());
+        }
+    }
+
+    // Helper method to validate that there are exactly two players in the match.
+    private void validatePlayersInMatch(List<Profile> players, Long matchId) {
+        if (players.size() != 2) {
+            throw new IllegalArgumentException("Match " + matchId + " does not have enough players to calculate expected score.");
+        }
+    }
+
+    // Helper method to calculate the expected score.
+    private double calculateExpectedScore(int playerPoints, int opponentPoints) {
+        return 1.0 / (1 + Math.pow(10, (opponentPoints - playerPoints) / 400.0));
+    }
+
+    // Helper method to determine the expected score for the player in the match.
+    private double getPlayerExpectedScore(User user, List<Profile> players, double expectedScoreA, double expectedScoreB) {
+        if (user.getProfile() == players.get(0)) {
+            return expectedScoreA;
+        } else if (user.getProfile() == players.get(1)) {
+            return expectedScoreB;
+        } else {
+            throw new IllegalArgumentException("Player " + user.getId() + " is not in the match.");
+        }
+}
+
+    // Helper method to update player statistics.
     private void updatePlayerStats(Profile player, Integer originalPoints, double expectedScore, boolean isWinner) {
         int K_FACTOR = 32;
         int result = isWinner ? 1 : 0;
@@ -264,20 +286,5 @@ public class ProfileServiceImpl implements ProfileService{
             Integer matchWins = player.getMatchWinCount();
             player.setMatchWinCount(matchWins + 1);
         }
-    }
-
-    // Retrieves player profiles from a given tournament.
-    public List<Profile> getProfilesFromTournaments(Long tournament_id) {
-        Tournament tournament = tournaments.findById(tournament_id).orElseThrow(()-> new TournamentNotFoundException(tournament_id));
-        List<Profile> retrieved = new ArrayList<>();
-        List<Long> players = tournament.getPlayers();
-        for (Long player : players) {
-            User user = users.findById(player).orElseThrow(()-> new UserNotFoundException(player));
-            Profile profile = user.getProfile();
-            if (profile != null) {
-                retrieved.add(profile);
-            }
-        }
-        return retrieved;
     }
 }
