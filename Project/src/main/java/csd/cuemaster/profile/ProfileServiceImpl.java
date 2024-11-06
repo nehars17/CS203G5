@@ -150,20 +150,22 @@ public class ProfileServiceImpl implements ProfileService{
         }
         int currentRank = 1;
         Profile currentPlayer = sortedPlayers.get(0);
-        Long playerId = currentPlayer.getId();
-        rankMap.put(playerId, currentRank);
+        User currentUser = currentPlayer.getUser();
+        Long userId = currentUser.getId();
+        rankMap.put(userId, currentRank);
         for (int i = 1; i < sortedPlayers.size(); i++) {
             currentPlayer = sortedPlayers.get(i);
-            playerId = currentPlayer.getId();
+            currentUser = currentPlayer.getUser();
+            userId = currentUser.getId();
             Integer p1 = currentPlayer.getPoints();
             Integer p2 = sortedPlayers.get(i - 1).getPoints();
 
             // Check for ties.
             if (i > 0 && p1.equals(p2)) {
-                rankMap.put(playerId, currentRank);
+                rankMap.put(userId, currentRank);
             } else {
                 currentRank = i + 1;
-                rankMap.put(playerId, currentRank);
+                rankMap.put(userId, currentRank);
             }
         }
         return rankMap;
