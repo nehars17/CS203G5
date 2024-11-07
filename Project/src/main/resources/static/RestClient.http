@@ -42,6 +42,8 @@ Content-Type: application/json
 ###
 POST http://localhost:8080/normallogin
 Content-Type: application/json
+Authorization: Bearer Fx_qI6V3f0SZkLoV7t7ztuiQkbuNvydBc0Xybd09tRKlxV-isa5NVrZdK9gPSVZ0hv3AbzIeRuCMeF7r2gAUDNvPUT5wuzDmYrX0uGuPAbd3qRxfumR9mncTP_chCletXF9he2TlFTk
+
 
 {
     "username": "admin@gmail.com",
@@ -133,7 +135,7 @@ Authorization: Basic admin@gmail.com goodpassword
 ### Create a new tournament
 POST http://localhost:8080/tournaments
 Content-Type: application/json 
-Authorization: Basic org@gmail.com goodpassword
+Authorization: Bearer 9E20FDE9EE06725825109265C1B76C6C
 
 {
   "tournamentname": "New York Tournament",
@@ -230,7 +232,7 @@ Authorization: Basic org@gmail.com goodpassword
 
 {
     "tournament": {
-        "id": 1
+        "id": 2
     },
     "user1": {
         "id": 2

@@ -82,52 +82,44 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/normallogin/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*", "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches", "/tournaments", "/leaderboard").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(login -> login.disable())   // Disable default form login
-                .oauth2Login(oauth2 -> oauth2
-                                .loginPage("/googlelogin/*")
-                                .successHandler(customSuccessHandler)
-
-
-
-                )
-                .logout(logout -> logout
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll())
-
-                .sessionManagement(session -> session
-                                .sessionCreationPolicy(SessionCreationPolicy.NEVER) // Stateless session management for REST
-                // APIs
-
-                )
-                .sessionManagement(session -> session
-                                .maximumSessions(1) // Limit to one session per user
-                                .maxSessionsPreventsLogin(true) // Prevent new login if session exists
-                )
-
-                .httpBasic(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable()) // CSRF protection is needed only for browser based attacks
-                .headers(header -> header.disable()) // disable the security headers, as we do not return HTML in our
-                .authenticationProvider(authenticationProvider());
-
+            .cors(Customizer.withDefaults()) // Enable CORS support
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/error").permitAll()
+                .requestMatchers("/normallogin/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*",
+                        "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches",
+                        "/tournaments", "/leaderboard", "/me").permitAll()
+                .requestMatchers(HttpMethod.GET, "/googlelogin").permitAll()
+                .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
+                .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
+                .requestMatchers(HttpMethod.POST, "/user/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/user/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/changepoints/*").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/user/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/tournaments/*").permitAll()
+                .requestMatchers(HttpMethod.POST, "/tournaments/*").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/tournaments/*").permitAll()
+                .requestMatchers(HttpMethod.POST, "/matches/create").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/matches/*").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/matches/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated())
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/googlelogin")
+                .successHandler(customSuccessHandler))
+            .logout(logout -> logout
+                .invalidateHttpSession(false)
+                .deleteCookies("JSESSIONID")
+                .permitAll())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Adjust based on your needs
+            .httpBasic(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .headers(headers -> headers.frameOptions().disable()); 
         return http.build();
     }
 
