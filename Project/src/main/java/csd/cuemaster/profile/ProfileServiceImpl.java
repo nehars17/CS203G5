@@ -134,16 +134,16 @@ public class ProfileServiceImpl implements ProfileService{
 
     // Sort all players based on points.
     @Override
-    public List<Profile> sort() {
+    public List<Profile> sortProfiles() {
         List<Profile> profileList = getPlayers();
-        profileList.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());
+        sort(profileList);
         return profileList;
     }
 
     // Set all players ranks based on the sorted points.
     @Override
     public Map<Long, Integer> setRank() {
-        List<Profile> sortedPlayers = sort();
+        List<Profile> sortedPlayers = sortProfiles();
         Map<Long, Integer> rankMap = new HashMap<>();
         if (sortedPlayers == null || sortedPlayers.isEmpty()) {
             return rankMap;
@@ -187,6 +187,7 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     // Retrieve player profiles from a given match.
+    @Override
     public List<Profile> getProfilesFromMatches(Long matchId) {
         Match match = matches.findById(matchId).orElseThrow(() -> new MatchNotFoundException(matchId));
         List<Profile> retrieved = new ArrayList<>();
@@ -196,11 +197,13 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     // Calculate the expected score of a given player in a given match.
+    @Override
     public double calculateExpectedScore(Long matchId, Long userId) {
         List<Profile> players = getProfilesFromMatches(matchId);
         validatePlayersInMatch(players, matchId);
-        Integer pointsA = players.get(0).getPoints();
-        Integer pointsB = players.get(1).getPoints();
+        List<Integer> points = getPointsFromProfiles(players);
+        Integer pointsA = points.get(0);
+        Integer pointsB = points.get(1);
         double expectedScoreA = calculateExpectedScore(pointsA, pointsB);
         double expectedScoreB = calculateExpectedScore(pointsB, pointsA);
         User user = users.findById(userId)
@@ -209,13 +212,12 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     // Update player statistics after a winner is declared.
+    @Override
     public List<Profile> updatePlayerStatistics(Long matchId, Long winnerId) {
         Match match = matches.findById(matchId).orElseThrow(()-> new MatchNotFoundException(matchId));
         Long userId1 = match.getUser1().getId();
         Long userId2 = match.getUser2().getId();
-        if (winnerId != userId1 && winnerId != userId2) {
-            throw new IllegalArgumentException("Player " + winnerId + " is not in the match.");
-        }
+        validateWinner(winnerId, userId1, userId2);
         List<Profile> players = getProfilesFromMatches(matchId);
         Integer originalPointsA = players.get(0).getPoints();
         Integer originalPointsB = players.get(1).getPoints();
@@ -235,6 +237,7 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     // Retrieve player profiles from a given tournament.
+    @Override
     public List<Profile> getProfilesFromTournaments(Long tournamentId) {
         Tournament tournament = tournaments.findById(tournamentId).orElseThrow(()-> new TournamentNotFoundException(tournamentId));
         List<Profile> retrieved = new ArrayList<>();
@@ -244,6 +247,19 @@ public class ProfileServiceImpl implements ProfileService{
             addProfileIfExists(user, retrieved);
         }
         return retrieved;
+    }
+
+    // Retrieve a list of sorted player points from a given tournament.
+    @Override
+    public List<Profile> sortProfilesFromTournaments(Long tournamentId) {
+        List<Profile> players = getProfilesFromTournaments(tournamentId);
+        sort(players);
+        return players;
+    }
+
+    // Helper method to sort points based on points.
+    private void sort(List<Profile> players) {
+        players.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());
     }
 
     // Helper method to add profiles to the list if not null.
@@ -256,8 +272,18 @@ public class ProfileServiceImpl implements ProfileService{
     // Helper method to validate that there are exactly two players in the match.
     private void validatePlayersInMatch(List<Profile> players, Long matchId) {
         if (players.size() != 2) {
-            throw new IllegalArgumentException("Match " + matchId + " does not have enough players to calculate expected score.");
+            throw new IllegalArgumentException("Match " + matchId + " does not have two players to calculate expected score.");
         }
+    }
+
+    // Helper method to get a list of points from profiles.
+    private List<Integer> getPointsFromProfiles(List<Profile> players) {
+        List<Integer> retrieved = new ArrayList<>();
+        for (int i = 0; i < players.size(); i++) {
+            Integer points = players.get(i).getPoints();
+            retrieved.add(points);
+        }
+        return retrieved;
     }
 
     // Helper method to calculate the expected score.
@@ -273,6 +299,13 @@ public class ProfileServiceImpl implements ProfileService{
             return expectedScoreB;
         } else {
             throw new IllegalArgumentException("Player " + user.getId() + " is not in the match.");
+        }
+    }
+
+    // Helper method to validate that the winner is in the match.
+    private void validateWinner(Long winnerId, Long userId1, Long userId2) {
+        if (winnerId != userId1 && winnerId != userId2) {
+            throw new IllegalArgumentException("Player " + winnerId + " is not in the match.");
         }
     }
 

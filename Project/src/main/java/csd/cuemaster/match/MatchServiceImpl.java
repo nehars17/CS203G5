@@ -1,5 +1,6 @@
 package csd.cuemaster.match;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,18 +8,24 @@ import org.springframework.stereotype.Service;
 
 import csd.cuemaster.tournament.*;
 import csd.cuemaster.user.*;
+import csd.cuemaster.profile.*;
 
 @Service
 public class MatchServiceImpl implements MatchService {
-    
+
+    private ProfileService profileService;
+
     @Autowired
     private MatchRepository matchRepository;
 
     @Autowired
-    private TournamentRepository tournamentRepository; 
+    private TournamentRepository tournamentRepository;
 
     @Autowired
-    private UserRepository userRepository; 
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository; 
 
     // public MatchServiceImpl(MatchRepository matchRepository) {
     //     this.matchResponsitory = matchRepository;
@@ -101,5 +108,24 @@ public class MatchServiceImpl implements MatchService {
         match.setWinner(userRepository.findById(winnerId).orElseThrow(() -> new ResourceNotFoundException("User with ID " + winnerId + " does not exist")));
         
         return matchRepository.save(match);
+    }
+
+    // Create matches from a given tournament.
+    @Override
+    public List<Match> createMatchesFromTournaments(Long tournamentId) {
+        List<Profile> players = profileService.sortProfilesFromTournaments(tournamentId);
+        if (players.size() < 2) {
+            return new ArrayList<>();
+        }
+        List<Match> matches = new ArrayList<>();
+        for (int i = 0; i < players.size(); i += 2) {
+            User user1 = players.get(i).getUser();
+            User user2 = players.get(i + 1).getUser();
+            Match match = new Match();
+            matches.add(match);
+            match.setUser1(user1);
+            match.setUser2(user2);
+        }
+        return matches;
     }
 }

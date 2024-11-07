@@ -12,11 +12,12 @@ public interface ProfileService {
     Profile addProfile(User user, Profile profile);
     // String addProfilePhoto(Long userID, byte[] image);
     List<Profile> getPlayers();
-    List<Profile> sort();
+    List<Profile> sortProfiles();
     Map<Long, Integer> setRank();
     Profile pointsSet(Long user_id, Integer points);
     List<Profile> getProfilesFromMatches(Long match_id);
     double calculateExpectedScore(Long match_id, Long user_id);
     List<Profile> updatePlayerStatistics(Long match_id, Long winner_id);
     List<Profile> getProfilesFromTournaments(Long tournament_id);
+    List<Profile> sortProfilesFromTournaments(Long tournamentId);
 }
