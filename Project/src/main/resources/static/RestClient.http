@@ -136,6 +136,24 @@ Authorization: Basic admin@gmail.com goodpassword
 }
 
 #SHIYUN
+### Join a tournament
+POST http://localhost:8080/tournaments/27/join
+Content-Type: application/json 
+Authorization: Basic throwawaynypemail@gmail.com goodpassword
+
+{
+  "players": [110,90]
+}
+
+### Leave a tournament
+POST http://localhost:8080/tournaments/27/join
+Content-Type: application/json 
+Authorization: Basic throwawaynypemail@gmail.com goodpassword
+
+{
+  "players": [110,90]
+}
+
 ### Create a new tournament
 POST http://localhost:8080/tournaments
 Content-Type: application/json 

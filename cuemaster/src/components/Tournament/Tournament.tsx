@@ -59,23 +59,42 @@ const Tournaments: React.FC = () => {
         return statusMatch && seasonMatch;
     });
 
-    const handleJoin = async (id: number) => {     
+    const handleJoin = async (id: number) => {
         if (!playerId) {
             console.error('Player ID is not available. Unable to join tournament.');
             return;
         }
-
         try {
-            await joinTournament(id, playerId);
-            setTournaments(prevTournaments =>
-                prevTournaments.map(tournament =>
-                    tournament.id === id ? { ...tournament, players: [...tournament.players, playerId] } : tournament
-                )
-            );
-            console.log(`Player ${playerId} joined tournament ${id}.`);
+            const token = getAuthToken();
+            const response = await fetch(`http://localhost:8080/tournaments/${id}/join`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(playerId),  // Send playerId as a plain number
+            });
+    
+            if (response.ok) {
+                console.log(`Player ${playerId} joined tournament ${id}.`);
+    
+                // Fetch updated tournament data (as previously described)
+                const updatedResponse = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const updatedTournament = await updatedResponse.json();
+                setTournaments(prevTournaments =>
+                    prevTournaments.map(tournament =>
+                        tournament.id === id ? updatedTournament : tournament
+                    )
+                );
+            } else {
+                console.error('Failed to join tournament:', response.statusText);
+            }
         } catch (error) {
-            console.error('Error joining tournament:', error);
-            setError('Failed to join tournament. Please try again later.');
+            console.error('Error:', error);
         }
     };
 
@@ -96,23 +115,6 @@ const Tournaments: React.FC = () => {
         } catch (error) {
             console.error('Error leaving tournament:', error);
             setError('Failed to leave tournament. Please try again later.');
-        }
-    };
-
-    const joinTournament = async (tournamentId: number, playerId: number) => {
-        try {
-            const authToken = localStorage.getItem('authToken'); // Or wherever you store your token
-            const response = await API.post(`/tournaments/${tournamentId}/join`, { playerId }, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-                withCredentials: true,
-            });
-            console.log('Join response:', response); // Log the response
-            return response; // Return the response to be used in the component
-        } catch (error) {
-            console.error('Error joining tournament:', error);
-            throw error; // Throw error to be caught in handleJoin
         }
     };
     
