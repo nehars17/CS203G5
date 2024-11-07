@@ -21,6 +21,7 @@ const Tournaments: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [filter, setFilter] = useState<string>('ALL'); // New filter state
+    const [seasonFilter, setSeasonFilter] = useState<string>('ALL'); // New state for season filter
     const isUserAuthenticated = isAuthenticated();
     const userRole = getUserRole();
     const playerId = getUserIdFromToken(); // Get the player ID from the token
@@ -41,10 +42,20 @@ const Tournaments: React.FC = () => {
         fetchTournaments(); // Call fetchTournaments when the component mounts
     }, []);
 
+    const determineSeason = (startDate: string): string => {
+        const month = new Date(startDate).getMonth() + 1; // Months are 0-indexed
+        if (month >= 7 && month <= 9) return 'Season 1'; // July - September
+        if (month >= 10 && month <= 12) return 'Season 2'; // October - December
+        if (month >= 1 && month <= 3) return 'Season 3'; // January - March
+        return 'Season 4'; // April - June
+    };
+
     // Filter function to filter tournaments based on selected status
     const filteredTournaments = tournaments.filter((tournament) => {
-        if (filter === 'ALL') return true;
-        return tournament.status === filter;
+        const season = determineSeason(tournament.startDate);
+        const statusMatch = filter === 'ALL' || tournament.status === filter;
+        const seasonMatch = seasonFilter === 'ALL' || season === seasonFilter;
+        return statusMatch && seasonMatch;
     });
 
     const handleJoin = async (id: number) => {
@@ -150,6 +161,14 @@ const Tournaments: React.FC = () => {
                 ))}
             </div>
 
+            {/* Season Dropdown */}
+            <select value={seasonFilter} onChange={(e) => setSeasonFilter(e.target.value)} style={styles.dropdown}>
+                <option value="ALL">All Seasons</option>
+                <option value="Season 1">Season 1 (July - September)</option>
+                <option value="Season 2">Season 2 (October - December)</option>
+                <option value="Season 3">Season 3 (January - March)</option>
+                <option value="Season 4">Season 4 (April - June)</option>
+            </select>
 
             {/* Show Create Tournament button only for authenticated organizers */}
             {isUserAuthenticated && userRole === "ROLE_ORGANISER" && (
@@ -173,7 +192,7 @@ const Tournaments: React.FC = () => {
                         <p><strong>Status:</strong> {tournament.status}</p>
                         <p><strong>Description:</strong> {tournament.description}</p>
                         <p><strong>WinnerID:</strong> {tournament.winnerId}</p>
-                        <p><strong>Players:</strong> {tournament.players.length > 0 ? tournament.players.join(', ') : 'No players'}</p>
+                        <p><strong>Players(ID):</strong> {tournament.players.length > 0 ? tournament.players.join(', ') : 'No players'}</p>
 
 
                         {/* Render Join button only for authenticated players not already in the tournament */}
@@ -253,6 +272,11 @@ const styles = {
         fontWeight: 'bold',
         transition: 'background-color 0.3s',
         cursor: 'pointer',
+    },
+    dropdown: {
+        margin: '20px', 
+        padding: '10px', 
+        fontSize: '1rem' 
     },
     tournamentList: {
         display: 'grid',

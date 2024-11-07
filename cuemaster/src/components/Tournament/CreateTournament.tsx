@@ -42,6 +42,7 @@ const CreateTournament: React.FC = () => {
             });
 
             if (response.ok) {
+                console.log(tournamentDetails);
                 navigate('/tournaments', { state: { showNewlyCreated: true } }); // Redirect with state
             } else {
                 console.error('Failed to create tournament:', response.statusText);
@@ -86,7 +87,7 @@ const CreateTournament: React.FC = () => {
                         }}
                         required
                         className="input"
-                        min={new Date().toISOString().split('T')[0]}
+                        // min={new Date().toISOString().split('T')[0]}
                     />
                 </div>
                 <div className="form-group">

@@ -82,6 +82,7 @@ const UpdateTournament: React.FC = () => {
             });
 
             if (response.ok) {
+                console.log(tournamentDetails);
                 navigate('/tournaments', { state: { showUpdatedTournament: true } });
             } else {
                 console.error('Failed to update tournament:', response.statusText);
@@ -126,7 +127,7 @@ const UpdateTournament: React.FC = () => {
                         }}
                         required
                         className="input"
-                        min={new Date().toISOString().split('T')[0]}
+                        // min={new Date().toISOString().split('T')[0]}
                     />
                 </div>
                 <div className="form-group">

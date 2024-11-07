@@ -147,7 +147,7 @@ Authorization: Basic org@gmail.com goodpassword
   "startDate": "2024-09-20",
   "endDate": "2024-09-21",
   "time": "10:00:00",
-  "status": "UPCOMING",
+  "status": "COMPLETED",
   "description": "Test Tournament",
   "winnerId": null,
   "players": []
