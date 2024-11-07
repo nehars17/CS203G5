@@ -18,6 +18,7 @@ interface Tournament {
 
 const Tournaments: React.FC = () => {
     const [tournaments, setTournaments] = useState<Tournament[]>([]);
+    const [status, setStatus] = useState('UPCOMING');
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [filter, setFilter] = useState<string>('ALL'); // New filter state
@@ -44,10 +45,10 @@ const Tournaments: React.FC = () => {
 
     const determineSeason = (startDate: string): string => {
         const month = new Date(startDate).getMonth() + 1; // Months are 0-indexed
-        if (month >= 7 && month <= 9) return 'Season 1'; // July - September
-        if (month >= 10 && month <= 12) return 'Season 2'; // October - December
-        if (month >= 1 && month <= 3) return 'Season 3'; // January - March
-        return 'Season 4'; // April - June
+        if (month >= 10 && month <= 12) return 'Season 1'; // October - December
+        if (month >= 1 && month <= 3) return 'Season 2'; // January - March
+        if (month >= 4 && month <= 6) return 'Season 3'; // April - June
+        return 'Season 4'; // July - September
     };
 
     // Filter function to filter tournaments based on selected status
@@ -58,7 +59,7 @@ const Tournaments: React.FC = () => {
         return statusMatch && seasonMatch;
     });
 
-    const handleJoin = async (id: number) => {
+    const handleJoin = async (id: number) => {     
         if (!playerId) {
             console.error('Player ID is not available. Unable to join tournament.');
             return;
@@ -78,7 +79,7 @@ const Tournaments: React.FC = () => {
         }
     };
 
-    const handleLeave = async (id: number) => {
+    const handleLeave = async (id: number) => {        
         if (!playerId) {
             console.error('Player ID is not available. Unable to leave tournament.');
             return;
@@ -189,10 +190,10 @@ const Tournaments: React.FC = () => {
             {/* Season Dropdown */}
             <select value={seasonFilter} onChange={(e) => setSeasonFilter(e.target.value)} style={styles.dropdown}>
                 <option value="ALL">All Seasons</option>
-                <option value="Season 1">Season 1 (July - September)</option>
-                <option value="Season 2">Season 2 (October - December)</option>
-                <option value="Season 3">Season 3 (January - March)</option>
-                <option value="Season 4">Season 4 (April - June)</option>
+                <option value="Season 1">Season 1</option>
+                <option value="Season 2">Season 2</option>
+                <option value="Season 3">Season 3</option>
+                <option value="Season 4">Season 4</option>
             </select>
 
             {/* Show Create Tournament button only for authenticated organizers */}
@@ -221,14 +222,14 @@ const Tournaments: React.FC = () => {
 
 
                         {/* Render Join button only for authenticated players not already in the tournament */}
-                        {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && !tournament.players.includes(playerId) && (
+                        {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && !tournament.players.includes(playerId) && tournament.status == "UPCOMING" && (
                             <button onClick={() => handleJoin(tournament.id)} style={styles.joinButton}>
                                 Join
                             </button>
                         )}
 
                         {/* Render Leave button only for authenticated players in the tournament */}
-                        {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && tournament.players.includes(playerId) && (
+                        {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && tournament.players.includes(playerId) && tournament.status == "UPCOMING" && (
                             <button onClick={() => handleLeave(tournament.id)} style={styles.leaveButton}>
                                 Leave
                             </button>
