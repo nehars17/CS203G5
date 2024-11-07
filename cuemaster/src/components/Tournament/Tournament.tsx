@@ -98,42 +98,45 @@ const Tournaments: React.FC = () => {
         }
     };
 
-    const handleLeave = async (id: number) => {        
+    const handleLeave = async (id: number) => {
         if (!playerId) {
             console.error('Player ID is not available. Unable to leave tournament.');
             return;
         }
-
         try {
-            await leaveTournament(id, playerId);
-            setTournaments(prevTournaments =>
-                prevTournaments.map(tournament =>
-                    tournament.id === id ? { ...tournament, players: tournament.players.filter(player => player !== playerId) } : tournament
-                )
-            );
-            console.log(`Player ${playerId} left tournament ${id}.`);
+            const token = getAuthToken();
+            const response = await fetch(`http://localhost:8080/tournaments/${id}/leave`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(playerId),  // Send playerId as a plain number
+            });
+    
+            if (response.ok) {
+                console.log(`Player ${playerId} left tournament ${id}.`);
+    
+                // Fetch updated tournament data to update state
+                const updatedResponse = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const updatedTournament = await updatedResponse.json();
+                setTournaments(prevTournaments =>
+                    prevTournaments.map(tournament =>
+                        tournament.id === id ? updatedTournament : tournament
+                    )
+                );
+            } else {
+                console.error('Failed to leave tournament:', response.statusText);
+            }
         } catch (error) {
-            console.error('Error leaving tournament:', error);
-            setError('Failed to leave tournament. Please try again later.');
+            console.error('Error:', error);
         }
     };
     
-    const leaveTournament = async (tournamentId: number, playerId: number) => {
-        try {
-            const authToken = localStorage.getItem('authToken'); // Or wherever you store your token
-            const response = await API.post(`/tournaments/${tournamentId}/leave`, { playerId }, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-                withCredentials: true,
-            });
-            console.log('Leave response:', response); // Log the response
-            return response; // Return the response to be used in the component
-        } catch (error) {
-            console.error('Error leaving tournament:', error);
-            throw error; // Throw error to be caught in handleLeave
-        }
-    };
 
     const handleDelete = async (id: number) => {
         if (window.confirm('Are you sure you want to delete this tournament?')) {
