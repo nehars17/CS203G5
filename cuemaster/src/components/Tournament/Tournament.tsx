@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
 import { Link } from 'react-router-dom';
-import { isAuthenticated, getUserRole, getUserIdFromToken } from '../authUtils';
+import { isAuthenticated, getUserRole, getUserIdFromToken, getAuthToken } from '../authUtils';
 
 interface Tournament {
     id: number;
@@ -131,6 +131,31 @@ const Tournaments: React.FC = () => {
             throw error; // Throw error to be caught in handleLeave
         }
     };
+
+    const handleDelete = async (id: number) => {
+        if (window.confirm('Are you sure you want to delete this tournament?')) {
+            try {
+                const token = getAuthToken();
+                const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    console.log(`Deleted tournament with ID: ${id}`);
+                    fetchTournaments();
+                } else {
+                    console.error('Failed to delete tournament:', response.statusText);
+                    setError('Failed to delete tournament. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                setError('An error occurred while deleting the tournament.');
+            }
+        }
+    };
     
 
     if (loading) {
@@ -217,9 +242,12 @@ const Tournaments: React.FC = () => {
                                 <Link to={`/tournaments/update-tournament/${tournament.id}`} className="update-button" style={styles.updateButton}>
                                     Edit
                                 </Link>
-                                <Link to={`/tournaments/delete-tournament/${tournament.id}`} className="delete-button" style={styles.deleteButton}>
+                                <button
+                                    onClick={() => handleDelete(tournament.id)}
+                                    style={styles.deleteButton}
+                                >
                                     Delete
-                                </Link>
+                                </button>
                             </div>
                         )}
                     </li>

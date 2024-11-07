@@ -9,7 +9,6 @@ import Leaderboard from './components/Leaderboard/Leaderboard';
 import Tournament from './components/Tournament/Tournament';
 import CreateTournament from './components/Tournament/CreateTournament';
 import UpdateTournament from './components/Tournament/UpdateTournament';
-import DeleteTournament from './components/Tournament/DeleteTournament';
 import NavBar from './components/NavBar/NavBar';
 import Error404 from './pages/Error404';
 import PrivateRoute from './components/PrivateRoute';
@@ -87,14 +86,6 @@ const AppRoutes: React.FC = () => {
                     element={
                         <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>
                             <UpdateTournament />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/tournaments/delete-tournament/:id"
-                    element={
-                        <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>
-                            <DeleteTournament />
                         </PrivateRoute>
                     }
                 />
