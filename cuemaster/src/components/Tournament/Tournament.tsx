@@ -64,6 +64,10 @@ const Tournaments: React.FC = () => {
             console.error('Player ID is not available. Unable to join tournament.');
             return;
         }
+
+        const confirmed = window.confirm(`Do you want to join?`);
+        if (!confirmed) return;
+
         try {
             const token = getAuthToken();
             const response = await fetch(`http://localhost:8080/tournaments/${id}/join`, {
@@ -77,7 +81,8 @@ const Tournaments: React.FC = () => {
     
             if (response.ok) {
                 console.log(`Player ${playerId} joined tournament ${id}.`);
-    
+                alert(`You have successfully joined!`);
+
                 // Fetch updated tournament data (as previously described)
                 const updatedResponse = await fetch(`http://localhost:8080/tournaments/${id}`, {
                     headers: {
@@ -103,6 +108,10 @@ const Tournaments: React.FC = () => {
             console.error('Player ID is not available. Unable to leave tournament.');
             return;
         }
+
+        const confirmed = window.confirm(`Do you want to leave?`);
+        if (!confirmed) return;
+
         try {
             const token = getAuthToken();
             const response = await fetch(`http://localhost:8080/tournaments/${id}/leave`, {
@@ -116,7 +125,8 @@ const Tournaments: React.FC = () => {
     
             if (response.ok) {
                 console.log(`Player ${playerId} left tournament ${id}.`);
-    
+                alert(`You have successfully left!`);
+
                 // Fetch updated tournament data to update state
                 const updatedResponse = await fetch(`http://localhost:8080/tournaments/${id}`, {
                     headers: {
@@ -223,11 +233,14 @@ const Tournaments: React.FC = () => {
                         <p><strong>Status:</strong> {tournament.status}</p>
                         <p><strong>Description:</strong> {tournament.description}</p>
                         <p><strong>WinnerID:</strong> {tournament.winnerId}</p>
-                        <p><strong>Players(ID):</strong> {tournament.players.length > 0 ? tournament.players.join(', ') : 'No players'}</p>
-
+                        {/* Render player list only for organizers */}
+                        {isUserAuthenticated && userRole === "ROLE_ORGANISER" && (
+                            <p><strong>Players (ID):</strong> {tournament.players.length > 0 ? tournament.players.join(', ') : 'No players'}</p>
+                        )}
+                        
 
                         {/* Render Join button only for authenticated players not already in the tournament */}
-                        {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && !tournament.players.includes(playerId) && tournament.status == "UPCOMING" && (
+                        {isUserAuthenticated && tournament.players.length < 32 && userRole === "ROLE_PLAYER" && playerId !== null && !tournament.players.includes(playerId) && tournament.status == "UPCOMING" && (
                             <button onClick={() => handleJoin(tournament.id)} style={styles.joinButton}>
                                 Join
                             </button>
