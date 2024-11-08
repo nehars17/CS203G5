@@ -45,7 +45,7 @@ class UserServiceTest {
     }
   
     @Test
-    public void testAddUser_NewUser_Success() {
+    public void testAddUser_NewUser_Success() throws Exception {
         // Arrange
         User newUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", false);
 
@@ -65,7 +65,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testAddUser_UserAlreadyExists() {
+    public void testAddUser_UserAlreadyExists() throws Exception {
         // Arrange
         User existingUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
 
@@ -102,7 +102,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testAccountActivation_Success() {
+    public void testAccountActivation_Success() throws Exception {
         // Arrange
         User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", false);
         savedUser.setActivationToken("valid-token");

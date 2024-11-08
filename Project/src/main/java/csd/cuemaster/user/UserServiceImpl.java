@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
         User foundUser = users.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        
+
         Key secretKey = totpService.generateSecret();
         TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
         foundUser.setSecret(secretKey);
@@ -88,16 +88,22 @@ public class UserServiceImpl implements UserService {
     /**
      * Added logic to avoid adding books with the same title
      * Return null if there exists a book with the same title
+     * 
+     * @throws Exception
      */
     @Override
-    public User addUser(User user) {
+    public User addUser(User user) throws Exception {
         if (users.findByUsername(user.getUsername()).isPresent()) {
             return null; // User already exists
         }
         user.setPassword(encoder.encode(user.getPassword()));
+        Key secretKey = totpService.generateSecret();
+        System.out.println(secretKey);
+        TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
+        user.setSecret(secretKey);
+        user.setTotpToken(totpCode);
+        user.setActivationToken(totpCode.getCode());
         user.setProvider("normal");
-        String token = generateActivationToken(); // Generate token
-        user.setActivationToken(token);
         return users.save(user);
     }
 
@@ -125,6 +131,7 @@ public class UserServiceImpl implements UserService {
             if (valid) {
                 foundUser.setTotpToken(null);
                 foundUser.setSecret(null);
+                foundUser.setActivationToken(null);
                 users.save(foundUser);
                 return foundUser;
             }
@@ -134,19 +141,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String accountActivation(String token) {
+    public String accountActivation(String token) throws Exception {
         // Find the user by the activation token
         User foundUser = users.findByActivationToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid activation code"));
-
-        // Set the user as enabled and clear the activation token
-        foundUser.setEnabled(true); // Activate the user
-        foundUser.setActivationToken(null); // Clear token after activation
-
-        // Save the updated user to the database
-        users.save(foundUser);
-
-        return "Account Activated";
+        TOTPToken totpToken = foundUser.getTotpToken();
+        System.out.println("IM CALLED");
+        if (totpToken != null && token.equals(totpToken.getCode())) {
+            boolean valid = totpService.validateTOTPToken(foundUser.getSecret(), totpToken);
+            if (valid) {
+                foundUser.setEnabled(true);
+                foundUser.setTotpToken(null);
+                foundUser.setSecret(null);
+                foundUser.setActivationToken(null);
+                users.save(foundUser);
+                return "Account activated successfully.";
+            } else {
+                return "Invalid or expired token.";
+            }
+        } else {
+            return "Token mismatch or token not found.";
+        }
+       
     }
 
     @Override

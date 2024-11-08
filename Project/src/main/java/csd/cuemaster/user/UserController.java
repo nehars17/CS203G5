@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,16 +65,17 @@ public class UserController {
      * 
      * @param user
      * @return
-     */
-
-    @PostMapping("/register")
-    public User addUser(@Valid @RequestBody User user, HttpServletRequest request) {
+          * @throws Exception 
+          */
+     
+         @PostMapping("/register")
+         public User addUser(@Valid @RequestBody User user, HttpServletRequest request) throws Exception {
         User savedUser = userService.addUser(user);
         if (savedUser == null) {
             throw new UserExistsException(user.getUsername());
 
         }
-        String activationLink = "http://localhost:8080/activate?token=" + savedUser.getActivationToken();
+        String activationLink = "http://localhost:3000/activateaccount?token=" + savedUser.getTotpToken().getCode();
         try {
             emailService.sendActivationEmail(savedUser.getUsername(), activationLink);
         } catch (MessagingException e) {
@@ -85,10 +85,11 @@ public class UserController {
 
     }
 
-    @GetMapping("/activate")
-    public String activateAccount(@RequestParam("token") String token) {
+    @PostMapping("/activate")
+    public ResponseEntity<String> activateAccount(@Valid @RequestBody Map<String, Object> payload) throws Exception {
+        String token = (String) payload.get("token");
         String message = userService.accountActivation(token);
-        return message; // Return a view to show the activation status
+        return ResponseEntity.ok(message); // Return a view to show the activation status
     }
 
     @PostMapping("/normallogin")

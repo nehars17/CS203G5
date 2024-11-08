@@ -16,6 +16,7 @@ import AdminDashboard from './components/Admin/AdminDashboard';
 import Home from './components/Home/Home';
 import ResetPassword from './components/User/ResetPassword';
 import ForgotPassword from './components/User/ForgotPassword';
+import AccountActivated from './components/User/AccountActivated';
 
 import About from './pages/About';
 import { isAuthenticated, getUserIdFromToken, getUserRole } from './components/authUtils';
@@ -38,6 +39,7 @@ const AppRoutes: React.FC = () => {
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/matches" element={<Matches />} />
                 <Route path="/emailauth" element={<EmailAuthForm />} />
+                <Route path="/activateaccount" element={<AccountActivated />} />
                 <Route path="/resetPassword" element={<ResetPassword />} />
                 <Route path="/forgotPassword" element={<ForgotPassword />} />
 

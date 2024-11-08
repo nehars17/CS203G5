@@ -65,11 +65,13 @@ public class SecurityConfig {
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/normallogin/*").permitAll()
-                .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*",
+                .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate/*",
                         "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches",
                         "/tournaments", "/leaderboard", "/me","/forgotPassword/*","/resetPassword/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
+                .requestMatchers(HttpMethod.POST, "/activate").permitAll()
+
                 .requestMatchers(HttpMethod.POST, "/forgotPassword").permitAll()
                 .requestMatchers(HttpMethod.POST, "/resetPassword").permitAll()
                 .requestMatchers(HttpMethod.POST, "/verify-code").permitAll()
