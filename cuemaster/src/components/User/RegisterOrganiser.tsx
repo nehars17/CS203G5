@@ -14,7 +14,12 @@ const Register: React.FC = () => {
   const [error, setError] = useState(''); // To handle error messages
   const userType = "ROLE_ORGANISER";
   const navigate = useNavigate();
-
+  function Refresh() {
+    setTimeout(function() {
+      window.location.reload(); // This reloads the current page
+    }, 1000); // Adjust the time (in milliseconds) as needed
+  }
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!captchaToken) {
@@ -63,8 +68,8 @@ const Register: React.FC = () => {
       const data = await res.json();
       console.log(data);
       localStorage.setItem('token', data.token); // Store token
-
       navigate('/organiserProfile');
+      
 
     } catch (error) {
       console.error('Error during Google login:', error);

@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,11 +24,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import csd.cuemaster.services.EmailService;
@@ -48,9 +45,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private EmailService emailService;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    @Value("${captcha.client-secret}")
+    private String captchasecretkey;
 
     @Autowired
     private JwtService jwtService;
@@ -110,7 +106,7 @@ public class UserController {
     public boolean verifyRecaptcha(String recaptchaToken) {
         String url = "https://www.google.com/recaptcha/api/siteverify";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("secret", "6LdKu3kqAAAAAGG--D9EwTpoqex87ouqRBbA8fg7");
+        params.add("secret", captchasecretkey);
         params.add("response", recaptchaToken);
 
         HttpHeaders headers = new HttpHeaders();
@@ -135,7 +131,7 @@ public class UserController {
                 System.err.println("No response from reCAPTCHA API.");
                 return false;
             }
-        } catch ( Exception e) {
+        } catch (Exception e) {
             System.err.println("Error while verifying reCAPTCHA: " + e.getMessage());
             return false;
         }
@@ -152,8 +148,8 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> retrieveUser(HttpSession session, @Valid @RequestBody User user)
             throws Exception {
 
-         // Verify reCAPTCHA token
-         if (!verifyRecaptcha((String) user.getRecaptchaToken())) {
+        // Verify reCAPTCHA token
+        if (!verifyRecaptcha((String) user.getRecaptchaToken())) {
             throw new IllegalArgumentException("Invalid CAPTCHA, please try again");
         }
         user.setRecaptchaToken(null);
@@ -163,8 +159,9 @@ public class UserController {
             throw new UsernameNotFoundException("Username or Password Incorrect");
         }
         if (!loggedInUser.isEnabled()) {
-            response.put("message","Please activate account, check email");
-            String activationLink = "http://localhost:3000/activateaccount?token=" + loggedInUser.getTotpToken().getCode();
+            response.put("message", "Please activate account, check email");
+            String activationLink = "http://localhost:3000/activateaccount?token="
+                    + loggedInUser.getTotpToken().getCode();
             try {
                 emailService.sendActivationEmail(loggedInUser.getUsername(), activationLink);
             } catch (MessagingException e) {
@@ -172,9 +169,9 @@ public class UserController {
             }
             return ResponseEntity.ok(response);
         }
-        if(!loggedInUser.isUnlocked()){
+        if (!loggedInUser.isUnlocked()) {
             System.out.println("IMCALLED");
-            response.put("message","Account Locked, Please contact administrator at cuemasternoreply@gmail.com");
+            response.put("message", "Account Locked, Please contact administrator at cuemasternoreply@gmail.com");
             return ResponseEntity.ok(response);
         }
         if (loggedInUser.getProvider().equals("google")) {
@@ -273,6 +270,5 @@ public class UserController {
     public void unlockAccount(@PathVariable(value = "user_id") Long user_id) {
         userService.unlockAccount(user_id);
     }
-
 
 }

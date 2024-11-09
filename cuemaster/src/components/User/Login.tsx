@@ -79,9 +79,9 @@ const Login: React.FC = () => {
       });
       const data = await res.json();
       localStorage.setItem('token', data.token); // Store token
-      if (data.role === "ROLE_PLAYER") {
+      if (data.role == "ROLE_PLAYER") {
         navigate('/playerProfile');
-      } else if (data.role === "ROLE_ORGANISER") {
+      } else if (data.role == "ROLE_ORGANISER") {
         navigate('/organiserProfile');
       }
     } catch (error) {
@@ -122,7 +122,7 @@ const Login: React.FC = () => {
             <Form.Group controlId="recaptcha" className="mt-3">
               <ReCAPTCHA
                 ref={recaptchaRef}
-                sitekey="6LdKu3kqAAAAAAeXkISFRFa_DokCrNUxlr-Q_m2H" // Make sure this is correct
+                sitekey="6LdKu3kqAAAAAAeXkISFRFa_DokCrNUxlr-Q_m2H" //captcha site key
                 onChange={handleRecaptcha}
               />
             </Form.Group>

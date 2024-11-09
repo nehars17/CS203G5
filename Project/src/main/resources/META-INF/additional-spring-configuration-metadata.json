@@ -33,5 +33,10 @@
     "name": "google.client-secret",
     "type": "java.lang.String",
     "description": "A description for 'google.client-secret'"
+  },
+  {
+    "name": "captcha.client-secret",
+    "type": "java.lang.String",
+    "description": "A description for 'captcha.client-secret'"
   }
 ]}

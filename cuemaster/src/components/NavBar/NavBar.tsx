@@ -17,7 +17,12 @@ const NavBar: React.FC = () => {
                             // Links for authenticated users
                             <>
                                 {userRole === "ROLE_ADMIN" && (
+                                    <>
                                     <Nav.Link href="/adminDashboard">Admin Dashboard</Nav.Link>
+                                    <Nav.Link href="/home">Home</Nav.Link>
+                                    </>
+
+
                                 )}
                                 {userRole === "ROLE_PLAYER" && (
                                     <>  <Nav.Link href="/home">Home</Nav.Link>

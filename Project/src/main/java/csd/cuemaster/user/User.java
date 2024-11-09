@@ -59,6 +59,7 @@ public class User implements UserDetails {
     @Size(min = 8, message = "Password should be at least 8 characters")
     private String password;
 
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String authorities;
 
     private boolean enabled;

@@ -59,7 +59,7 @@ const AppRoutes: React.FC = () => {
                 <Route
                     path="/playerProfile"
                     element={
-                        <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_PLAYER"}>
+                        <PrivateRoute isAuthenticated={isUserAuthenticated && (isRole === "ROLE_PLAYER" || isRole==="ROLE_ADMIN") }>
                             <Profile />
                         </PrivateRoute>
                     }
@@ -67,7 +67,7 @@ const AppRoutes: React.FC = () => {
                 <Route
                     path="/organiserProfile"
                     element={
-                        <PrivateRoute isAuthenticated={isUserAuthenticated}>
+                        <PrivateRoute isAuthenticated={isUserAuthenticated && (isRole==="ROLE_ORGANISER" || isRole==="ROLE_ADMIN")}>
                             <Profile />
                         </PrivateRoute>
                     }

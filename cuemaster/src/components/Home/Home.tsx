@@ -30,7 +30,7 @@ const Home: React.FC = () => {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       });
-      const data = response.data; // Assuming response.data is of type UserData
+      const data = response.data; //  response.data is of type UserData
       setUserData(data); // Update state with user data
     } catch (error) {
       console.error('Failed to fetch profile', error);

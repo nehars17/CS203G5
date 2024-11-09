@@ -15,7 +15,11 @@ const Register: React.FC = () => {
   const [error, setError] = useState('');
   const userType = "ROLE_PLAYER";
   const navigate = useNavigate();
-
+  function Refresh() {
+    setTimeout(function() {
+      window.location.reload(); // This reloads the current page
+    }, 1000); // Adjust the time (in milliseconds) as needed
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!captchaToken) {
@@ -28,7 +32,7 @@ const Register: React.FC = () => {
     }
     try {
 
-      // Include the CAPTCHA token in your registration payload
+      // Include the CAPTCHA token in  registration payload
       await API.post('/register', {
         username: email,
         password: password,
