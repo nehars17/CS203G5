@@ -17,7 +17,7 @@ public class CueMasterApplication {
         BCryptPasswordEncoder encoder = ctx.getBean(BCryptPasswordEncoder.class);
 
         // Check if the admin user already exists
-        String adminEmail = "admin@gmail.com";
+        String adminEmail = "cuemasternoreply@gmail.com";
         if (!users.findByUsername(adminEmail).isPresent()) {
             User user = new User("cuemasternoreply@gmail.com" , encoder.encode("goodpassword"), "ROLE_ADMIN", "normal", true);
             User user2 = new User("org@gmail.com", encoder.encode("goodpassword"), "ROLE_ORGANISER", "normal", true);

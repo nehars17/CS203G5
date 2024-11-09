@@ -80,9 +80,10 @@ const Login: React.FC = () => {
       const data = await res.json();
       localStorage.setItem('token', data.token); // Store token
       if (data.role == "ROLE_PLAYER") {
-        navigate('/playerProfile');
+        window.location.href = '/playerProfile';
       } else if (data.role == "ROLE_ORGANISER") {
-        navigate('/organiserProfile');
+        window.location.href = '/organiserProfile';
+
       }
     } catch (error) {
       console.error('Error during Google login:', error);

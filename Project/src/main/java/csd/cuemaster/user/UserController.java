@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -208,7 +209,6 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
             String jwtToken = jwtService.generateToken(loggedInUser, loggedInUser.getId(), role);
-            System.out.println(jwtToken);
             Map<String, Object> response = new HashMap<>();
             response.put("user", loggedInUser);
             response.put("token", jwtToken);
@@ -263,12 +263,25 @@ public class UserController {
 
     @DeleteMapping("/user/{user_id}/account")
     public void deleteAccount(@PathVariable(value = "user_id") Long user_id) {
-        userService.deleteUser(user_id);
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (currentUser.getId() == 1 || currentUser.getId() == user_id) {
+            userService.deleteUser(user_id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this account");
+
+        }
     }
 
     @PutMapping("/user/{user_id}/account")
     public void unlockAccount(@PathVariable(value = "user_id") Long user_id) {
-        userService.unlockAccount(user_id);
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (currentUser.getId() == 1 || currentUser.getId() == user_id) {
+            userService.unlockAccount(user_id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this account");
+
+        }
+
     }
 
 }

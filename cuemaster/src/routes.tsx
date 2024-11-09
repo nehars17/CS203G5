@@ -11,6 +11,7 @@ import Leaderboard from './components/Leaderboard/Leaderboard';
 import Tournament from './components/Tournament/Tournament';
 import NavBar from './components/NavBar/NavBar';
 import Error404 from './pages/Error404';
+import Forbidden403 from './pages/Forbidden403';
 import PrivateRoute from './components/PrivateRoute';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import Home from './components/Home/Home';
@@ -42,7 +43,7 @@ const AppRoutes: React.FC = () => {
                 <Route path="/activateaccount" element={<AccountActivated />} />
                 <Route path="/resetPassword" element={<ResetPassword />} />
                 <Route path="/forgotPassword" element={<ForgotPassword />} />
-
+                <Route path="/403" element={<Forbidden403 />} />
                 <Route path="*" element={<Error404 />} />
              
 
