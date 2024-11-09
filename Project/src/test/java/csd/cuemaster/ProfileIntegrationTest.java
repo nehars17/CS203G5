@@ -1,11 +1,13 @@
 package csd.cuemaster;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+
 import java.net.URI;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,8 +17,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import csd.cuemaster.profile.Profile;
-import csd.cuemaster.profile.ProfileRepository;
+import csd.cuemaster.profile.*;
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserRepository;
 

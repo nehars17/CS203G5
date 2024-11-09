@@ -66,8 +66,7 @@ public class ProfileController {
     // Returns a sorted list of players.
     @GetMapping("/leaderboard")
     public List<Profile> getLeaderboard() {
-        List<Profile> sortedProfileList = profileService.sort();
-        // profileService.updateRank(profiles);
+        List<Profile> sortedProfileList = profileService.sortProfiles();
         return sortedProfileList;
     }
 
