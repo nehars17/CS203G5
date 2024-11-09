@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,14 +19,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import csd.cuemaster.user.CustomAuthenticationSuccessHandler;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
-    private final CustomAuthenticationSuccessHandler customSuccessHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Value("${google.client-id}")
@@ -37,17 +33,12 @@ public class SecurityConfig {
     @Value("${google.client-secret}")
     private String clientSecret;
 
-    public SecurityConfig(UserDetailsService userDetailsService, CustomAuthenticationSuccessHandler customSuccessHandler,
+    public SecurityConfig(UserDetailsService userDetailsService,
                           JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
-        this.customSuccessHandler = customSuccessHandler;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -90,8 +81,7 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
-                .loginPage("/googlelogin")
-                .successHandler(customSuccessHandler))
+                .loginPage("/googlelogin"))
             .logout(logout -> logout
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")

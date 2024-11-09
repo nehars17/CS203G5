@@ -203,7 +203,6 @@ public class UserController {
         User loggedInUser = userService.EmailAuth(code, userDetails.getUsername());
         System.out.println(loggedInUser);
         if (loggedInUser != null) {
-            System.out.println("Im here");
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     loggedInUser.getUsername(), null);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);

@@ -55,7 +55,6 @@ class UserIntegrationTest {
         users.save(user);
 
         ResponseEntity<User[]> result = restTemplate.getForEntity(uri, User[].class);
-        User[] user_array = result.getBody();
 
         assertEquals(200, result.getStatusCode().value());
         // You can uncomment the following line if you want to assert the number of
