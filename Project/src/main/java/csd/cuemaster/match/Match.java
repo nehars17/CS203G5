@@ -6,7 +6,9 @@ import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import csd.cuemaster.profile.Profile;
 import csd.cuemaster.tournament.Tournament;
+import csd.cuemaster.tournament.Tournament.Status;
 import csd.cuemaster.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,11 +44,11 @@ public class Match {
     //stores each of the players id
     @ManyToOne 
     @JoinColumn(name="user_id_1", nullable = false)
-    private User user1;
+    private Profile user1;
 
     @ManyToOne 
     @JoinColumn(name="user_id_2", nullable = false)
-    private User user2;
+    private Profile user2;
 
     //stores the id of the winner of the match
     @ManyToOne 
@@ -63,10 +65,10 @@ public class Match {
     private int user2Score;
     
     //testing for scoring algo
-    //private String tournamentStatus;
+    private Status tournamentStatus;
 
     
-    public Match(Tournament tournament, User user1, User user2, LocalDate matchDate, LocalTime matchTime, int user1Score, int user2Score) {
+    public Match(Tournament tournament, Profile user1, Profile user2, LocalDate matchDate, LocalTime matchTime, int user1Score, int user2Score, String tournamentStatus) {
         this.tournament = tournament;
         this.user1 = user1;
         this.user2 = user2;
@@ -74,9 +76,7 @@ public class Match {
         this.matchTime = matchTime;
         this.user1Score = user1Score;
         this.user2Score = user2Score;
-
         //testing
-        // this.tournamentStatus = tournament != null ? tournament.getStatus() : null; // Initialize tournament status
-
+        this.tournamentStatus = tournament != null ? tournament.getStatus() : null;
     }
 }

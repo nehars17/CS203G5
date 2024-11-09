@@ -4,7 +4,6 @@ import Login from './components/User/Login';
 import RegisterPlayer from './components/User/RegisterPlayer';
 import RegisterOrganiser from './components/User/RegisterOrganiser';
 import Profile from './components/Profile/Profile';
-import Matches from './components/Matches/Matches';
 import Leaderboard from './components/Leaderboard/Leaderboard';
 import Tournament from './components/Tournament/Tournament';
 import CreateTournament from './components/Tournament/CreateTournament';
@@ -17,6 +16,9 @@ import Home from './components/Home/Home';
 import About from './pages/About';
 import { isAuthenticated, getUserIdFromToken, getUserRole } from './components/authUtils';
 import { Navigate } from 'react-router-dom';
+
+//match routes
+import MatchList from './components/Matches/MatchList';
 
 const AppRoutes: React.FC = () => {
     const isUserAuthenticated = isAuthenticated();
@@ -33,7 +35,8 @@ const AppRoutes: React.FC = () => {
                 <Route path="/organiserRegistration" element={<RegisterOrganiser />} />
                 <Route path="/tournaments" element={<Tournament />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/matches" element={<Matches />} />
+                <Route path="/matches" element={<MatchList />} />
+        
                 <Route path="*" element={<Error404 />} />
              
 
@@ -95,3 +98,4 @@ const AppRoutes: React.FC = () => {
 };
 
 export default AppRoutes;
+

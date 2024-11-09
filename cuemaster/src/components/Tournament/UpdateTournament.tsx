@@ -16,6 +16,8 @@ const UpdateTournament: React.FC = () => {
     const [description, setDescription] = useState('');
     const [winnerId, setWinnerId] = useState<string | null>(null);
     const [players, setPlayers] = useState<string[]>([]);
+    const [matches, setMatches] = useState<{ player1: string; player2: string }[]>([]);
+
 
     // Fetch tournament details when the component mounts
     useEffect(() => {
@@ -92,73 +94,98 @@ const UpdateTournament: React.FC = () => {
         }
     };
 
+    // Function to generate matches from players
+    const generateMatches = () => {
+        const newMatches: { player1: string; player2: string }[] = [];
+        const shuffledPlayers = [...players].sort(() => Math.random() - 0.5); // Randomly shuffle players
+
+        //temp for testing only
+        // Pair players for matches
+        for (let i = 0; i < shuffledPlayers.length; i += 2) {
+            if (shuffledPlayers[i + 1]) {
+                newMatches.push({ player1: shuffledPlayers[i], player2: shuffledPlayers[i + 1] });
+            }
+        }
+        setMatches(newMatches);
+    };
+
     return (
-        <div className="container">
-            <h1 className="title">Update Tournament</h1>
+        <div className="container mt-4">
+            <h1 className="title mb-4">Update Tournament</h1>
             <form onSubmit={handleSubmit} className="form">
-                <div className="form-group">
-                    <label>Tournament Name:</label>
+                <div className="form-group mb-3">
+                    <label htmlFor="tournamentName" className="form-label">Tournament Name:</label>
                     <input
                         type="text"
+                        id="tournamentName"
                         value={tournamentName}
                         onChange={(e) => setTournamentName(e.target.value)}
                         required
-                        className="input"
+                        className="form-control"
                     />
                 </div>
-                <div className="form-group">
-                    <label>Location:</label>
+
+                <div className="form-group mb-3">
+                    <label htmlFor="location" className="form-label">Location:</label>
                     <input
                         type="text"
+                        id="location"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
                         required
-                        className="input"
+                        className="form-control"
                     />
                 </div>
-                <div className="form-group">
-                    <label>Start Date:</label>
+
+                <div className="form-group mb-3">
+                    <label htmlFor="startDate" className="form-label">Start Date:</label>
                     <input
                         type="date"
+                        id="startDate"
                         value={startDate}
                         onChange={(e) => {
                             setStartDate(e.target.value);
                             setEndDate('');
                         }}
                         required
-                        className="input"
-                        // min={new Date().toISOString().split('T')[0]}
+                        className="form-control"
                     />
                 </div>
-                <div className="form-group">
-                    <label>End Date:</label>
+
+                <div className="form-group mb-3">
+                    <label htmlFor="endDate" className="form-label">End Date:</label>
                     <input
                         type="date"
+                        id="endDate"
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
                         required
-                        className="input"
+                        className="form-control"
                         min={startDate ? startDate : undefined}
                         disabled={!startDate}
                     />
                 </div>
-                <div className="form-group">
-                    <label>Time:</label>
+
+                <div className="form-group mb-3">
+                    <label htmlFor="time" className="form-label">Time:</label>
                     <input
                         type="time"
+                        id="time"
                         value={time}
                         onChange={(e) => setTime(e.target.value)}
                         required
-                        className="input"
+                        className="form-control"
                     />
                 </div>
-                <div className="form-group">
-                    <label>Status:</label>
+
+                <div className="form-group mb-3">
+                    <label htmlFor="status" className="form-label">Status:</label>
                     <select
+                        id="status"
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
                         required
-                        className="input"
+                        className="form-select"
                     >
                         <option value="UPCOMING">Upcoming</option>
                         <option value="ONGOING">Ongoing</option>
@@ -171,38 +198,65 @@ const UpdateTournament: React.FC = () => {
                         <option value="FINAL">Final</option>
                     </select>
                 </div>
-                <div className="form-group">
-                    <label>Description:</label>
+
+                <div className="form-group mb-3">
+                    <label htmlFor="description" className="form-label">Description:</label>
                     <textarea
+                        id="description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required
-                        className="input"
+                        className="form-control"
                         style={{ height: '100px' }}
                     />
                 </div>
-                <div className="form-group">
-                    <label>Winner ID:</label>
+
+                <div className="form-group mb-3">
+                    <label htmlFor="winnerId" className="form-label">Winner ID:</label>
                     <input
                         type="text"
+                        id="winnerId"
                         value={winnerId || ''}
                         onChange={(e) => setWinnerId(e.target.value)}
-                        className="input"
+                        className="form-control"
                     />
                 </div>
-                <div className="form-group">
-                    <label>Player IDs (comma separated):</label>
+
+                <div className="form-group mb-3">
+                    <label htmlFor="players" className="form-label">Player IDs (comma separated):</label>
                     <input
                         type="text"
+                        id="players"
                         value={players.join(',')}
                         onChange={(e) => setPlayers(e.target.value.split(','))}
-                        className="input"
+                        className="form-control"
                     />
                 </div>
-                <button type="submit" className="submit-button">Update</button>
+
+                <button type="submit" className="btn btn-primary">Update</button>
             </form>
+            
+            {/* Generate Matches button */}
+            <button onClick={generateMatches} className="generate-matches-button">
+                Generate Matches
+            </button>
+
+            {/* Display Matches */}
+            {matches.length > 0 && (
+                <div className="matches-section">
+                    <h2>Matches</h2>
+                    <ul className="matches-list">
+                        {matches.map((match, index) => (
+                            <li key={index}>
+                                {match.player1} vs {match.player2}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
     );
 };
 
 export default UpdateTournament;
+

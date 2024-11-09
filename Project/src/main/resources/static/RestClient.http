@@ -157,7 +157,7 @@ Authorization: Basic throwawaynypemail@gmail.com goodpassword
 ### Create a new tournament
 POST http://localhost:8080/tournaments
 Content-Type: application/json 
-Authorization: Basic org@gmail.com goodpassword
+Authorization: Bearer 9E20FDE9EE06725825109265C1B76C6C
 
 {
   "tournamentname": "New York Tournament",
@@ -254,13 +254,13 @@ Authorization: Basic org@gmail.com goodpassword
 
 {
     "tournament": {
-        "id": 1
+        "id": 2
     },
     "user1": {
-        "id": 3
+        "id": 2
     },
     "user2": {
-        "id": 4
+        "id": 1
     },
     "matchDate": "2024-10-02",
     "matchTime": "12:00",

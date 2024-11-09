@@ -11,4 +11,5 @@ public interface MatchService {
     List<Match> getAllMatches();
     void deleteMatchById(Long matchId);
     List<Match> getMatchesByTournamentId(Long tournamentId);
+    List<Match> createMatchesFromTournaments(Long tournamentId);
 }

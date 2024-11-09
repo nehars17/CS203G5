@@ -28,6 +28,12 @@ import csd.cuemaster.profile.UserProfileNotFoundException;
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
+import csd.cuemaster.match.Match;
+import csd.cuemaster.match.MatchNotFoundException;
+import csd.cuemaster.match.MatchRepository;
+import csd.cuemaster.tournament.Tournament;
+import csd.cuemaster.tournament.TournamentNotFoundException;
+import csd.cuemaster.tournament.TournamentRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class ProfileServicetest {
@@ -36,6 +42,10 @@ public class ProfileServicetest {
     private ProfileRepository profiles;
     @Mock
     private UserRepository users;
+    @Mock
+    private MatchRepository matches;
+    @Mock
+    private TournamentRepository tournaments;
 
     @InjectMocks
     private ProfileServiceImpl profileService;
@@ -183,7 +193,6 @@ public class ProfileServicetest {
         profile.setId(1L);
 
         // Mock
-        when(users.findById(1L)).thenReturn(Optional.of(user));
         when(profiles.save(any(Profile.class))).thenReturn(profile);
 
         // Act
@@ -282,6 +291,7 @@ public class ProfileServicetest {
         user.setProfile(profile);
 
         // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
         when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile));
         when(profiles.save(any(Profile.class))).thenReturn(profile);
 
@@ -305,6 +315,7 @@ public class ProfileServicetest {
         user.setProfile(profile);
 
         // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
         when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile));
         when(profiles.save(any(Profile.class))).thenReturn(profile);
 
@@ -344,7 +355,7 @@ public class ProfileServicetest {
         when(profiles.findAll()).thenReturn(leaderboard);
 
         // Act
-        leaderboard = profileService.sort();
+        leaderboard = profileService.sortProfiles();
 
         // Assert
         assertNotNull(leaderboard);
@@ -365,9 +376,9 @@ public class ProfileServicetest {
         profile1.setId(1L);
         user1.setProfile(profile1);
         User user2 = new User("Koopa", "goodpassword", "ROLE_ORGANISER", "normal", true);
-        user2.setId(1L);
+        user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user2);
-        profile2.setId(1L);
+        profile2.setId(2L);
         user2.setProfile(profile2);
 
         leaderboard.add(profile1);
@@ -377,10 +388,472 @@ public class ProfileServicetest {
         when(profiles.findAll()).thenReturn(leaderboard);
 
         // Act
-        leaderboard = profileService.sort();
+        leaderboard = profileService.sortProfiles();
 
         // Assert
         assertNotNull(leaderboard);
         assertTrue(leaderboard.isEmpty());
+    }
+
+    // Test Case: Set player ranks based on points.
+    @Test
+    void setRank_SetPlayerRanks_ReturnRankMap() {
+        // Arrange
+        List<Profile> leaderboard = new ArrayList<>();
+
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        profile1.setPoints(1200);
+        user1.setProfile(profile1);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        profile2.setPoints(2300);
+        user2.setProfile(profile2);
+
+        leaderboard.add(profile1);
+        leaderboard.add(profile2);
+
+        // Mock
+        when(profiles.findAll()).thenReturn(leaderboard);
+
+        // Act
+        Map<Long, Integer> rankMap = profileService.setRank();
+
+        // Assert
+        assertNotNull(rankMap);
+        assertFalse(rankMap.isEmpty());
+        assertEquals(2, rankMap.get(1L));
+        assertEquals(1, rankMap.get(2L));
+    }
+
+    // Test Case: Players with same points.
+    @Test
+    void setRank_SamePoints_ReturnRankMap() {
+        // Arrange
+        List<Profile> leaderboard = new ArrayList<>();
+
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        profile1.setPoints(1200);
+        user1.setProfile(profile1);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        profile2.setPoints(2300);
+        user2.setProfile(profile2);
+
+        User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user3.setId(3L);
+        Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", user3);
+        profile3.setId(3L);
+        profile3.setPoints(2300);
+        user3.setProfile(profile3);
+
+        leaderboard.add(profile1);
+        leaderboard.add(profile2);
+        leaderboard.add(profile3);
+
+        // Mock
+        when(profiles.findAll()).thenReturn(leaderboard);
+
+        // Act
+        Map<Long, Integer> rankMap = profileService.setRank();
+
+        // Assert
+        assertNotNull(rankMap);
+        assertFalse(rankMap.isEmpty());
+        assertEquals(3, rankMap.get(1L));
+        assertEquals(1, rankMap.get(2L));
+        assertEquals(1, rankMap.get(3L));
+    }
+
+    // Test Case: No players.
+    @Test
+    void setRank_NoPlayers_ReturnEmptyMap() {
+        // Arrange
+        List<Profile> leaderboard = new ArrayList<>();
+
+        // Mock
+        when(profiles.findAll()).thenReturn(leaderboard);
+
+        // Act
+        Map<Long, Integer> rankMap = profileService.setRank();
+
+        // Assert
+        assertNotNull(rankMap);
+        assertTrue(rankMap.isEmpty());
+    }
+
+    // Test Case: Get two player profiles from a match.
+    @Test
+    void getProfilesFromMatches_TwoPlayerProfiles_ReturnList() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        List<Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertFalse(retrievedProfiles.isEmpty());
+        assertEquals(2, retrievedProfiles.size());
+    }
+
+    // Test Case: Get one player profile from a match.
+    @Test
+    void getProfilesFromMatches_OnePlayerProfile_ReturnList() {
+        // Arrange
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
+        profile.setId(1L);
+        user.setProfile(profile);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        List<Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertFalse(retrievedProfiles.isEmpty());
+        assertEquals(1, retrievedProfiles.size());
+    }
+
+    // Test Case: No player profiles.
+    @Test
+    void getProfilesFromMatches_ZeroPlayerProfiles_ReturnEmptyList() {
+        // Arrange
+        Match match = new Match();
+        match.setId(1L);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        List<Profile> retrievedProfiles = profileService.getProfilesFromMatches(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertTrue(retrievedProfiles.isEmpty());
+    }
+
+    // Test Case: Match does not exist.
+    @Test
+    void getProfilesFromMatches_MatchDoesNotExist_ThrowMatchNotFoundException() {
+        // Arrange (Nothing to arrange.)
+
+        // Mock (Nothing to mock.)
+
+        // Act
+        MatchNotFoundException exception = assertThrows(MatchNotFoundException.class, () -> {
+            profileService.getProfilesFromMatches(1L);
+        });
+
+        // Assert
+        assertEquals("Could not find match 1.", exception.getMessage());
+    }
+
+    // Test Case: Get the expected score of a player from a match.
+    @Test
+    void calculateExpectedScore_PlayerA_ReturnScore() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+        profile1.setPoints(1200);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+        profile2.setPoints(2300);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+        when(users.findById(1L)).thenReturn(Optional.of(user1));
+
+        // Act
+        double score = profileService.calculateExpectedScore(1L, 1L);
+
+        // Assert
+        assertNotNull(score);
+        assertEquals(0.0017751227458097578, score);
+    }
+
+    // Test Case: Not enough players in a match.
+    @Test
+    void calculateExpectedScore_NotEnoughPlayers_ThrowIllegalArgumentException() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            profileService.calculateExpectedScore(1L, 1L);
+        });
+
+        // Assert
+        assertEquals("Match 1 does not have enough players to calculate expected score.", exception.getMessage());
+    }
+
+    // Test Case: Player does not exist in a match.
+    @Test
+    void calculateExpectedScore_PlayerNotFound_ThrowIllegalArgumentException() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+
+        User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user3.setId(3L);
+        Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", user3);
+        profile3.setId(3L);
+        user3.setProfile(profile3);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+        when(users.findById(3L)).thenReturn(Optional.of(user3));
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            profileService.calculateExpectedScore(1L, 3L);
+        });
+
+        // Assert
+        assertEquals("Player 3 is not in the match.", exception.getMessage());
+    }
+
+    // Test Case: Get the new points of the players after a match.
+    @Test
+    void updatePlayerStatistics_PlayerAWins_ReturnList() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+        profile1.setPoints(1200);
+        profile1.setMatchWinCount(0);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+        profile2.setPoints(2300);
+        profile2.setMatchWinCount(0);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+        when(users.findById(1L)).thenReturn(Optional.of(user1));
+        when(users.findById(2L)).thenReturn(Optional.of(user2));
+
+        // Act
+        List<Profile> updatedProfiles = profileService.updatePlayerStatistics(1L, 1L);
+
+        // Assert
+        assertNotNull(updatedProfiles);
+        assertEquals(1231, updatedProfiles.get(0).getPoints());
+        assertEquals(2268, updatedProfiles.get(1).getPoints());
+        assertEquals(1, updatedProfiles.get(0).getMatchWinCount());
+        assertEquals(0, updatedProfiles.get(1).getMatchWinCount());
+    }
+
+    // Test Case: Winner does not exist in a match.
+    @Test
+    void updatePlayerStatistics_WinnerNotFound_ThrowIllegalArgumentException() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+
+        Match match = new Match();
+        match.setId(1L);
+        match.setUser1(user1);
+        match.setUser2(user2);
+
+        // Mock
+        when(matches.findById(1L)).thenReturn(Optional.of(match));
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            profileService.updatePlayerStatistics(1L, 3L);
+        });
+
+        // Assert
+        assertEquals("Player 3 is not in the match.", exception.getMessage());
+    }
+
+    // Test Case: Get two player profiles from a tournament.
+    @Test
+    void getProfilesFromTournaments_TwoPlayerProfiles_ReturnList() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+        tournament.getPlayers().add(1L);
+        tournament.getPlayers().add(2L);
+
+        // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user1));
+        when(users.findById(2L)).thenReturn(Optional.of(user2));
+        when(tournaments.findById(1L)).thenReturn(Optional.of(tournament));
+
+        // Act
+        List<Profile> retrievedProfiles = profileService.getProfilesFromTournaments(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertFalse(retrievedProfiles.isEmpty());
+        assertEquals(2, retrievedProfiles.size());
+    }
+
+    // Test Case: Get one player profile from a tournament.
+    @Test
+    void getProfilesFromTournaments_OnePlayerProfile_ReturnList() {
+        // Arrange
+        User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user.setId(1L);
+        Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
+        profile.setId(1L);
+        user.setProfile(profile);
+
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+        tournament.getPlayers().add(1L);
+
+        // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
+        when(tournaments.findById(1L)).thenReturn(Optional.of(tournament));
+
+        // Act
+        List<Profile> retrievedProfiles = profileService.getProfilesFromTournaments(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertFalse(retrievedProfiles.isEmpty());
+        assertEquals(1, retrievedProfiles.size());
+    }
+
+    // Test Case: No player profiles.
+    @Test
+    void getProfilesFromTournaments_ZeroPlayerProfiles_ReturnEmptyList() {
+        // Arrange
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+
+        // Mock
+        when(tournaments.findById(1L)).thenReturn(Optional.of(tournament));
+
+        // Act
+        List<Profile> retrievedProfiles = profileService.getProfilesFromTournaments(1L);
+
+        // Assert
+        assertNotNull(retrievedProfiles);
+        assertTrue(retrievedProfiles.isEmpty());
+    }
+
+    // Test Case: Tournament does not exist.
+    @Test
+    void getProfilesFromTournaments_TournamentDoesNotExist_ThrowTournamentNotFoundException() {
+        // Arrange (Nothing to arrange.)
+
+        // Mock (Nothing to mock.)
+
+        // Act
+        TournamentNotFoundException exception = assertThrows(TournamentNotFoundException.class, () -> {
+            profileService.getProfilesFromTournaments(1L);
+        });
+
+        // Assert
+        assertEquals("Could not find tournament 1", exception.getMessage());
     }
 }
