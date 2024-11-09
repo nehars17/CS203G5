@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -72,7 +74,9 @@ import net.minidev.json.parser.JSONParser;
  * 
  * The controller handles various exceptions and returns appropriate HTTP responses.
  */
+
 @RestController
+@Configuration
 public class UserController {
     @Autowired
     private UserService userService;
@@ -84,6 +88,7 @@ public class UserController {
     @Autowired
     private JwtService jwtService;
 
+    @Lazy
     @Autowired
     private RestTemplate restTemplate;
 
