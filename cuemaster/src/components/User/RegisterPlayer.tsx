@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import API from '../../services/api';
+import API from '../../services/api'; // Adjust the import path according to your folder structure
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Card, Container } from 'react-bootstrap';
+import { Form, Button, Card, Container, Alert } from 'react-bootstrap';
 import { GoogleLogin } from '@react-oauth/google'; // New Google OAuth import
+import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA correctly
+import useRecaptcha from './useRecaptcha';
 
 const Register: React.FC = () => {
+  const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
+  const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,17 +18,25 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaToken) {
+      setError('Please complete CAPTCHA');
+      return;
+    }
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
     try {
+
+      // Include the CAPTCHA token in your registration payload
       await API.post('/register', {
         username: email,
         password: password,
         authorities: userType,
+        recaptchaToken: captchaToken
       });
-      navigate('/login');
+      setMessage("Activation Email sent, please check email");
+      setError('');
     } catch (error) {
       console.error('Registration failed', error);
       setError('Registration failed, please try again');
@@ -50,10 +62,8 @@ const Register: React.FC = () => {
         }),
       });
       const data = await res.json();
-      localStorage.setItem('token', data.token); // Store token
-      console.log(data);
+      localStorage.setItem('token', data.token); // Store token in localStorage
       navigate('/playerProfile');
-     
     } catch (error) {
       console.error('Error during Google login:', error);
       setError('Google login failed, please try again');
@@ -76,6 +86,7 @@ const Register: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </Form.Group>
+
             <Form.Group controlId="formBasicPassword" className="mt-3">
               <Form.Label>Password</Form.Label>
               <Form.Control
@@ -86,6 +97,7 @@ const Register: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Form.Group>
+
             <Form.Group controlId="formConfirmPassword" className="mt-3">
               <Form.Label>Confirm Password</Form.Label>
               <Form.Control
@@ -97,17 +109,28 @@ const Register: React.FC = () => {
               />
             </Form.Group>
 
-            {error && <div className="alert alert-danger mt-3">{error}</div>} {/* Error message */}
+            <Form.Group controlId="recaptcha" className="mt-3">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey="6LdKu3kqAAAAAAeXkISFRFa_DokCrNUxlr-Q_m2H" // Make sure this is correct
+                onChange={handleRecaptcha}
+              />
+            </Form.Group>
+
+            {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+            {message && <Alert variant="success" className="mt-3">{message}</Alert>}
 
             <Button variant="primary" type="submit" className="w-100 mt-4">
               Register
             </Button>
-            <div className="mt-3">
+
+            <div className="mt-3 text-center">
               <GoogleLogin
                 onSuccess={onSuccess}
-                onError={() => console.error('Google login failed')} // Handle Google login failure
+                onError={() => console.error('Google login failed')}
               />
             </div>
+
             <div className="text-center mt-3">
               <small>
                 Already have an account? <a href="/login">Login</a>
@@ -119,5 +142,6 @@ const Register: React.FC = () => {
     </Container>
   );
 };
+
 
 export default Register;

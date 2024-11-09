@@ -59,13 +59,13 @@ public class User implements UserDetails {
     @Size(min = 8, message = "Password should be at least 8 characters")
     private String password;
 
-    @JsonProperty(access = Access.WRITE_ONLY)
     private String authorities;
 
-    @JsonIgnore
     private boolean enabled;
 
-    @JsonIgnore
+
+    private boolean unlocked;
+
     private String provider;
 
     @JsonIgnore
@@ -73,13 +73,18 @@ public class User implements UserDetails {
 
     @JsonIgnore
     private Key secret;
-
-
+    
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private String recaptchaToken;
     
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
+
     @JsonIgnore
     private TOTPToken totpToken;
+
+    @JsonIgnore
+    private int failedLoginAttempts;
 
     @JsonIgnore
     private LocalDateTime expiryDate;
@@ -94,6 +99,7 @@ public class User implements UserDetails {
         this.authorities = authorities;
         this.authorities = authorities;
         this.enabled = enabled;
+        this.unlocked = true;
         this.provider = provider;
     }
 
@@ -115,10 +121,9 @@ public class User implements UserDetails {
     }
 
     @JsonIgnore
-
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return unlocked;
     }
 
     @JsonIgnore

@@ -72,8 +72,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/activate").permitAll()
 
-                .requestMatchers(HttpMethod.POST, "/forgotPassword").permitAll()
-                .requestMatchers(HttpMethod.POST, "/resetPassword").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/forgotPassword").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/resetPassword").permitAll()
                 .requestMatchers(HttpMethod.POST, "/verify-code").permitAll()
                 .requestMatchers(HttpMethod.POST, "/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()

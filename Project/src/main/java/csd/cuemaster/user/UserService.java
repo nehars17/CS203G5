@@ -15,6 +15,8 @@ public interface UserService {
     void updatePassword(Long id, User user);
     String resetPassword(Long id, String newPassword,String token) throws Exception;
     User forgotPassword(String username) throws Exception;
+    boolean unlockAccount(Long user_id);
+
     /**
      * Change method's signature: do not return a value for delete operation
      * @param id

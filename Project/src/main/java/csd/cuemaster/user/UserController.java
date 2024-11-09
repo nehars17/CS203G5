@@ -5,20 +5,31 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.ParseException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import csd.cuemaster.services.EmailService;
@@ -28,6 +39,8 @@ import jakarta.persistence.ElementCollection;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 
 @RestController
 public class UserController {
@@ -65,24 +78,67 @@ public class UserController {
      * 
      * @param user
      * @return
-          * @throws Exception 
-          */
-     
-         @PostMapping("/register")
-         public User addUser(@Valid @RequestBody User user, HttpServletRequest request) throws Exception {
+     * @throws Exception
+     */
+
+    @PostMapping("/register")
+    public ResponseEntity<User> addUser(@Valid @RequestBody User user,
+            HttpServletRequest request) throws Exception {
+
+        // Verify reCAPTCHA token
+        if (!verifyRecaptcha((String) user.getRecaptchaToken())) {
+            throw new IllegalArgumentException("Invalid CAPTCHA, please try again");
+        }
+
+        user.setRecaptchaToken(null);
+
         User savedUser = userService.addUser(user);
         if (savedUser == null) {
             throw new UserExistsException(user.getUsername());
-
         }
+
         String activationLink = "http://localhost:3000/activateaccount?token=" + savedUser.getTotpToken().getCode();
         try {
             emailService.sendActivationEmail(savedUser.getUsername(), activationLink);
         } catch (MessagingException e) {
-            throw new AccountActivationException("unable to send email");
+            throw new AccountActivationException("Unable to send email");
         }
-        return savedUser;
 
+        return ResponseEntity.ok(savedUser);
+    }
+
+    public boolean verifyRecaptcha(String recaptchaToken) {
+        String url = "https://www.google.com/recaptcha/api/siteverify";
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("secret", "6LdKu3kqAAAAAGG--D9EwTpoqex87ouqRBbA8fg7");
+        params.add("response", recaptchaToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+            String responseBody = response.getBody();
+
+            if (responseBody != null) {
+                // Use JSONParser to parse the response into a JSONObject
+                JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+                JSONObject jsonResponse = (JSONObject) parser.parse(responseBody);
+
+                // Access the "success" key in the response
+                boolean success = (boolean) jsonResponse.get("success");
+                return success;
+            } else {
+                System.err.println("No response from reCAPTCHA API.");
+                return false;
+            }
+        } catch ( Exception e) {
+            System.err.println("Error while verifying reCAPTCHA: " + e.getMessage());
+            return false;
+        }
     }
 
     @PostMapping("/activate")
@@ -95,12 +151,31 @@ public class UserController {
     @PostMapping("/normallogin")
     public ResponseEntity<Map<String, Object>> retrieveUser(HttpSession session, @Valid @RequestBody User user)
             throws Exception {
+
+         // Verify reCAPTCHA token
+         if (!verifyRecaptcha((String) user.getRecaptchaToken())) {
+            throw new IllegalArgumentException("Invalid CAPTCHA, please try again");
+        }
+        user.setRecaptchaToken(null);
         User loggedInUser = userService.loginUser(user);
+        Map<String, Object> response = new HashMap<>();
         if (loggedInUser == null) {
             throw new UsernameNotFoundException("Username or Password Incorrect");
         }
         if (!loggedInUser.isEnabled()) {
-            throw new AccountActivationException("Please activate account first");
+            response.put("message","Please activate account, check email");
+            String activationLink = "http://localhost:3000/activateaccount?token=" + loggedInUser.getTotpToken().getCode();
+            try {
+                emailService.sendActivationEmail(loggedInUser.getUsername(), activationLink);
+            } catch (MessagingException e) {
+                throw new AccountActivationException("Unable to send email");
+            }
+            return ResponseEntity.ok(response);
+        }
+        if(!loggedInUser.isUnlocked()){
+            System.out.println("IMCALLED");
+            response.put("message","Account Locked, Please contact administrator at cuemasternoreply@gmail.com");
+            return ResponseEntity.ok(response);
         }
         if (loggedInUser.getProvider().equals("google")) {
             throw new UsernameNotFoundException("Please login using Google");
@@ -114,7 +189,6 @@ public class UserController {
 
         String role = loggedInUser.getAuthorities().iterator().next().getAuthority();
 
-        Map<String, Object> response = new HashMap<>();
         response.put("user", loggedInUser);
         response.put("role", role);
         return ResponseEntity.ok(response);
@@ -147,7 +221,6 @@ public class UserController {
         } else {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", "Invalid code, please try again.");
-            System.out.println("IM CALLED");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
@@ -158,8 +231,9 @@ public class UserController {
         return ResponseEntity.ok("Logged out successfully!");
     }
 
-    @PostMapping("/forgotPassword")
-    public ResponseEntity<String> ForgotPassword(HttpSession session, @Valid @RequestBody  Map<String, Object> payload) throws Exception {
+    @PutMapping("/forgotPassword")
+    public ResponseEntity<String> ForgotPassword(HttpSession session, @Valid @RequestBody Map<String, Object> payload)
+            throws Exception {
         String username = (String) payload.get("username");
 
         User foundUser = userService.forgotPassword(username);
@@ -173,7 +247,7 @@ public class UserController {
         return ResponseEntity.ok("User not found");
     }
 
-    @PostMapping("/resetPassword")
+    @PutMapping("/resetPassword")
     public ResponseEntity<String> ResetPassword(@Valid @RequestBody Map<String, Object> payload) throws Exception {
         String token = (String) payload.get("token");
         String newPassword = (String) payload.get("password");
@@ -184,7 +258,7 @@ public class UserController {
 
     }
 
-    @PostMapping("/update/{user_id}/password")
+    @PutMapping("/update/{user_id}/password")
     public void updatePassword(@PathVariable(value = "user_id") Long user_id, @Valid @RequestBody User user) {
         userService.updatePassword(user_id, user);
 
@@ -194,5 +268,11 @@ public class UserController {
     public void deleteAccount(@PathVariable(value = "user_id") Long user_id) {
         userService.deleteUser(user_id);
     }
+
+    @PutMapping("/user/{user_id}/account")
+    public void unlockAccount(@PathVariable(value = "user_id") Long user_id) {
+        userService.unlockAccount(user_id);
+    }
+
 
 }

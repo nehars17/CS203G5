@@ -64,11 +64,25 @@ public class UserServiceImpl implements UserService {
 
         return users.findById(id).orElse(null);
     }
+    @Override
+    public boolean unlockAccount(Long user_id){
+        User foundUser = getUser(user_id);
+        foundUser.setUnlocked(true);
+        users.save(foundUser);
+        return true;
+
+    }
 
     @Override
     public User loginUser(User user) throws Exception {
         User foundUser = users.findByUsername(user.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if(foundUser.getFailedLoginAttempts()>=5){
+            foundUser.setUnlocked(false);
+            users.save(foundUser);
+            return foundUser;
+        }
         if (encoder.matches(user.getPassword(), foundUser.getPassword())) {
             Key secretKey = totpService.generateSecret();
             System.out.println(secretKey);
@@ -80,6 +94,8 @@ public class UserServiceImpl implements UserService {
             return foundUser;
 
         } else {
+            foundUser.setFailedLoginAttempts(foundUser.getFailedLoginAttempts()+1);
+            users.save(foundUser);
             return null; // Incorrect password
         }
 

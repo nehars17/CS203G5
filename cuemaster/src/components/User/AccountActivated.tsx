@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Alert, Spinner } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const AccountActivated: React.FC = () => {
   const [message, setMessage] = useState('');
@@ -21,23 +20,40 @@ const AccountActivated: React.FC = () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ token:activationToken }),
+            body: JSON.stringify({ token: activationToken }),
           });
-          const data = await res.json();
-          console.log(data);
-          setMessage(data);
+  
+          // Parse the response as text, since your backend returns a String
+          const data = await res.text();
+  
+          if (!res.ok) {
+            throw new Error(data || 'Activation failed');
+          }
+  
+          // Success: set success message and stop loading
+          setMessage(data);  // Display the success message returned by backend
           setError('');
-          navigate("/login")
-        } catch (error) {
-          console.log(error)
-          setMessage('');
-          setError('Failed to Activate. Please try again.');
           setLoading(false);
+  
+          // Navigate to login after a short delay (e.g., 3 seconds)
+          setTimeout(() => {
+            navigate('/login');
+          }, 3000);
+  
+        } catch (error: any) {
+          console.error(error);
+          setError(error.message || 'Failed to Activate. Please try again.');
+          setLoading(false);  // Stop loading if there's an error
         }
+      } else {
+        setError('Invalid activation token.');
+        setLoading(false);
       }
     };
+  
     activateAccount();
-  }, [activationToken]);
+  }, [activationToken, navigate]);
+  
 
   return (
     <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
@@ -52,7 +68,6 @@ const AccountActivated: React.FC = () => {
             <>
               {message && <Alert variant="success">{message}</Alert>}
               {error && <Alert variant="danger">{error}</Alert>}
-              {message && navigate('/login')}
             </>
           )}
         </Card.Body>
