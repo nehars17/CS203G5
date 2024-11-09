@@ -38,6 +38,16 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    public void sendUnlockedEmail(String recipientEmail) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setTo(recipientEmail);
+        helper.setSubject("Account Unlocked");
+        helper.setText("<p>Your account has been unlocked. You can now login.</p>", true);
+
+        mailSender.send(message);
+    }
     /*
      * Sends an email to the specified recipient with the 2FA code.
      */

@@ -384,13 +384,14 @@ public class UserController {
      * Unlocks the account of the specified user.
      *
      * @param user_id the ID of the user whose account is to be unlocked
-     * @throws ResponseStatusException if the current user is not allowed to unlock
-     *                                 the account
-     */
-    @PutMapping("/user/{user_id}/account")
-    public void unlockAccount(@PathVariable(value = "user_id") Long user_id) {
+          * @throws MessagingException 
+          * @throws ResponseStatusException if the current user is not allowed to unlock
+          *                                 the account
+          */
+         @PutMapping("/user/{user_id}/account")
+         public void unlockAccount(@PathVariable(value = "user_id") Long user_id) throws MessagingException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentUser.getId() == 1 || currentUser.getId() == user_id) {
+        if (currentUser.getId() == 1) {
             userService.unlockAccount(user_id);
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this account");

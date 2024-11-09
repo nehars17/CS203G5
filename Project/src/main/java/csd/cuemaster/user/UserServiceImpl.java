@@ -10,7 +10,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import csd.cuemaster.models.TOTPToken;
+import csd.cuemaster.services.EmailService;
 import csd.cuemaster.services.TOTPService;
+import jakarta.mail.MessagingException;
 
 /**
  * Service implementation for managing users.
@@ -27,6 +29,9 @@ public class UserServiceImpl implements UserService {
     private TOTPService totpService;
 
     @Autowired BCryptPasswordEncoder encoder;
+
+    @Autowired
+    private EmailService emailService;
 
     /**
      * Lists all users.
@@ -75,12 +80,14 @@ public class UserServiceImpl implements UserService {
      * 
      * @param user_id the ID of the user to unlock.
      * @return true if the account was successfully unlocked.
+     * @throws MessagingException 
      */
     @Override
-    public boolean unlockAccount(Long user_id) {
+    public boolean unlockAccount(Long user_id) throws MessagingException {
         User foundUser = getUser(user_id);
         foundUser.setUnlocked(true);
         users.save(foundUser);
+        emailService.sendUnlockedEmail(foundUser.getUsername());
         return true;
     }
 

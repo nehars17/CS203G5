@@ -2,6 +2,8 @@ package csd.cuemaster.user;
 
 import java.util.List;
 
+import jakarta.mail.MessagingException;
+
 public interface UserService {
     
     List<User> listUsers();
@@ -15,7 +17,7 @@ public interface UserService {
     void updatePassword(Long id, User user);
     String resetPassword(Long id, String newPassword,String token) throws Exception;
     User forgotPassword(String username) throws Exception;
-    boolean unlockAccount(Long user_id);
+    boolean unlockAccount(Long user_id) throws MessagingException;
 
     /**
      * Change method's signature: do not return a value for delete operation
