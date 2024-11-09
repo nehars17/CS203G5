@@ -19,5 +19,4 @@ public interface ProfileService {
     double calculateExpectedScore(Long match_id, Long user_id);
     List<Profile> updatePlayerStatistics(Long match_id, Long winner_id);
     List<Profile> getProfilesFromTournaments(Long tournament_id);
-    List<Profile> sortProfilesFromTournaments(Long tournamentId);
 }

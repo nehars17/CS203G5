@@ -291,8 +291,56 @@ void testCreateMatch_Success() {
     }
 
     // Test Case: Get list of matches from a tournament.
+    // Expected Result: 2 V 3 || 3 V 2 (Not a 100% guarantee due to randomness.)
     @Test
-    void createMatchesFromTournaments_TwoPlayerProfiles_ReturnList() {
+    void createMatchesFromTournaments_ThreePlayers_ReturnList() {
+        // Arrange
+        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user1.setId(1L);
+        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
+        profile1.setId(1L);
+        user1.setProfile(profile1);
+        profile1.setPoints(1200);
+
+        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user2.setId(2L);
+        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
+        profile2.setId(2L);
+        user2.setProfile(profile2);
+        profile2.setPoints(2300);
+
+        User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
+        user3.setId(3L);
+        Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", user3);
+        profile3.setId(3L);
+        user3.setProfile(profile3);
+        profile3.setPoints(2300);
+
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+        tournament.getPlayers().add(1L);
+        tournament.getPlayers().add(2L);
+        tournament.getPlayers().add(3L);
+
+        // Mock
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
+        when(userRepository.findById(3L)).thenReturn(Optional.of(user3));
+        when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
+        when(profileService.getProfilesFromTournaments(1L)).thenReturn(List.of(profile1, profile2, profile3));
+
+        // Act
+        List<Match> retrievedMatches = matchService.createMatchesFromTournaments(1L);
+
+        // Assert
+        assertNotNull(retrievedMatches);
+        assertFalse(retrievedMatches.isEmpty());
+        assertEquals(1, retrievedMatches.size());
+    }
+
+    // Test Case: Get list of matches from a tournament.
+    @Test
+    void createMatchesFromTournaments_TwoPlayers_ReturnList() {
         // Arrange
         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user1.setId(1L);
@@ -317,7 +365,7 @@ void testCreateMatch_Success() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
         when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
-        when(profileService.sortProfilesFromTournaments(1L)).thenReturn(List.of(profile1, profile2));
+        when(profileService.getProfilesFromTournaments(1L)).thenReturn(List.of(profile1, profile2));
 
         // Act
         List<Match> retrievedMatches = matchService.createMatchesFromTournaments(1L);
@@ -330,7 +378,7 @@ void testCreateMatch_Success() {
 
     // Test Case: Not enough players to create matches.
     @Test
-    void createMatchesFromTournaments_OnePlayerProfile_ReturnEmptyList() {
+    void createMatchesFromTournaments_OnePlayer_ReturnEmptyList() {
         // Arrange
         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
         user1.setId(1L);
@@ -346,7 +394,7 @@ void testCreateMatch_Success() {
         // Mock
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
-        when(profileService.sortProfilesFromTournaments(1L)).thenReturn(List.of(profile1));
+        when(profileService.getProfilesFromTournaments(1L)).thenReturn(List.of(profile1));
 
         // Act
         List<Match> retrievedMatches = matchService.createMatchesFromTournaments(1L);

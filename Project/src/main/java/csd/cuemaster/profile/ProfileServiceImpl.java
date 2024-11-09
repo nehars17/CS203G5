@@ -249,14 +249,6 @@ public class ProfileServiceImpl implements ProfileService{
         return retrieved;
     }
 
-    // Retrieve a list of sorted player points from a given tournament.
-    @Override
-    public List<Profile> sortProfilesFromTournaments(Long tournamentId) {
-        List<Profile> players = getProfilesFromTournaments(tournamentId);
-        sort(players);
-        return players;
-    }
-
     // Helper method to sort points based on points.
     private void sort(List<Profile> players) {
         players.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());

@@ -856,42 +856,4 @@ public class ProfileServicetest {
         // Assert
         assertEquals("Could not find tournament 1", exception.getMessage());
     }
-
-    // Test Case: Get list of points from two player profiles from a tournament.
-    @Test
-    void sortProfilesFromTournaments_TwoPlayerProfiles_ReturnList() {
-        // Arrange
-        User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
-        user1.setId(1L);
-        Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
-        profile1.setId(1L);
-        user1.setProfile(profile1);
-        profile1.setPoints(1200);
-
-        User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
-        user2.setId(2L);
-        Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
-        profile2.setId(2L);
-        user2.setProfile(profile2);
-        profile2.setPoints(2300);
-
-        Tournament tournament = new Tournament();
-        tournament.setId(1L);
-        tournament.getPlayers().add(1L);
-        tournament.getPlayers().add(2L);
-
-        // Mock
-        when(users.findById(1L)).thenReturn(Optional.of(user1));
-        when(users.findById(2L)).thenReturn(Optional.of(user2));
-        when(tournaments.findById(1L)).thenReturn(Optional.of(tournament));
-
-        // Act
-        List<Profile> retrievedProfiles = profileService.sortProfilesFromTournaments(1L);
-
-        // Assert
-        assertNotNull(retrievedProfiles);
-        assertFalse(retrievedProfiles.isEmpty());
-        assertEquals(2, retrievedProfiles.size());
-        assertEquals(profile2, retrievedProfiles.get(0));
-    }
 }
