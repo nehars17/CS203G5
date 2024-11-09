@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
+// Define the PrivateRouteProps interface
 interface PrivateRouteProps {
     isAuthenticated: boolean;
     children: React.ReactNode; // Use ReactNode to allow any valid React child

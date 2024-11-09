@@ -20,26 +20,57 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 
+/**
+ * Security configuration class for setting up web security in the application.
+ * This class configures authentication providers, security filter chains, CORS settings, and more.
+ * 
+ * <p>It uses JWT for authentication and integrates with OAuth2 for Google login.</p>
+ * 
+ * <p>It also defines various security rules for different endpoints and HTTP methods.</p>
+ */
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * Service to load user-specific data.
+     */
     private final UserDetailsService userDetailsService;
+
+    /**
+     * Filter for JWT authentication.
+     */
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Google client ID for OAuth2 login.
+     */
     @Value("${google.client-id}")
     private String clientId;
 
+    /**
+     * Google client secret for OAuth2 login.
+     */
     @Value("${google.client-secret}")
     private String clientSecret;
 
+    /**
+     * Constructor to initialize the SecurityConfig with required services.
+     * 
+     * @param userDetailsService the service to load user-specific data
+     * @param jwtAuthenticationFilter the filter for JWT authentication
+     */
     public SecurityConfig(UserDetailsService userDetailsService,
                           JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
-
+    /**
+     * Bean for DaoAuthenticationProvider to handle authentication.
+     * 
+     * @return the DaoAuthenticationProvider bean
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -48,6 +79,13 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Bean for configuring the security filter chain.
+     * 
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -96,11 +134,21 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Bean for BCryptPasswordEncoder to encode passwords.
+     * 
+     * @return the BCryptPasswordEncoder bean
+     */
     @Bean
     public BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Bean for configuring CORS settings.
+     * 
+     * @return the CorsFilter bean
+     */
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();

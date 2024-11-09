@@ -2,6 +2,10 @@ package csd.cuemaster.models;
 
 import java.time.Instant;
 
+/**
+ * Represents a Time-based One-Time Password (TOTP) token.
+ * This token contains a code and an expiration time.
+ */
 public class TOTPToken {
     private String code;
     private Instant expirationTime;

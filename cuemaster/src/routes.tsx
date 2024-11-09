@@ -23,6 +23,8 @@ import About from './pages/About';
 import { isAuthenticated, getUserIdFromToken, getUserRole } from './components/authUtils';
 import { Navigate } from 'react-router-dom';
 
+
+// Define the AppRoutes component
 const AppRoutes: React.FC = () => {
     const isUserAuthenticated = isAuthenticated();
     const userId = getUserIdFromToken();

@@ -19,6 +19,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/*
+ * This cmponent class is used to authenticate the user using JWT token.
+ * It extends OncePerRequestFilter class which is used to guarantee a single execution per request dispatch.
+ * It overrides the doFilterInternal method to authenticate the user using JWT token.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver handlerExceptionResolver;
