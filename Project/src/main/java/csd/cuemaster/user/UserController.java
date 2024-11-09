@@ -6,6 +6,9 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,9 +30,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,7 +44,8 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 
 /**
- * UserController is a REST controller that handles user-related operations such as registration, authentication, 
+ * UserController is a REST controller that handles user-related operations such
+ * as registration, authentication,
  * account activation, password management, and account management.
  * 
  * It provides endpoints for:
@@ -60,19 +61,24 @@ import net.minidev.json.parser.JSONParser;
  * - Deleting a user's account
  * - Unlocking a user's account
  * 
- * The controller uses various services such as UserService, EmailService, JwtService, and RestTemplate to perform 
+ * The controller uses various services such as UserService, EmailService,
+ * JwtService, and RestTemplate to perform
  * the necessary operations.
  * 
- * It also verifies reCAPTCHA tokens using the Google reCAPTCHA API to enhance security.
+ * It also verifies reCAPTCHA tokens using the Google reCAPTCHA API to enhance
+ * security.
  * 
- * The controller is annotated with @RestController, indicating that it is a Spring MVC controller where every 
+ * The controller is annotated with @RestController, indicating that it is a
+ * Spring MVC controller where every
  * method returns a domain object instead of a view.
  * 
  * Dependencies are injected using the @Autowired annotation.
  * 
- * The @Value annotation is used to inject the reCAPTCHA client secret key from the application properties.
+ * The @Value annotation is used to inject the reCAPTCHA client secret key from
+ * the application properties.
  * 
- * The controller handles various exceptions and returns appropriate HTTP responses.
+ * The controller handles various exceptions and returns appropriate HTTP
+ * responses.
  */
 
 @RestController
@@ -103,8 +109,7 @@ public class UserController {
         return new RestTemplate();
     }
 
-
-    /* 
+    /*
      *
      * Retrieves the details of the currently authenticated user.
      * 
@@ -121,13 +126,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    
     /*
      * Registers a new user account and sends an activation email.
-        *   * @param user the user object containing the registration details
-        *   * @param request the HTTP request
-        *   * @return a ResponseEntity containing the saved user object
-        *   * @throws Exception if an error occurs during the registration process
+     * * @param user the user object containing the registration details
+     * * @param request the HTTP request
+     * * @return a ResponseEntity containing the saved user object
+     * * @throws Exception if an error occurs during the registration process
      */
     @PostMapping("/register")
     public ResponseEntity<User> addUser(@Valid @RequestBody User user,
@@ -199,7 +203,8 @@ public class UserController {
      * Activates a user account using the provided token.
      *
      * @param payload a map containing the activation token
-     * @return a ResponseEntity with a message indicating the result of the activation
+     * @return a ResponseEntity with a message indicating the result of the
+     *         activation
      * @throws Exception if an error occurs during the activation process
      */
     @PostMapping("/activate")
@@ -209,13 +214,13 @@ public class UserController {
         return ResponseEntity.ok(message); // Return a ResponseEntity with the activation status message
     }
 
-    
     /**
      * Authenticates a user using normal login and verifies reCAPTCHA token.
      * 
      * @param session the HTTP session
-     * @param user the user object containing login credentials
-     * @return a ResponseEntity containing user details and role if login is successful,
+     * @param user    the user object containing login credentials
+     * @return a ResponseEntity containing user details and role if login is
+     *         successful,
      *         or an appropriate message if login fails
      * @throws Exception if an error occurs during the login process
      */
@@ -266,9 +271,9 @@ public class UserController {
 
     }
 
-   /*
-    * Authenticates a user using two-factor authentication.
-    */
+    /*
+     * Authenticates a user using two-factor authentication.
+     */
     @PostMapping("/verify-code")
     public ResponseEntity<Map<String, Object>> verifyTwoFactorCode(@Valid @RequestBody Map<String, Object> payload)
             throws Exception {
@@ -299,6 +304,9 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         session.invalidate(); // Invalidate the session
+
+        // Clear the authentication context
+        SecurityContextHolder.clearContext();
         return ResponseEntity.ok("Logged out successfully!");
     }
 
@@ -329,14 +337,16 @@ public class UserController {
     }
 
     /**
-    @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody Map<String, Object> payload) throws Exception {
+     * @PostMapping("/resetPassword")
+     * public ResponseEntity<String> resetPassword(@Valid @RequestBody Map<String,
+     * Object> payload) throws Exception {
      *
      * @param payload a map containing the token, new password, and user ID
-     * @return a ResponseEntity with a message indicating the result of the password reset
+     * @return a ResponseEntity with a message indicating the result of the password
+     *         reset
      * @throws Exception if an error occurs during the process
      */
-    
+
     public ResponseEntity<String> resetPassword(@Valid @RequestBody Map<String, Object> payload) throws Exception {
         String token = (String) payload.get("token");
         String newPassword = (String) payload.get("password");
@@ -384,12 +394,12 @@ public class UserController {
      * Unlocks the account of the specified user.
      *
      * @param user_id the ID of the user whose account is to be unlocked
-          * @throws MessagingException 
-          * @throws ResponseStatusException if the current user is not allowed to unlock
-          *                                 the account
-          */
-         @PutMapping("/user/{user_id}/account")
-         public void unlockAccount(@PathVariable(value = "user_id") Long user_id) throws MessagingException {
+     * @throws MessagingException
+     * @throws ResponseStatusException if the current user is not allowed to unlock
+     *                                 the account
+     */
+    @PutMapping("/user/{user_id}/account")
+    public void unlockAccount(@PathVariable(value = "user_id") Long user_id) throws MessagingException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (currentUser.getId() == 1) {
             userService.unlockAccount(user_id);
