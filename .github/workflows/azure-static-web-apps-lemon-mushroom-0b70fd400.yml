@@ -37,11 +37,12 @@ jobs:
         with: 
              node-version: '18.x'
 
+      # Set up JDK 17 with Temurin distribution
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'adoptopenjdk'
+          distribution: 'temurin'  # Use Temurin for JDK 17
 
       - name: Clean npm cache and node_modules
         run: |
