@@ -33,8 +33,12 @@ jobs:
                return await coredemo.getIDToken()
            result-encoding: string
            
-      - name: Install Dependencies
-        run: npm install --force  # Add this flag to bypass peer dependency conflicts
+      - name: Clean npm cache and node_modules
+        run: |
+          rm -rf node_modules
+          npm cache clean --force
+      - name: Install Dependencies with --force
+        run: npm install --force
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
