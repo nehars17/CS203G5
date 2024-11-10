@@ -47,7 +47,13 @@ jobs:
           distribution: 'temurin'  # Use Temurin for JDK 17
       - name: Make mvnw executable
         run: chmod +x ./Project/mvnw
+      # Verify Java version to ensure correct JDK is used
+      - name: Verify Java Version
+        run: java -version
 
+      # Verify Maven version to ensure compatibility with JDK 17
+      - name: Verify Maven Version
+        run: mvn -v
       - name: Install Maven 3.8.1 or higher
         run: |
           wget https://archive.apache.org/dist/maven/maven-3/3.8.1/binaries/apache-maven-3.8.1-bin.tar.gz
