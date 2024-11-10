@@ -43,7 +43,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'  # Use Temurin for JDK 17
-
+      - name: Set JAVA_HOME for Maven
+        run: echo "JAVA_HOME=${{ steps.setup-java.outputs.java-home }}" >> $GITHUB_ENV
       - name: Clean npm cache and node_modules
         run: |
           rm -rf node_modules
