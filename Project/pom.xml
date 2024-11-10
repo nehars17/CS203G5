@@ -17,9 +17,9 @@
     
 
     <properties>
-    <maven.compiler.release>17</maven.compiler.release>
-</properties>
-
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
 
  
 
@@ -145,10 +145,13 @@
           
    
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-compiler-plugin</artifactId> 
-                <version>3.8.1</version> <!-- Downgrade to a version that supports Java 17 -->
-                 <configuration> 
-                <release>17</release>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.0</version>
+ <!-- Make sure the version is compatible with Java 17 -->
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
         </plugins>
