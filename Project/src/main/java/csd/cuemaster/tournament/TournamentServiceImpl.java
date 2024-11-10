@@ -86,4 +86,12 @@ public class TournamentServiceImpl implements TournamentService {
         return tournament;
     }
 
+    public Tournament setWinner(Long tournamentId, Long winnerId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+            .orElseThrow(() -> new TournamentNotFoundException(tournamentId));
+    
+        tournament.setWinnerId(winnerId);
+        return tournamentRepository.save(tournament);
+    }
+
 }

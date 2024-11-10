@@ -11,4 +11,6 @@ public interface TournamentService {
 
     Tournament joinTournament(Long tournamentId, Long playerId);
     Tournament leaveTournament(Long tournamentId, Long playerId);
+
+    Tournament setWinner(Long tournamentId, Long winnerId);
 }

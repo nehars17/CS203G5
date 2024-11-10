@@ -106,4 +106,16 @@ public class TournamentController {
         return ResponseEntity.ok(updatedTournament);
     }
 
+    @PostMapping("/tournaments/{id}/set-winner")
+    public ResponseEntity<?> setTournamentWinner(@PathVariable Long id, @RequestBody Long winnerId) {
+        try {
+            Tournament tournament = tournamentService.setWinner(id, winnerId);
+            profileService.TournamentWinCount(winnerId); // Increment win count for winner
+            return ResponseEntity.ok(tournament);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to set tournament winner: " + e.getMessage());
+        }
+    }
+
+
 }
