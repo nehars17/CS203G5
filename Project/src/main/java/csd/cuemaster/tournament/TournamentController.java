@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import csd.cuemaster.profile.ProfileService;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -14,6 +15,7 @@ public class TournamentController {
 
     @Autowired
     private TournamentService tournamentService;
+    private ProfileService profileService;
 
     /**
      * Add a new tournament with POST request to "/tournaments"
@@ -93,12 +95,14 @@ public class TournamentController {
     @PostMapping("/tournaments/{id}/join")
     public ResponseEntity<Tournament> joinTournament(@PathVariable Long id, @RequestBody Long playerId) {
         Tournament updatedTournament = tournamentService.joinTournament(id, playerId);
+        profileService.increaseTournamentCount(playerId);
         return ResponseEntity.ok(updatedTournament);
     }
 
     @PostMapping("/tournaments/{id}/leave")
     public ResponseEntity<Tournament> leaveTournament(@PathVariable Long id, @RequestBody Long playerId) {
         Tournament updatedTournament = tournamentService.leaveTournament(id, playerId);
+        profileService.decreaseTournamentCount(playerId);
         return ResponseEntity.ok(updatedTournament);
     }
 
