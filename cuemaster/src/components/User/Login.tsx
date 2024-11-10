@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Card, Container, Alert } from 'react-bootstrap';
 import { GoogleLogin } from '@react-oauth/google';
+import { getUserIdFromToken } from 'cuemaster/src/components/authUtils';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -30,15 +31,13 @@ const Login: React.FC = () => {
 
       const data = await res.json();
       localStorage.setItem('token', data.token); // Store token
-
+      const userId = getUserIdFromToken();
+      
       // Navigate based on role
-      if (data.role === 'ROLE_PLAYER') {
-        
-        navigate('/playerProfile');
-      } else if (data.role === 'ROLE_ORGANISER') {
-        navigate('/organiserProfile');
-      } else {
+      if (data.role === 'ROLE_ADMIN') {
         navigate('/adminDashboard');
+      }else {
+        navigate(`/ProfileCreation/${userId}`);
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -68,12 +67,9 @@ const Login: React.FC = () => {
       console.log(data.role);
       console.log(data);
       localStorage.setItem('token', data.token); // Store token
-      if (data.role == "ROLE_PLAYER") {
-        navigate('/playerProfile');
-      }
-      else if(data.role == "ROLE_ORGANISER") {
-        navigate('/organiserProfile');
-      }
+      const userId = getUserIdFromToken();
+      
+      navigate(`/ProfileCreation/${userId}`);
 
     } catch (error) {
       console.error('Error during Google login:', error);

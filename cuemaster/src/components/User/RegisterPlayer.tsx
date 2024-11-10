@@ -4,6 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Button, Card, Container } from 'react-bootstrap';
 import { GoogleLogin } from '@react-oauth/google'; // New Google OAuth import
 
+interface RegisterResponse{
+  userId:String;
+  username:String;
+}
+
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,15 +24,14 @@ const Register: React.FC = () => {
       return;
     }
     try {
-      const response = await API.post('/register', {
+      const response = await API.post<RegisterResponse>('/register', {
         username: email,
         password: password,
         authorities: userType,
       });
 
       const userId = response.data.userId;
-      // navigate('/login');
-      navigate(`/create-profile/${userId}`,{state: {userId}});  //Navigate to /creating profile with the userid 
+      navigate('/login');
     } catch (error) {
       console.error('Registration failed', error);
       setError('Registration failed, please try again');

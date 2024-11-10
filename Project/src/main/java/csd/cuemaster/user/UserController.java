@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,14 +19,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import csd.cuemaster.services.EmailService;
 import csd.cuemaster.services.JwtService;
+import csd.cuemaster.imageservice.ImageService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.ElementCollection;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 public class UserController {
@@ -40,6 +45,9 @@ public class UserController {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private ImageService ImageService;
+
     @ElementCollection
     @GetMapping("/users")
     public List<User> getUsers() {
@@ -47,16 +55,28 @@ public class UserController {
     }
 
     @GetMapping("/me")
-public ResponseEntity<Map<String, Object>> authenticatedUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (!(authentication.getPrincipal() instanceof User)) {
-        throw new UsernameNotFoundException("User not found");
+    public ResponseEntity<Map<String, Object>> authenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication.getPrincipal() instanceof User)) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        User currentUser = (User) authentication.getPrincipal();
+        Map<String, Object> response = new HashMap<>();
+        response.put("username", currentUser.getUsername());
+        return ResponseEntity.ok(response);
     }
-    User currentUser = (User) authentication.getPrincipal();
-    Map<String, Object> response = new HashMap<>();
-    response.put("username", currentUser.getUsername());
-    return ResponseEntity.ok(response);
-}
+
+    @GetMapping("/Provider/{user_id}")
+    public String getUserProvider(@PathVariable(value = "user_id") Long user_id){
+
+        return userService.getProvider(user_id);
+    }
+
+    @GetMapping("/user/{user_id}")
+    public User getUserByUserId(@PathVariable(value = "user_id") Long user_id) {
+        return userService.getUser(user_id);
+    }
+    
 
 
     /**
@@ -89,7 +109,6 @@ public ResponseEntity<Map<String, Object>> authenticatedUser() {
         return message; // Return a view to show the activation status
     }
 
-
     @PostMapping("/normallogin")
     public ResponseEntity<Map<String, Object>> retrieveUser(HttpSession session, @Valid @RequestBody User user) {
         User loggedInUser = userService.loginUser(user);
@@ -104,17 +123,17 @@ public ResponseEntity<Map<String, Object>> authenticatedUser() {
         }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                    loggedInUser.getUsername(),
-                    user.getPassword()));
-        String role = loggedInUser.getAuthorities().isEmpty() ? null : loggedInUser.getAuthorities().iterator().next().getAuthority();
-        String jwtToken = jwtService.generateToken(loggedInUser,loggedInUser.getId(),role);
+                        loggedInUser.getUsername(),
+                        user.getPassword()));
+        String role = loggedInUser.getAuthorities().isEmpty() ? null
+                : loggedInUser.getAuthorities().iterator().next().getAuthority();
+        String jwtToken = jwtService.generateToken(loggedInUser, loggedInUser.getId(), role);
         System.out.println(jwtToken);
         // Prepare the response map
         Map<String, Object> response = new HashMap<>();
         response.put("user", loggedInUser);
         response.put("token", jwtToken);
         response.put("role", role);
-
 
         return ResponseEntity.ok(response);
     }
@@ -125,9 +144,19 @@ public ResponseEntity<Map<String, Object>> authenticatedUser() {
         return ResponseEntity.ok("Logged out successfully!");
     }
 
+    @PutMapping("/update/{user_id}/password")
+    public void updatePassword(@PathVariable(value = "user_id") Long user_id, @Valid @RequestBody User user) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (currentUser.getId() == user_id) {
+            userService.updatePassword(user_id, user);
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to update this password");
+        }
+    }
+
     @DeleteMapping("/user/{user_id}/account")
     public void deleteAccount(@PathVariable(value = "user_id") Long user_id) {
         userService.deleteUser(user_id);
+        ImageService.deleteImage("ProfilePhoto_" + user_id + ".jpg");
     }
-
 }

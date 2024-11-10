@@ -62,7 +62,19 @@ public class UserServiceImpl implements UserService {
         return users.save(user);
     }
 
-
+    /**
+     * Updates a user's password.
+     * 
+     * @param userId the ID of the user.
+     * @param user the user with the new password.
+     */
+    @Override
+    public void updatePassword(Long userId, User user) {
+        User foundUser = users.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        foundUser.setPassword(encoder.encode(user.getPassword()));
+        users.save(foundUser);
+    }
 
     public User googleLogin(String email, String role) {
         // Create the authority from the role string
@@ -109,4 +121,10 @@ public class UserServiceImpl implements UserService {
         users.delete(user);
     }
 
+    @Override
+    public String getProvider(Long userId){
+        User user = users.findById(userId)           
+                        .orElseThrow(() -> new UserNotFoundException(userId));
+        return user.getProvider();
+    }
 }

@@ -55,4 +55,25 @@ public class ImageService {
             return ResponseEntity.status(500).build(); // Handle any exceptions
         }
     }
+
+    public ResponseEntity<Resource> deleteImage(String filename) {
+        try {
+            // Resolve the file path based on the filename
+            Path filepath = Paths.get(directoryPath).resolve(filename);
+            
+            // Check if the file exists before attempting to delete it
+            if (Files.exists(filepath)) {
+                // Delete the file
+                Files.delete(filepath);
+                return ResponseEntity.ok().build();  // Return a success response
+            } else {
+                // If the file does not exist, return a 404 (Not Found) response
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Return a 500 (Internal Server Error) response if something goes wrong
+            return ResponseEntity.status(500).build();
+        }
+    }
 }

@@ -12,7 +12,8 @@ public interface UserService {
     public User loginUser(User user);
     public User googleLogin(String email, String role);
     public String accountActivation(String token);
-
+    String getProvider(Long user_id);
+    void updatePassword(Long userId, User user);
     /**
      * Change method's signature: do not return a value for delete operation
      * @param id

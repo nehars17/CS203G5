@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import API from '../../services/api';
-import axios from 'axios';
+import './Profile.css';
+import { isAuthenticated, getUserIdFromToken, getUserRole } from 'cuemaster/src/components/authUtils';
 
-// Profile interface definition
+interface User {
+  id: number;
+  username: string;
+}
+
 interface Profile {
   id: number;
   firstname: string;
@@ -11,64 +16,93 @@ interface Profile {
   birthdate: string;
   birthlocation: string;
   profilephotopath: string;
-  organization?: string;
-  TournamentCount?: number;
-  TournamentWinCount?: number;
-  MatchCount?: number;
-  MatchWinCount?: number;
-  points?: number;
+  organization: string | null;
+  points: number | null;
+  user: User;
+  tournamentCount: number | null;
+  matchCount: number | null;
+  matchWinCount: number | null;
+  tournamentWinCount: number | null;
 }
 
 const Profile: React.FC = () => {
-  const { userId, profileId } = useParams<{ userId: string; profileId: string }>(); // Extracting from URL params (extracting userid and profileid from url)
-  const [profile, setProfile] = useState<Profile | null>(null); //store the getprofile to this profile variable 
-  const [loading, setLoading] = useState(true);//keep track of whether the profile data is currently being loaded (true - not fetched / false - fetched/error)
-  const [error, setError] = useState<string | null>(null); //store any error message 
+  const { userId } = useParams<{ userId: string }>(); // Change userId type to string
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error message state
 
-  useEffect(() => {                 //useEffect perform side effects such as data fetching 
-    
-    //Constructing the fetchprofile function
+  useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await API.get(`/user/${userId}/profile/${profileId}`);
+        const response = await API.get<Profile>(
+          `http://localhost:8080/profile/${Number(userId)}` // Convert userId to a number
+        );
         setProfile(response.data);
       } catch (err) {
-        setError('Failed to load profile');
+        if (err && typeof err === 'object' && 'response' in err) {
+          const errorMessage = (err as any).response?.data?.message || 'Failed to load profile';
+          setError(errorMessage);
+        } else {
+          setError('An unexpected error occurred.');
+        }
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    //calling the function 
     fetchProfile();
-  }, [userId, profileId]);
+  }, [userId]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  // If neither loading nor error, render the profile
-  return (
-    <div>
-      <h1>User Profile</h1>
-      {profile && (
-        <div>
-          <h2>{profile.firstname} {profile.lastname}</h2>
-          <p>Date of Birth: {profile.birthdate}</p>
-          <p>Birth Location: {profile.birthlocation}</p>
-          {profile.organization && <p>Organization: {profile.organization}</p>}
-          <p>Tournaments Played: {profile.TournamentCount}</p>
-          <p>Tournaments Won: {profile.TournamentWinCount}</p>
-          <p>Matches Played: {profile.MatchCount}</p>
-          <p>Matches Won: {profile.MatchWinCount}</p>
-          <p>Points: {profile.points}</p>
-          {profile.profilephotopath && (
-            <img src={profile.profilephotopath} alt="Profile" style={{ width: '150px', height: '150px', borderRadius: '8px' }} />
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+  // Check if the logged-in user matches the profile ID or has an admin role
+  const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'admin');
 
-export default Profile;
+  return (
+    <div className="profile-container">
+    {profile && (
+      <>
+        <div className="profile-info">
+          <div className="profile-image">
+            {profile.profilephotopath && (
+              <img
+                src={`http://localhost:8080/profilePhotos/${profile.profilephotopath}`}
+                alt="Profile Picture"
+                className="profile-pphoto" // Add a class for better control
+              />
+            )}
+            <h1 className="Name-info">{profile.firstname} {profile.lastname}</h1>
+          </div>
+  
+          <div className="profile-details-container">
+            <div className="profile-details">
+              <p className="profile-details-row"><strong>Date of Birth:</strong> <span className='profile-spaces'> {profile.birthdate} </span></p>
+              <p className="profile-details-row"><strong>Place of Birth:</strong> <span className='profile-spaces'> {profile.birthlocation} </span></p>
+              {profile.organization && <p className="profile-details-row"><strong>Organization:</strong><span className='profile-spaces'>{profile.organization}</span> </p>}
+              {profile.tournamentCount !== null && <p className="profile-details-row"><strong>Tournaments Played:</strong> <span className='profile-spaces'>{profile.tournamentCount}</span></p>}
+              {profile.tournamentWinCount !== null && <p className="profile-details-row"><strong>Tournaments Won:</strong> <span className='profile-spaces'>{profile.tournamentWinCount}</span></p>}
+              {profile.matchCount !== null && <p className="profile-details-row"><strong>Matches Played:</strong><span className='profile-spaces'> {profile.matchCount}</span></p>}
+              {profile.matchWinCount !== null && <p className="profile-details-row"><strong>Matches Won:</strong> <span className='profile-spaces'>{profile.matchWinCount}</span></p>}
+              {profile.points !== null && <p className="profile-details-row"><strong>Points:</strong><span className='profile-spaces'> {profile.points} </span></p>}
+            </div>
+          </div>
+        </div>
+  
+        {canEdit && (
+          <div className="edit-button-container">
+            <button
+              className="editbutton"
+              onClick={() => (window.location.href = `/ProfileAmendment/${profile.user.id}`)}
+            >
+              Edit Profile
+            </button>
+          </div>
+        )}
+      </>
+    )}
+  </div>
+  );}
+
+  export default Profile;

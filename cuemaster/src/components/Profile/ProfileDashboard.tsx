@@ -2,22 +2,22 @@ import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
 import './ProfileDashboard.css';
 
-interface User{
+interface User {
   id: number;
   username: string;
 }
 
 interface Profile {
-  id: number; // Change to number if profile IDs are integers
+  id: number;
   firstname: string;
   lastname: string;
-  birthdate: string; // If you want to access it in the frontend
+  birthdate: string;
   birthlocation: string;
-  profilephotopath: string; // Ensure this field is included
-  organization: string | null; // Allow null if it's optional
-  points: number | null; // Allow null if it's optional
-  user: User; // Nested user object
-  tournamentCount: number | null; 
+  profilephotopath: string;
+  organization: string | null;
+  points: number | null;
+  user: User;
+  tournamentCount: number | null;
   matchCount: number | null;
   matchWinCount: number | null;
   tournamentWinCount: number | null;
@@ -35,14 +35,14 @@ const ProfileDashboard: React.FC = () => {
 
       // Handle API calls based on the selected role
       if (role === "All") {
-        response = await API.get(`/profiles`);
+        response = await API.get<Profile[]>(`/profiles`); // Directly expect Profile[]
       } else {
-        response = await API.get(`/profiles?role=${role}`);
+        response = await API.get<Profile[]>(`/profiles?role=${role}`); // Directly expect Profile[]
       }
 
       console.log('Response from API:', response); // Log the entire response
       console.log('Profiles data:', response.data); // Log only the data
-      setProfiles(response.data);
+      setProfiles(response.data); // Now correctly typed as Profile[]
       setFilter(role);
     } catch (error) {
       console.error(`Failed to fetch ${role} profiles:`, error);
@@ -57,13 +57,16 @@ const ProfileDashboard: React.FC = () => {
 
   return (
     <div className="dashboard-container">
-      <h1>Profile Dashboard</h1>
+      <h1 className="dashboard-title">Profile Dashboard</h1>
+
+      {/* Filter buttons */}
       <div className="button-group">
-        <button className="button" onClick={() => handleFilterChange('All')}>All</button>
-        <button className="button" onClick={() => handleFilterChange('Player')}>Players</button>
-        <button className="button" onClick={() => handleFilterChange('Organizer')}>Organizers</button>
+        <button className="filterbutton" onClick={() => handleFilterChange('All')}>All</button>
+        <button className="filterbutton" onClick={() => handleFilterChange('Player')}>Players</button>
+        <button className="filterbutton" onClick={() => handleFilterChange('Organizer')}>Organizers</button>
       </div>
 
+      {/* Loading state */}
       {loading ? (
         <p className="loading-message">Loading profiles...</p>
       ) : (
@@ -75,15 +78,20 @@ const ProfileDashboard: React.FC = () => {
             return (
               <div key={profile.id} className="profile-card">
                 <div className="profile-content">
+                  {/* Profile photo */}
                   <img
                     src={imageUrl}
                     alt={`${profile.firstname} ${profile.lastname}`}
                     className="profile-photo"
                   />
-                  <h3>{profile.firstname} {profile.lastname}</h3>
+
+                  {/* Profile name */}
+                  <h3 className="profile-name">{profile.firstname} {profile.lastname}</h3>
+
+                  {/* View profile button */}
                   <button
-                    className="button"
-                    onClick={() => (window.location.href = `/user/${profile.id}/profile`)}
+                    className="viewbutton"
+                    onClick={() => window.location.href = `/profile/${profile.user.id}`}
                   >
                     View Profile
                   </button>

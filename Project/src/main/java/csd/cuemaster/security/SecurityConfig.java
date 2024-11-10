@@ -66,17 +66,19 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/normallogin/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*",
-                        "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches",
-                        "/tournaments", "/leaderboard", "/me").permitAll()
+                        "/loginSuccess", "/profiles", "/profile/*", "/tournaments/*", "/matches/*", "/matches",
+                        "/tournaments", "/leaderboard", "/playerrank", "/userName/*","/user/*","/me").permitAll()
                 .requestMatchers(HttpMethod.GET, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
                 .requestMatchers(HttpMethod.GET, "/profilePhotos/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/user/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/create/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/update/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")

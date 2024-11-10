@@ -65,6 +65,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmdAZ21haWwuY29tIiwiaWF0I
     "authorities": "ROLE_ADMIN"
 }
 
+###
+DELETE http://localhost:8080/user/121/account
+Content-Type: application/json
+
+{
+
+}
+
 
 
 #BRYAN
