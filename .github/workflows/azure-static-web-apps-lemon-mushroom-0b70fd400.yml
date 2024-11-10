@@ -48,6 +48,13 @@ jobs:
       - name: Make mvnw executable
         run: chmod +x ./Project/mvnw
 
+      - name: Install Maven 3.8.1 or higher
+        run: |
+          wget https://archive.apache.org/dist/maven/maven-3/3.8.1/binaries/apache-maven-3.8.1-bin.tar.gz
+          tar -xvzf apache-maven-3.8.1-bin.tar.gz
+          export PATH=$PWD/apache-maven-3.8.1/bin:$PATH
+
+
       - name: Cache Maven packages 
         uses: actions/cache@v2
         with: 
