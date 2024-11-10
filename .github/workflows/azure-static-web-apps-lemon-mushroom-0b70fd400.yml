@@ -22,8 +22,7 @@ jobs:
         with:
           submodules: true
           lfs: false
-      - name: Install OIDC Client from Core Package
-        run: npm install @actions/core@1.6.0 @actions/http-client
+      # Removed the installation of @actions/core
       - name: Get Id Token
         uses: actions/github-script@v6
         id: idtoken
@@ -43,7 +42,6 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LEMON_MUSHROOM_0B70FD400 }}
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/cuemaster" # App source code path
           api_location: "/Project" # Spring Boot backend source code path
           output_location: "/cuemaster/build" # Built app content directory
