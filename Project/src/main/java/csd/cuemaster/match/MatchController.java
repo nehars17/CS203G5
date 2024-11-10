@@ -98,6 +98,21 @@ public class MatchController {
         }
     }
 
+    @PostMapping("/matchmaking/{tournamentId}")
+    public List<Match> createMatches(@PathVariable (value = "tournamentId") Long tournamentId) {
+        return matchService.createMatchesFromTournaments(tournamentId);
+    }
+
+    // Exceptions handler
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
 
 }

@@ -16,7 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -75,6 +74,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/playerstats/*").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
@@ -82,6 +82,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.POST, "/matchmaking/*").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
