@@ -1,12 +1,11 @@
 package csd.cuemaster;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.net.URI;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,18 +13,14 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import csd.cuemaster.match.Match;
+import csd.cuemaster.match.MatchRepository;
 import csd.cuemaster.match.MatchService;
 import csd.cuemaster.profile.ProfileRepository;
-import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.tournament.TournamentRepository;
-import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -43,111 +38,139 @@ public class MatchIntegrationTest {
     private ProfileRepository profiles; 
 
     @Autowired
+    private UserRepository users;
+
+    @Autowired
     private TournamentRepository tournaments;
    
     @Autowired
     private MatchService matchService;
 
-    private Match match;
-    private Tournament tournament;
-    private Profile user1;
-    private Profile user2;
-    
-    @BeforeEach
-    void setUp() {
-        baseUrl = baseUrl + port;
-
-        // Create and save sample entities
-        tournament = tournaments.save(new Tournament());
-        user1 = users.save(new Profile());
-        user2 = users.save(new User());
-
-        match = new Match();
-        match.setTournament(tournament);
-        match.setUser1(user1);
-        match.setUser2(user2);
-        match.setMatchDate(LocalDate.now());
-        match.setMatchTime(LocalTime.now());
-        match.setUser1Score(0);
-        match.setUser2Score(0);
-
-        match = matchService.createMatch(match); // Save the match using the actual service
-    }
+    @Autowired
+    private MatchRepository matchRepository;
 
     @AfterEach
     void tearDown(){
-        profiles.deleteAll();
-        users.deleteAll();
-        tournaments.deleteAll();
+        matchRepository.deleteAll();
     }
 
     @Test
-    void testCreateMatch() {
-        Match newMatch = new Match();
-        newMatch.setTournament(tournament);
-        newMatch.setUser1(user1);
-        newMatch.setUser2(user2);
-        newMatch.setMatchDate(LocalDate.now());
-        newMatch.setMatchTime(LocalTime.now());
-        newMatch.setUser1Score(0);
-        newMatch.setUser2Score(0);
+    public void createMatch_Success() throws Exception {
+        URI uri = new URI(baseUrl + port + "/matches/");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Match> request = new HttpEntity<>(newMatch, headers);
+        Match match = new Match();
+        match.setRoundNumber(1);
+        match.setPlayer1Id(1L);
+        match.setPlayer2Id(2L);
 
-        ResponseEntity<Match> response = restTemplate.postForEntity(baseUrl + "/matches/create", request, Match.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody().getId());
+        ResponseEntity<Match> result = restTemplate.postForEntity(uri, match, Match.class);
+
+        assertEquals(201, result.getStatusCode().value());
+        assertNotNull(result.getBody().getId());
+        assertEquals(1L, result.getBody().getPlayer1Id());
     }
 
     @Test
-    void testUpdateMatch() {
-        match.setUser1Score(1);
-        match.setUser2Score(2);
+    public void getMatchById_ValidId_Success() throws Exception {
+        // Save a match to retrieve later
+        Match match = new Match();
+        match.setRoundNumber(1);
+        match.setPlayer1Id(1L);
+        match.setPlayer2Id(2L);
+        Match savedMatch = matchRepository.save(match);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Match> request = new HttpEntity<>(match, headers);
+        URI uri = new URI(baseUrl + port + "/matches/" + savedMatch.getId());
 
-        ResponseEntity<Match> response = restTemplate.exchange(baseUrl + "/matches/" + match.getId(), HttpMethod.PUT, request, Match.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().getUser1Score());
-        assertEquals(2, response.getBody().getUser2Score());
+        ResponseEntity<Match> result = restTemplate.getForEntity(uri, Match.class);
+
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals(1L, result.getBody().getPlayer1Id());
     }
 
     @Test
-    void testGetMatchById() {
-        ResponseEntity<Match> response = restTemplate.getForEntity(baseUrl + "/matches/" + match.getId(), Match.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(match.getId(), response.getBody().getId());
+    public void getMatchById_InvalidId_Failure() throws Exception {
+        URI uri = new URI(baseUrl + port + "/matches/999");
+
+        ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
+
+        assertEquals(404, result.getStatusCode().value());
     }
 
     @Test
-    void testGetAllMatches() {
-        ResponseEntity<Match[]> response = restTemplate.getForEntity(baseUrl + "/matches", Match[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().length);
+    public void updateMatch_ValidId_Success() throws Exception {
+        Match match = new Match();
+        match.setRoundNumber(1);
+        match.setPlayer1Id(1L);
+        match.setPlayer2Id(2L);
+        Match savedMatch = matchRepository.save(match);
+
+        URI uri = new URI(baseUrl + port + "/matches/" + savedMatch.getId());
+
+        Match updatedMatch = new Match();
+        updatedMatch.setRoundNumber(2);
+        updatedMatch.setPlayer1Id(1L);
+        updatedMatch.setPlayer2Id(3L);
+
+        ResponseEntity<Match> result = restTemplate.exchange(uri, HttpMethod.PUT, new HttpEntity<>(updatedMatch), Match.class);
+
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals(3L, result.getBody().getPlayer2Id());
     }
 
     @Test
-    void testDeleteMatch() {
-        ResponseEntity<Void> response = restTemplate.exchange(baseUrl + "/matches/" + match.getId(), HttpMethod.DELETE, null, Void.class);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    public void deleteMatch_ValidId_Success() throws Exception {
+        Match match = new Match();
+        match.setRoundNumber(1);
+        match.setPlayer1Id(1L);
+        match.setPlayer2Id(2L);
+        Match savedMatch = matchRepository.save(match);
 
-        // Verify deletion
-        ResponseEntity<Match> deletedMatchResponse = restTemplate.getForEntity(baseUrl + "/matches/" + match.getId(), Match.class);
-        assertEquals(HttpStatus.NOT_FOUND, deletedMatchResponse.getStatusCode());
+        URI uri = new URI(baseUrl + port + "/matches/" + savedMatch.getId());
+
+        ResponseEntity<Void> result = restTemplate.exchange(uri, HttpMethod.DELETE, null, Void.class);
+
+        assertEquals(204, result.getStatusCode().value());
+
+        // Check that the match is actually deleted
+        ResponseEntity<String> getResult = restTemplate.getForEntity(uri, String.class);
+        assertEquals(404, getResult.getStatusCode().value());
     }
 
     @Test
-    void testDeclareWinner() {
-        Long winnerId = user1.getId();
-        ResponseEntity<Match> response = restTemplate.postForEntity(baseUrl + "/matches/" + match.getId() + "/declareWinner/" + winnerId, null, Match.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(match.getId(), response.getBody().getId());
-        assertEquals(winnerId, response.getBody().getWinner().getId());
+    public void declareWinner_ValidMatchAndWinner_Success() throws Exception {
+        Match match = new Match();
+        match.setRoundNumber(1);
+        match.setPlayer1Id(1L);
+        match.setPlayer2Id(2L);
+        Match savedMatch = matchRepository.save(match);
+
+        URI uri = new URI(baseUrl + port + "/matches/" + savedMatch.getId() + "/winner/1");
+
+        ResponseEntity<Match> result = restTemplate.postForEntity(uri, null, Match.class);
+
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals(1L, result.getBody().getWinnerId());
+    }
+
+    @Test
+    public void declareWinner_InvalidMatchId_Failure() throws Exception {
+        URI uri = new URI(baseUrl + port + "/matches/999/winner/1");
+
+        ResponseEntity<String> result = restTemplate.postForEntity(uri, null, String.class);
+
+        assertEquals(404, result.getStatusCode().value());
+    }
+
+    @Test
+    public void createMatchesForTournament_Success() throws Exception {
+        // Assume tournamentId 1L is valid and has associated players
+        URI uri = new URI(baseUrl + port + "/matchmaking/1");
+
+        ResponseEntity<Match[]> result = restTemplate.postForEntity(uri, null, Match[].class);
+
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals(4, result.getBody().length);  // Adjust this as per your tournament's match creation logic
     }
 }
+
 

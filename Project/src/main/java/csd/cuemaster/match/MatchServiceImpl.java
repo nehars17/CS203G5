@@ -1,16 +1,24 @@
 package csd.cuemaster.match;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import csd.cuemaster.profile.*;
-import csd.cuemaster.tournament.*;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator.Validity;
+
+import csd.cuemaster.profile.Profile;
+import csd.cuemaster.profile.ProfileService;
+import csd.cuemaster.services.MatchingService;
+import csd.cuemaster.services.MatchingServiceImpl;
+import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.tournament.TournamentRepository;
-import csd.cuemaster.user.*;
+import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserRepository;
 
 @Service
@@ -28,38 +36,32 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     private UserRepository userRepository; 
 
-    /**
-     * Prevent organizer from creating a match without a tournament and players
-     * Will return a resourceNotFoundException if tournament and either users does not exist
-     * @param match
-     */
-    private void matchConditionsCheck(Match match) {
-        if (match.getTournament() == null || !tournamentRepository.existsById(match.getTournament().getId())) {
-            throw new ResourceNotFoundException("Tournament with ID " + match.getTournament().getId() + " does not exist");
-        }
-        if (!userRepository.existsById(match.getUser1().getId())) {
-            throw new ResourceNotFoundException("User with ID " + match.getUser1().getId() + " does not exist");
-        }
-        if (!userRepository.existsById(match.getUser2().getId())) {
-            throw new ResourceNotFoundException("User with ID " + match.getUser2().getId() + " does not exist");
-        }
-    }
+    @Autowired
+    private MatchingService matchingService;  // Inject MatchingServiceImpl
+
 
     /**
-     * Comment
+     * Deletes a match by its ID.
+     *
+     * @param matchId ID of the match to delete.
+     * @throws ResourceNotFoundException if the match with the given ID is not found.
      */
     @Override
-    public Match createMatch(Match match) {
-        matchConditionsCheck(match);
-        
-        return matchRepository.save(match);
+    public void deleteMatchById(Long matchId) {
+        if (!matchRepository.existsById(matchId)) {
+            throw new ResourceNotFoundException("Match with ID " + matchId + " not found");
+        }
+        matchRepository.deleteById(matchId);
     }
 
-    //update exisiting match
+        /**
+     * only updates given a valid match id
+     */
     @Override
     public Match updateMatch(Long matchId, Match match) {
         
         Match existingMatch = matchRepository.findById(matchId).orElse(null);
+        
         if (existingMatch == null) {
             throw new RuntimeException("Match not found with id: " + matchId); // Consider a custom exception
         }
@@ -87,118 +89,130 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public void deleteMatchById(Long matchId) {
-        if (!matchRepository.existsById(matchId)) {
-            throw new ResourceNotFoundException("This match with id:" + matchId +" does not exist");
-        }
-        matchRepository.deleteById(matchId);
-    }
-
-    @Override
-    public List<Match> getMatchesByTournamentId(Long tournamentId) {
-        return matchRepository.findByTournamentId(tournamentId);
-    }
-
-    //need fixing
-    // Set the winner of the match
-    @Override
-    public Match declareWinner(Long matchId, Long winnerId) {
-        Match match = matchRepository.findById(matchId).orElseThrow(() -> new ResourceNotFoundException("Match with ID " + matchId + " does not exist"));
-    
-            // Check if the winner is one of the two users in the match
-        if (!match.getUser1().getId().equals(winnerId) && !match.getUser2().getId().equals(winnerId)) {
-            throw new IllegalArgumentException("Winner must be one of the two participants of the match.");
-        }
-    
-            // Set the winner and update the match
-        match.setWinner(userRepository.findById(winnerId).orElseThrow(() -> new ResourceNotFoundException("User with ID " + winnerId + " does not exist")));
-        
-        return matchRepository.save(match);
-    }
-
-    // Create matches from a given tournament.
-    @Override
     public List<Match> createMatchesFromTournaments(Long tournamentId) {
-        List<Profile> players = new ArrayList<>(profileService.getProfilesFromTournaments(tournamentId));
-        if (players.size() < 2) {
-            return new ArrayList<>();
-        }
-        List<Match> matches = new ArrayList<>();
-        Random random = new Random();
-        int pointsRange = 100;
+        // Retrieve the tournament from the repository using the tournamentId
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
-        // Matchmaking occurs here.
-        while (players.size() > 2) {
-            int player1 = random.nextInt(players.size());
-            int player2 = random.nextInt(players.size());
-            player2 = validatePlayer(players, random, player1, player2);
-            int difference = getDifference(players, player1, player2);
+        // Ensure there are enough players for the round
+        List<User> players = tournament.getPlayers();
+        checkSufficientPlayers(players, getRequiredPlayersForNextRound(tournament));
 
-            // Create match only when it is balanced.
-            if (difference <= pointsRange) {
-                createMatch(players, matches, player1, player2);
-                removePlayers(players, player1, player2);
+        // Create match pairs based on tournament round status
+        List<Match> matches = matchingService.createPairs(players, tournament);
 
-                // Reset the range back to 100.
-                pointsRange = 100;
-            } else {
-                pointsRange += 100;
-            }
-        }
-
-        // Create the last match if there are exactly two players left.
-        if (players.size() == 2) {
-            createLastMatch(players, matches);
-        }
+        // Save the matches in the repository
         matchRepository.saveAll(matches);
+
+        // Update the tournament status to the next round
+        updateTournamentStatus(tournament);
+
         return matches;
     }
 
-    // Helper method to check that the two players are different.
-    private int validatePlayer(List<Profile> players, Random random, int player1, int player2) {
-        while (player1 == player2) {
-            player2 = random.nextInt(players.size());
-        }
-        return player2;
-    }
-
-    // Helper method to get the points difference between the two players.
-    private int getDifference(List<Profile> players, int player1, int player2) {
-        Integer points1 = players.get(player1).getPoints();
-        Integer points2 = players.get(player2).getPoints();
-        int difference = Math.abs(points1 - points2);
-        return difference;
-    }
-
-    // Helper method to create matches.
-    private void createMatch(List<Profile> players, List<Match> matches, int player1, int player2) {
-        User user1 = players.get(player1).getUser();
-        User user2 = players.get(player2).getUser();
-        Match match = new Match();
-        matches.add(match);
-        match.setUser1(user1.getProfile());
-        match.setUser2(user2.getProfile());
-    }
-
-    // Helper method to remove the chosen players from the list.
-    private void removePlayers(List<Profile> players, int player1, int player2) {
-        if (player1 > player2) {
-            players.remove(player1);
-            players.remove(player2);
-        } else if (player2 > player1) {
-            players.remove(player2);
-            players.remove(player1);
+    private int getRequiredPlayersForNextRound(Tournament tournament) {
+        switch (tournament.getStatus()) {
+            case ROUND_OF_32: return 64;
+            case ROUND_OF_16: return 32;
+            case QUARTER_FINALS: return 16;
+            case SEMI_FINAL: return 8;
+            case FINAL: return 2;
+            default: throw new IllegalStateException("Invalid tournament status");
         }
     }
 
-    // Helper method to create the last match if there are exactly two players left.
-    private void createLastMatch(List<Profile> players, List<Match> matches) {
-        User user1 = players.get(0).getUser();
-        User user2 = players.get(1).getUser();
-        Match match = new Match();
-        matches.add(match);
-        match.setUser1(user1.getProfile());
-        match.setUser2(user2.getProfile());
-        players.clear();
+    // private Match createByeMatch(Tournament tournament, User playerForBye) {
+    //     return createMatch(tournament, playerForBye, null, "BYE");
+    // }
+
+    /**
+     * Update the tournament status to the next round.
+     */
+    private void updateTournamentStatus(Tournament tournament) {
+        switch (tournament.getStatus()) {
+            case ROUND_OF_32: 
+                tournament.setStatus(Tournament.Status.ROUND_OF_16); 
+                break;
+            case ROUND_OF_16: 
+                tournament.setStatus(Tournament.Status.QUARTER_FINALS); 
+                break;
+            case QUARTER_FINALS: 
+                tournament.setStatus(Tournament.Status.SEMI_FINAL); 
+                break;
+            case SEMI_FINAL: 
+                tournament.setStatus(Tournament.Status.FINAL); 
+                break;
+            case FINAL: 
+                tournament.setStatus(Tournament.Status.COMPLETED); 
+                break;
+            default: throw new IllegalStateException("Unexpected tournament status: " + tournament.getStatus());
+        }
+        tournamentRepository.save(tournament);
     }
+
+    // Helper method to create match pairs (even vs. odd player count, etc.)
+    private void createMatchPairs(List<User> players, List<Match> matches) {
+        for (int i = 0; i < players.size(); i += 2) {
+            if (i + 1 < players.size()) { // Only create pairs if there's a second player
+                matches.add(createMatch(players.get(i), players.get(i + 1)));
+            } else { // In case there's an odd number of players, handle "BYE" cases
+                matches.add(createMatch(players.get(i), null));  // One player gets a bye
+            }
+        }
+    }
+
+    private Match createMatch(User player1, User player2) {
+        // Retrieve the tournament for the match by using either player1 or player2
+        Tournament tournament = getTournamentForMatch(player1, player2);
+        LocalDate matchDate = LocalDate.now();
+        LocalTime matchTime = LocalTime.now();
+
+        return new Match(tournament, player1, player2, matchDate, matchTime, 0, 0, "UPCOMING");
+    }
+
+    // Utility method to get the tournament for a given match based on the players
+    private Tournament getTournamentForMatch(User player1, User player2) {
+        // Find a match for the players
+        Match existingMatch = matchRepository.findByUser1IdAndUser2Id(player1.getId(), player2.getId());
+        
+        if (existingMatch != null) {
+            return existingMatch.getTournament();  // Return the tournament associated with the match
+        } else {
+            // If no existing match is found, you may choose to throw an error or create a new tournament
+            throw new RuntimeException("No existing match found for players: " + player1.getUsername() + " and " + player2.getUsername());
+        }
+    }
+
+    @Override
+    public void declareWinner(Long matchId, Long winnerId) {
+        Match match = matchRepository.findById(matchId)
+            .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        User winner = userRepository.findById(winnerId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Profile winnerProfile = winner.getProfile();
+        Profile loserProfile = match.getUser1().getId().equals(winnerId)
+            ? match.getUser2().getProfile()
+            : match.getUser1().getProfile();
+
+        match.setWinner(winner);
+        matchRepository.save(match);
+
+        Long tournamentId = match.getTournament().getId();
+
+        // Update player statistics
+        profileService.updatePlayerStatistics(winnerProfile, loserProfile, tournamentId, match.getTournamentStatus());
+    }
+
+    /** Prevent organizers from creating matches without enough players for the given starting round. Ex: Starting with Round of 32 will need 64 players  
+     * @param players
+     * @param requiredPlayers
+     */
+    private void checkSufficientPlayers(List<User> players, int requiredPlayers) {
+        if (players.size() < requiredPlayers) {
+            throw new IllegalArgumentException("Insufficient players for this round. Required: " + requiredPlayers);
+        }
+    }
+
 }

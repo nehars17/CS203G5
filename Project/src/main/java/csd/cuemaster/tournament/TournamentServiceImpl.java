@@ -5,8 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import csd.cuemaster.match.Match;
 import csd.cuemaster.match.MatchRepository;
-import csd.cuemaster.match.ResourceNotFoundException;
+import csd.cuemaster.match.MatchService;
+import csd.cuemaster.user.User;
+import csd.cuemaster.user.UserRepository;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -18,6 +21,12 @@ public class TournamentServiceImpl implements TournamentService {
     @Autowired
     private MatchRepository matchRepository;
 
+    @Autowired
+    private MatchService matchService;
+
+    @Autowired
+    private UserRepository userRepository;
+    
     // Create a new tournament
     @Override
     public Tournament createTournament(Tournament tournament) {
@@ -66,45 +75,43 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Transactional
     public Tournament joinTournament(Long tournamentId, Long playerId) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found"));
-        
-        // Add playerId to the list of players
-        if (!tournament.getPlayers().contains(playerId)) {
-            tournament.getPlayers().add(playerId);
+        Tournament tournament = getTournamentById(tournamentId);
+        User player = userRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!tournament.getPlayers().contains(player)) {
+            tournament.getPlayers().add(player);
             tournamentRepository.save(tournament);
         }
-        
+
         return tournament;
     }
 
     @Transactional
+    @Override
     public Tournament leaveTournament(Long tournamentId, Long playerId) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found"));
-        
-        // Remove playerId from the list of players
-        tournament.getPlayers().remove(playerId); // This will remove the player if they exist
+        Tournament tournament = getTournamentById(tournamentId);
+        User player;
+        player = userRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        tournament.getPlayers().remove(player);
         tournamentRepository.save(tournament);
-        
+
         return tournament;
     }
 
-    //create matches for the tournament using 
     @Override
-    public Tournament generateMatches(Long tournamentId) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found"));
-
-        if (tournament.getPlayers().size() < 64) {
-            throw new IllegalArgumentException("At least 64 players are required to generate 32 matches.");
-        }
-
-        List<Match> matches = createMatchesFromTournament(tournament);
-        matchRepository.saveAll(matches);  // Save all matches to the database
-
-        tournament.setMatch(matches); // Set matches in the tournament
-        return tournamentRepository.save(tournament); // Save and return updated tournament
+    public List<Match> createMatchesFromTournaments(Long tournamentId) {
+        return matchService.createMatchesFromTournaments(tournamentId);
     }
 
+    // /**
+    //  * Ensure there are enough players for the current round.
+    //  */
+    // private void checkSufficientPlayers(List<Profile> players, int requiredPlayers) {
+    //     if (players.size() < requiredPlayers) {
+    //         throw new IllegalArgumentException("Insufficient players for this round");
+    //     }
+    // }
 }

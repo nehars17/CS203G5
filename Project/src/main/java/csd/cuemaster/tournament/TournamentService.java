@@ -2,6 +2,8 @@ package csd.cuemaster.tournament;
 
 import java.util.List;
 
+import csd.cuemaster.match.Match;
+
 public interface TournamentService {
     Tournament createTournament(Tournament tournament);
     List<Tournament> getAllTournaments();
@@ -11,4 +13,6 @@ public interface TournamentService {
 
     Tournament joinTournament(Long tournamentId, Long playerId);
     Tournament leaveTournament(Long tournamentId, Long playerId);
+
+    List<Match> createMatchesFromTournaments(Long tournamentId);
 }

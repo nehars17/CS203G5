@@ -71,11 +71,11 @@ void testCreateMatch_Success() {
     
     User user1 = new User();
     user1.setId(1L);
-    match.setUser1(user1);
+    match.setUser1(user1.getProfile());
 
     User user2 = new User();
     user2.setId(2L);
-    match.setUser2(user2);
+    match.setUser2(user2.getProfile());
 
     when(tournamentRepository.existsById(1L)).thenReturn(true);
     when(userRepository.existsById(1L)).thenReturn(true);
@@ -118,8 +118,8 @@ void testCreateMatch_Success() {
 
         Match updatedMatch = new Match();
         updatedMatch.setTournament(new Tournament());
-        updatedMatch.setUser1(new User());
-        updatedMatch.setUser2(new User());
+        updatedMatch.setUser1(new User().getProfile());
+        updatedMatch.setUser2(new User().getProfile());
         
         when(matchRepository.findById(matchId)).thenReturn(Optional.of(existingMatch));
         when(matchRepository.save(existingMatch)).thenReturn(existingMatch);
@@ -250,8 +250,8 @@ void testCreateMatch_Success() {
         User user2 = new User();
         user2.setId(2L);
         
-        match.setUser1(user1);
-        match.setUser2(user2);
+        match.setUser1(user1.getProfile());
+        match.setUser2(user2.getProfile());
         
         when(matchRepository.findById(matchId)).thenReturn(Optional.of(match));
         when(userRepository.findById(winnerId)).thenReturn(Optional.of(user1));
@@ -277,8 +277,8 @@ void testCreateMatch_Success() {
         User user2 = new User();
         user2.setId(2L);
         
-        match.setUser1(user1);
-        match.setUser2(user2);
+        match.setUser1(user1.getProfile());
+        match.setUser2(user2.getProfile());
         
         when(matchRepository.findById(matchId)).thenReturn(Optional.of(match));
 

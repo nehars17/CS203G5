@@ -8,8 +8,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import csd.cuemaster.match.Match;
+import csd.cuemaster.user.User;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -63,8 +63,8 @@ public class Tournament {
 
     private Long winnerId; // stores the winner's player ID
 
-    @ElementCollection
-    private List<Long> players = new ArrayList<>();; // Storing player IDs participating in the tournament
+    @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<User> players = new ArrayList<>(); // Storing player participating in the tournament
     // Initializing players list to avoid null issues 
     
     @JsonManagedReference
@@ -93,7 +93,7 @@ public class Tournament {
 
     // Additional overloaded constructors if needed
     public Tournament(String tournamentname, String location, LocalDate startDate, LocalDate endDate, 
-    LocalTime time, Status status, String description, Long winnerId, List<Long> players) {
+    LocalTime time, Status status, String description, Long winnerId, List<User> players) {
         this.tournamentname = tournamentname;
         this.location = location;
         this.startDate = startDate;

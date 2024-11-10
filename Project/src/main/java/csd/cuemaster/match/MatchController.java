@@ -21,31 +21,29 @@ public class MatchController {
     @Autowired
     private MatchService matchService;
 
-    //create match
+    // //create match
+    // @PostMapping("/matches/")
+    // public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
+        
+    //     Match createdMatch = matchService.createMatch(match);
+    //     return ResponseEntity.ok("match created: id =" + createdMatch.getId());
+    // }
+
+    // Create a match
     @PostMapping("/matches/")
     public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
-        
-        Match createdMatch = matchService.createMatch(match);
-        // return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
-        return ResponseEntity.ok("match created: id =" + createdMatch.getId());
+        Match createdMatch = matchService.createMatchesFromTournaments(tournamentId)(match);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Match created: id = " + createdMatch.getId());
     }
-    
-    // public Match updateMatch(@PathVariable Long id, @Valid @RequestBody Match match) {
-        
-    //     Match updatedMatch = matchService.updateMatch(id, match);
-        
-    //     if (updatedMatch == null) {
-    //         throw new ResourceNotFoundException("match with this id does not exist:" + id);
-    //     }
 
-    //     return updatedMatch;
-    // }
-    
-    //update match
+    /**
+     * @param matchId
+     * @param match
+     * @return 
+     */
     @PutMapping("/matches/{matchId}")
     public ResponseEntity<String> updateMatch(@PathVariable Long matchId, @Valid @RequestBody Match match) {
         match.setId(matchId);
-        //Match updatedMatch = 
         matchService.updateMatch(matchId, match);
         return ResponseEntity.ok("match updated: id =" + matchId);
     }
@@ -63,20 +61,11 @@ public class MatchController {
     }
 
     //tempo: get all matches
-    @GetMapping("/matches")
+    @GetMapping("/matchlist")
     public List<Match> getAllMatches() {
         return matchService.getAllMatches();
     }
     
-
-    //get all matches per tournament
-    //need edits
-    // @GetMapping("/tournament/{tournamentId}")
-    // public ResponseEntity<List<Match>> getAllMatchesByTournamentId(@PathVariable Long tournamentId) {
-    //     List<Match> matches = matchService.getMatchesByTournamentId(tournamentId);
-    //     return ResponseEntity.ok(matches);
-    // }
-
     //delete a match
     @DeleteMapping("/matches/{matchId}")
     public ResponseEntity<Void> deleteMatch(@PathVariable Long matchId) {
@@ -103,16 +92,16 @@ public class MatchController {
         return matchService.createMatchesFromTournaments(tournamentId);
     }
 
-    // Exceptions handler
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
+    // // Exceptions handler
+    // @ExceptionHandler(ResourceNotFoundException.class)
+    // public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
+    //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    // }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
+    // @ExceptionHandler(IllegalArgumentException.class)
+    // public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+    //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    // }
 
 
 }

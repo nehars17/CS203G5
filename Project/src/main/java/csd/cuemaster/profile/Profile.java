@@ -1,5 +1,12 @@
 package csd.cuemaster.profile;
 
+import java.time.LocalDate;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import csd.cuemaster.user.User;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,13 +16,12 @@ import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-
-import java.time.LocalDate;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import csd.cuemaster.user.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter // getter methods for all the variables
@@ -50,6 +56,9 @@ public class Profile {
     private Integer TournamentCount; 
 
     private Integer TournamentWinCount;
+
+    @ElementCollection
+    private Set<Long> partcipatedTournamentIds = new HashSet<>();
 
     private Integer MatchCount; 
 
