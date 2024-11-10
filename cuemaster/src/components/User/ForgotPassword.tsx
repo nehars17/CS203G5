@@ -26,9 +26,13 @@ const ForgotPassword: React.FC = () => {
             setMessage('Reset link sent to your email.');
             setError(''); // Clear any previous errors
     
-        } catch (error: any) {
+        } catch (error) {
             setMessage('');
-            setError(error.message || 'Unexpected Error'); // Display backend error message
+            if (error instanceof Error) {
+                setError(error.message || 'Unexpected Error'); // Display backend error message
+            } else {
+                setError('Unexpected Error');
+            }
         }
     };
     

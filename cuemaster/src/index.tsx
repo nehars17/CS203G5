@@ -4,6 +4,18 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Import the process polyfill
+import process from 'process';
+
+// At the very top of your index.js or index.tsx file
+import 'process/browser';
+import { Buffer } from 'buffer';
+global.Buffer = Buffer;
+
+
+// Expose process globally (needed for certain modules)
+(window as any).process = process;
+
 // Use ReactDOM.render() for React 17
 ReactDOM.render(
   <React.StrictMode>

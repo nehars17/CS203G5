@@ -40,9 +40,13 @@ const AccountActivated: React.FC = () => {
             navigate('/login');
           }, 3000);
   
-        } catch (error: any) {
+        } catch (error) {
           console.error(error);
-          setError(error.message || 'Failed to Activate. Please try again.');
+          if (error instanceof Error) {
+            setError(error.message || 'Failed to Activate. Please try again.');
+          } else {
+            setError('Failed to Activate. Please try again.');
+          }
           setLoading(false);  // Stop loading if there's an error
         }
       } else {
@@ -52,7 +56,7 @@ const AccountActivated: React.FC = () => {
     };
   
     activateAccount();
-  }, [activationToken, navigate]);
+  }, [activationToken, navigator]);
   
 
   return (

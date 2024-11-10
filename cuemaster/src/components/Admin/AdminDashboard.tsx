@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { setAuthToken } from '../../services/api';
 
 interface User {
     id: number;
@@ -35,9 +34,9 @@ const AdminDashboard: React.FC = () => {
                 const usersData = await res.json();
                 setUsers(usersData); // Update the users state with the fetched data
                 setError(''); // Clear any previous errors
-            } catch (error: any) {
+            } catch (error) {
                 setUsers([]); // Clear the users if an error occurs
-                setError(error.message || 'Unexpected Error');
+                setError((error instanceof Error) ? error.message : 'Unexpected Error'); // Check if it's an instance of Error
             } finally {
                 setLoading(false); // Set loading to false after the request is complete
             }
@@ -55,7 +54,7 @@ const AdminDashboard: React.FC = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 },
             });
 
@@ -65,22 +64,20 @@ const AdminDashboard: React.FC = () => {
             }
 
             setUsers(users.filter(user => user.id !== id)); // Update the users state
-        } catch (error: any) {
-            setError(error.message || 'Unexpected Error');
+        } catch (error) {
+            setError((error instanceof Error) ? error.message : 'Unexpected Error');
         }
     };
 
     // Unlock a user (change status to 'active')
     const unlockUser = async (id: number) => {
-        // Set the token when the app starts or user logs in
         const token = localStorage.getItem('token');
-        console.log(token);
         try {
             const res = await fetch(`http://localhost:8080/user/${id}/account`, { // Correct URL interpolation
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                     'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 },
             });
 
@@ -92,8 +89,8 @@ const AdminDashboard: React.FC = () => {
             setUsers(users.map(user =>
                 user.id === id ? { ...user, unlocked: true } : user
             ));
-        } catch (error: any) {
-            setError(error.message || 'Unexpected Error');
+        } catch (error) {
+            setError((error instanceof Error) ? error.message : 'Unexpected Error');
         }
     };
 
@@ -105,7 +102,7 @@ const AdminDashboard: React.FC = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                     'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 },
             });
 
@@ -114,13 +111,10 @@ const AdminDashboard: React.FC = () => {
                 throw new Error(errorText);
             }
 
-            setUsers(users.map(user =>
-                user.id === id ? { ...user, unlocked: true } : user
-            ));
-        } catch (error: any) {
-            setError(error.message || 'Unexpected Error');
+            // Implement routing to a detailed profile page here if needed
+        } catch (error) {
+            setError((error instanceof Error) ? error.message : 'Unexpected Error');
         }
-        // Implement routing to a detailed profile page here if needed
     };
 
     return (
@@ -143,7 +137,6 @@ const AdminDashboard: React.FC = () => {
                         <th>Status</th>
                         <th>Provider</th>
                         <th>Actions</th>
-
                     </tr>
                 </thead>
                 <tbody>
@@ -154,7 +147,6 @@ const AdminDashboard: React.FC = () => {
                             <td>{user.enabled ? 'Yes' : 'No'}</td>
                             <td>{user.unlocked ? 'active' : 'locked'}</td>
                             <td>{user.provider}</td>
-
                             <td>
                                 <button className="btn btn-info btn-sm me-2" onClick={() => viewProfile(user.id)}>View Profile</button>
                                 {user.unlocked === false && (
