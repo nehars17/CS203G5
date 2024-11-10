@@ -145,11 +145,10 @@
           
    
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <release>17</release>
+                <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-compiler-plugin</artifactId> 
+                <version>3.8.1</version> <!-- Downgrade to a version that supports Java 17 -->
+                 <configuration> 
+                <release>17</release>
                 </configuration>
             </plugin>
         </plugins>
