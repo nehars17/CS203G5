@@ -38,5 +38,15 @@
     "name": "captcha.client-secret",
     "type": "java.lang.String",
     "description": "A description for 'captcha.client-secret'"
+  },
+  {
+    "name": "app.serverUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'app.serverUrl'"
+  },
+  {
+    "name": "app.clientUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'app.clientUrl'"
   }
 ]}

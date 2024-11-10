@@ -149,9 +149,8 @@ public class UserController {
             throw new UserExistsException(user.getUsername());
         }
 
-        String activationLink = "http://localhost:3000/activateaccount?token=" + savedUser.getTotpToken().getCode();
         try {
-            emailService.sendActivationEmail(savedUser.getUsername(), activationLink);
+            emailService.sendActivationEmail(savedUser.getUsername(), savedUser.getTotpToken().getCode());
         } catch (MessagingException e) {
             throw new AccountActivationException("Unable to send email");
         }
@@ -240,10 +239,8 @@ public class UserController {
         }
         if (!loggedInUser.isEnabled()) {
             response.put("message", "Please activate account, check email");
-            String activationLink = "http://localhost:3000/activateaccount?token="
-                    + loggedInUser.getTotpToken().getCode();
             try {
-                emailService.sendActivationEmail(loggedInUser.getUsername(), activationLink);
+                emailService.sendActivationEmail(loggedInUser.getUsername(), loggedInUser.getTotpToken().getCode());
             } catch (MessagingException e) {
                 throw new AccountActivationException("Unable to send email");
             }

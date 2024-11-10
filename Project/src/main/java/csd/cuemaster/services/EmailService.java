@@ -1,5 +1,6 @@
 package csd.cuemaster.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class EmailService {
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
+    
+    @Value("${app.clientUrl}")
+    private String clientUrl;
 
     /**
      * Sends an email to the specified recipient with the activation link.
@@ -26,14 +30,16 @@ public class EmailService {
      * @param link           The activation link to be included in the email.
      * @throws MessagingException If an error occurs while sending the email.
      */
-    public void sendActivationEmail(String recipientEmail, String link) throws MessagingException {
+    public void sendActivationEmail(String recipientEmail, String code) throws MessagingException {
+
+        String activationLink = clientUrl+"/activateaccount?token=" + code;
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
         helper.setTo(recipientEmail);
         helper.setSubject("Account Activation");
         helper.setText("<p>Please click the link below to activate your account:</p>"
-                + "<a href=\"" + link + "\">Activate Now</a>", true);
+                + "<a href=\"" + activationLink + "\">Activate Now</a>", true);
 
         mailSender.send(message);
     }
@@ -71,7 +77,7 @@ public class EmailService {
 
 
         // Create the reset URL
-        String resetUrl = "http://localhost:3000/resetPassword" + "?token=" + token + "&id=" + userId;
+        String resetUrl = clientUrl+"/resetPassword" + "?token=" + token + "&id=" + userId;
 
         // Create an email message
         MimeMessage message = mailSender.createMimeMessage();
