@@ -32,6 +32,8 @@ jobs:
                const coredemo = require('@actions/core')
                return await coredemo.getIDToken()
            result-encoding: string
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps  # Add this flag to bypass peer dependency conflicts
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
