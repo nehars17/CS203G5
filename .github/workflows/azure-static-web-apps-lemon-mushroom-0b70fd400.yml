@@ -55,8 +55,11 @@ jobs:
       - name: Verify Maven Version
         run: mvn -v
 
-      - name: Clean and force update dependencies
-        run: mvn clean install -U
+      # Navigate to the backend project directory and run Maven
+      - name: Navigate to Project Directory and Build
+        run: |
+          cd ./Project  # Replace with the correct directory for the backend project
+          mvn clean install -U
 
 
       - name: Clean npm cache and node_modules
