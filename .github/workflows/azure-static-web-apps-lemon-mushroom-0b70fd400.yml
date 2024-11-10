@@ -62,13 +62,13 @@ jobs:
         run: npm install --force
 
       - name: Make mvnw executable
-        run: chmod +x ./Projects/mvnw
+        run: chmod +x Projects/mvnw
 
       - name: Build with Maven
-        run: ./Projects/mvnw -f ./Projects/pom.xml clean install
+        run: Projects/mvnw -f Projects/pom.xml clean install
 
       - name: Run Tests
-        run: ./Projects/mvnw -f ./Projects/pom.xml test
+        run: Projects/mvnw -f Projects/pom.xml test
 
       - name: Build And Deploy
         id: builddeploy
