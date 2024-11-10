@@ -56,7 +56,7 @@ const AccountActivated: React.FC = () => {
     };
   
     activateAccount();
-  }, [activationToken, navigator]);
+  }, [activationToken, navigate]);
   
 
   return (

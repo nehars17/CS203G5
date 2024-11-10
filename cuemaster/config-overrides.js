@@ -17,3 +17,11 @@ module.exports = function override(config) {
 
   return config;
 };
+module.exports = {
+    resolve: {
+      fallback: {
+        vm: require.resolve('vm-browserify')
+      }
+    }
+  };
+  
