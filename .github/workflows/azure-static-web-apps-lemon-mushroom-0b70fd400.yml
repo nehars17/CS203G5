@@ -44,7 +44,7 @@ jobs:
       - name: Install Dependencies with --force
         run: npm install --force
       - name: Make mvnw executable
-        run: chmod +x ./mvnw
+        run: chmod +x ./Project/mvnw
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
