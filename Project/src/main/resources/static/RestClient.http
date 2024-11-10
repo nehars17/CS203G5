@@ -278,3 +278,11 @@ Authorization: Basic org@gmail.com goodpassword
 ###
 DELETE http://localhost:8080/matches/1
 Authorization: Basic org@gmail.com goodpassword
+
+###
+PUT http://localhost:8080/playerstats/1/3
+Content-Type: application/json
+
+###
+POST http://localhost:8080/matchmaking/1
+Content-Type: application/json

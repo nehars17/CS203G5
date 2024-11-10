@@ -91,6 +91,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/playerstats/*").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
                         .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
@@ -98,6 +99,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
                         .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
                         .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.POST, "/matchmaking/*").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(login -> login.disable())   // Disable default form login
