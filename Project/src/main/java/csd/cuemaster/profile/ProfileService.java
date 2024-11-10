@@ -13,4 +13,7 @@ public interface ProfileService {
     List<Profile> sort();
     Profile pointsSet(Long user_id, Integer points);
     // void updateRank(List<Profile> sortedplayers);
+    void increaseTournamentCount(Long userId);
+    void decreaseTournamentCount(Long userId);
+    void TournamentWinCount(Long userId);
 }

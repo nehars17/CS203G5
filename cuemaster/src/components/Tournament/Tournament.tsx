@@ -240,14 +240,14 @@ const Tournaments: React.FC = () => {
                         
 
                         {/* Render Join button only for authenticated players not already in the tournament */}
-                        {isUserAuthenticated && tournament.players.length < 32 && userRole === "ROLE_PLAYER" && playerId !== null && !tournament.players.includes(playerId) && tournament.status == "UPCOMING" && (
+                        {isUserAuthenticated && tournament.players.length < 32 && userRole === "ROLE_PLAYER" && playerId !== null && !tournament.players.includes(playerId) && tournament.status === "UPCOMING" && (
                             <button onClick={() => handleJoin(tournament.id)} style={styles.joinButton}>
                                 Join
                             </button>
                         )}
 
                         {/* Render Leave button only for authenticated players in the tournament */}
-                        {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && tournament.players.includes(playerId) && tournament.status == "UPCOMING" && (
+                        {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && tournament.players.includes(playerId) && tournament.status === "UPCOMING" && (
                             <button onClick={() => handleLeave(tournament.id)} style={styles.leaveButton}>
                                 Leave
                             </button>

@@ -152,4 +152,43 @@ public class ProfileServiceImpl implements ProfileService{
                 currentRank++;
             }
     } */
+
+    public void increaseTournamentCount(Long userId){
+
+        User user = users.findById(userId)           
+                        .orElseThrow(() -> new UserNotFoundException(userId));
+
+        Profile profile = profiles.findByUserId(userId)
+                        .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
+        
+        int tournamentcount = profile.getTournamentCount() + 1;
+        profile.setTournamentCount(tournamentcount);
+        profiles.save(profile);
+    }
+
+    public void decreaseTournamentCount(Long userId){
+
+        User user = users.findById(userId)           
+                        .orElseThrow(() -> new UserNotFoundException(userId));
+
+        Profile profile = profiles.findByUserId(userId)
+                        .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
+        
+        int tournamentcount = profile.getTournamentCount() - 1;
+        profile.setTournamentCount(tournamentcount);
+        profiles.save(profile);
+    }
+
+    public void TournamentWinCount(Long userId){
+
+        User user = users.findById(userId)           
+                        .orElseThrow(() -> new UserNotFoundException(userId));
+
+        Profile profile = profiles.findByUserId(userId)
+                        .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
+        
+        int tournamentWincount = profile.getTournamentWinCount() + 1;
+        profile.setTournamentWinCount(tournamentWincount);
+        profiles.save(profile);
+    }
 }
