@@ -45,6 +45,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'  # Use Temurin for JDK 17
+      - name: Make mvnw executable
+        run: chmod +x ./Project/mvnw
 
       - name: Cache Maven packages 
         uses: actions/cache@v2
