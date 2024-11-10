@@ -43,6 +43,8 @@ jobs:
           npm cache clean --force
       - name: Install Dependencies with --force
         run: npm install --force
+      - name: Make mvnw executable
+        run: chmod +x ./mvnw
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -60,6 +62,7 @@ jobs:
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
+    
     name: Close Pull Request Job
     steps:
       - name: Close Pull Request
