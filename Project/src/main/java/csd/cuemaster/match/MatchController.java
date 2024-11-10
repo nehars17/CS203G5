@@ -22,7 +22,7 @@ public class MatchController {
     private MatchService matchService;
 
     //create match
-    @PostMapping("/matches/create")
+    @PostMapping("/matches/")
     public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
         
         Match createdMatch = matchService.createMatch(match);

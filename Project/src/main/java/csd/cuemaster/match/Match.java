@@ -32,8 +32,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class Match {
-    @Id 
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
 
     @JsonBackReference

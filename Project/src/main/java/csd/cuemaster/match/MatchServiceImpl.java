@@ -16,6 +16,7 @@ import csd.cuemaster.user.UserRepository;
 @Service
 public class MatchServiceImpl implements MatchService {
 
+    @Autowired
     private ProfileService profileService;
 
     @Autowired
@@ -175,8 +176,8 @@ public class MatchServiceImpl implements MatchService {
         User user2 = players.get(player2).getUser();
         Match match = new Match();
         matches.add(match);
-        match.setUser1(user1);
-        match.setUser2(user2);
+        match.setUser1(user1.getProfile());
+        match.setUser2(user2.getProfile());
     }
 
     // Helper method to remove the chosen players from the list.
@@ -196,8 +197,8 @@ public class MatchServiceImpl implements MatchService {
         User user2 = players.get(1).getUser();
         Match match = new Match();
         matches.add(match);
-        match.setUser1(user1);
-        match.setUser2(user2);
+        match.setUser1(user1.getProfile());
+        match.setUser2(user2.getProfile());
         players.clear();
     }
 }

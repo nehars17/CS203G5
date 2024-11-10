@@ -67,6 +67,10 @@ public class Tournament {
     private List<Long> players = new ArrayList<>();; // Storing player IDs participating in the tournament
     // Initializing players list to avoid null issues 
     
+    @JsonManagedReference
+    @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Match> match;
+    
     // Enum for status with defined values
     // Status enum definition for better control and type safety
     public enum Status {
@@ -80,10 +84,6 @@ public class Tournament {
         SEMI_FINAL,
         FINAL
     }
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Match> match;
 
     // Default constructor
     public Tournament() {

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import csd.cuemaster.match.MatchRepository;
 import csd.cuemaster.match.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 
@@ -13,6 +14,9 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Autowired
     private TournamentRepository tournamentRepository;
+
+    @Autowired
+    private MatchRepository matchRepository;
 
     // Create a new tournament
     @Override
@@ -84,6 +88,23 @@ public class TournamentServiceImpl implements TournamentService {
         tournamentRepository.save(tournament);
         
         return tournament;
+    }
+
+    //create matches for the tournament using 
+    @Override
+    public Tournament generateMatches(Long tournamentId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found"));
+
+        if (tournament.getPlayers().size() < 64) {
+            throw new IllegalArgumentException("At least 64 players are required to generate 32 matches.");
+        }
+
+        List<Match> matches = createMatchesFromTournament(tournament);
+        matchRepository.saveAll(matches);  // Save all matches to the database
+
+        tournament.setMatch(matches); // Set matches in the tournament
+        return tournamentRepository.save(tournament); // Save and return updated tournament
     }
 
 }
