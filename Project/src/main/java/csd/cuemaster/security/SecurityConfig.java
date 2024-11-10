@@ -55,6 +55,12 @@ public class SecurityConfig {
     private String clientSecret;
 
     /**
+     * URL of the client application.
+     */
+    @Value("${app.clientUrl}")
+    private String clienturl;
+
+    /**
      * Constructor to initialize the SecurityConfig with required services.
      * 
      * @param userDetailsService the service to load user-specific data
@@ -152,7 +158,7 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Your frontend origin
+        corsConfig.setAllowedOrigins(Arrays.asList(clienturl)); // Your frontend origin
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfig.setAllowedHeaders(Arrays.asList("*"));
         corsConfig.setAllowCredentials(true);
