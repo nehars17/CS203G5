@@ -54,19 +54,13 @@ jobs:
       # Verify Maven version to ensure compatibility with JDK 17
       - name: Verify Maven Version
         run: mvn -v
-      - name: Install Maven 3.8.1 or higher
+
+      # Navigate to the backend project directory and run Maven
+      - name: Navigate to Project Directory and Build
         run: |
-          wget https://archive.apache.org/dist/maven/maven-3/3.8.1/binaries/apache-maven-3.8.1-bin.tar.gz
-          tar -xvzf apache-maven-3.8.1-bin.tar.gz
-          export PATH=$PWD/apache-maven-3.8.1/bin:$PATH
+          cd ./Project  # Replace with the correct directory for the backend project
+          mvn clean install -U
 
-
-      - name: Cache Maven packages 
-        uses: actions/cache@v2
-        with: 
-          path: ~/.m2/repository 
-          key: ${{ runner.os }}-maven-${{ hashFiles('Project/pom.xml') }} 
-          restore-keys: ${{ runner.os }}-maven
 
       - name: Clean npm cache and node_modules
         run: |
