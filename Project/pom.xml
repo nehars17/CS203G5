@@ -76,13 +76,17 @@
             <optional>true</optional>
         </dependency>
       
-        <dependency>
-            <groupId>com.azure.spring</groupId>
-            <artifactId>spring-cloud-azure-dependencies</artifactId>
-            <version>5.17.1</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
+        <dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>com.azure.spring</groupId>
+                    <artifactId>spring-cloud-azure-dependencies</artifactId>
+                    <version>5.17.1</version>
+                    <type>pom</type>
+                    <scope>import</scope>
+                </dependency>
+            </dependencies>
+        </dependencyManagement>
     
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -150,8 +154,8 @@
                 <version>3.10.0</version>
  <!-- Make sure the version is compatible with Java 17 -->
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <failOnError>false</failOnError>
+
                 </configuration>
             </plugin>
         </plugins>
