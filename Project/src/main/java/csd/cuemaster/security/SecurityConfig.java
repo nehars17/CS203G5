@@ -91,7 +91,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/playerstats/*").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/playerstats/*").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
                         .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
