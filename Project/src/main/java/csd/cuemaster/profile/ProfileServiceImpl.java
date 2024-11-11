@@ -199,15 +199,20 @@ public class ProfileServiceImpl implements ProfileService{
     // Calculate the expected score of a given player in a given match.
     @Override
     public double calculateExpectedScore(Long matchId, Long userId) {
+        User user = users.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
         List<Profile> players = getProfilesFromMatches(matchId);
+
+        // Check if the player exists in the match.
+        if (!(user.getProfile().equals(players.get(0)) || (user.getProfile().equals(players.get(1))))) {
+            throw new IllegalArgumentException("Player " + user.getId() + " is not in the match.");
+        }
         validatePlayersInMatch(players, matchId);
         List<Integer> points = getPointsFromProfiles(players);
         Integer pointsA = points.get(0);
         Integer pointsB = points.get(1);
         double expectedScoreA = calculateExpectedScore(pointsA, pointsB);
         double expectedScoreB = calculateExpectedScore(pointsB, pointsA);
-        User user = users.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
         return getPlayerExpectedScore(user, players, expectedScoreA, expectedScoreB);
     }
 
@@ -287,10 +292,8 @@ public class ProfileServiceImpl implements ProfileService{
     private double getPlayerExpectedScore(User user, List<Profile> players, double expectedScoreA, double expectedScoreB) {
         if (user.getProfile() == players.get(0)) {
             return expectedScoreA;
-        } else if (user.getProfile() == players.get(1)) {
-            return expectedScoreB;
         } else {
-            throw new IllegalArgumentException("Player " + user.getId() + " is not in the match.");
+            return expectedScoreB;
         }
     }
 
