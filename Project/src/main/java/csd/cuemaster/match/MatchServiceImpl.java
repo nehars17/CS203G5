@@ -14,6 +14,7 @@ import csd.cuemaster.profile.*;
 @Service
 public class MatchServiceImpl implements MatchService {
 
+    @Autowired
     private ProfileService profileService;
 
     @Autowired
@@ -24,9 +25,6 @@ public class MatchServiceImpl implements MatchService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private ProfileRepository profileRepository; 
 
     // public MatchServiceImpl(MatchRepository matchRepository) {
     //     this.matchResponsitory = matchRepository;
