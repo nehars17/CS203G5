@@ -224,8 +224,10 @@ public class ProfileServiceImpl implements ProfileService{
         Long userId2 = match.getUser2().getId();
         validateWinner(winnerId, userId1, userId2);
         List<Profile> players = getProfilesFromMatches(matchId);
-        Integer originalPointsA = players.get(0).getPoints();
-        Integer originalPointsB = players.get(1).getPoints();
+        validatePlayersInMatch(players, matchId);
+        List<Integer> points = getPointsFromProfiles(players);
+        Integer originalPointsA = points.get(0);
+        Integer originalPointsB = points.get(1);
         double expectedScoreA = calculateExpectedScore(matchId, userId1);
         double expectedScoreB = calculateExpectedScore(matchId, userId2);
 
