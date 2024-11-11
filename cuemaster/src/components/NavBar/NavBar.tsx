@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { getUserRole, isAuthenticated } from '../authUtils'; // Import your authentication check function
+import { isAuthenticated, getUserRole } from '../authUtils'; // Import your authentication check function
 
 const NavBar: React.FC = () => {
     const isUserAuthenticated = isAuthenticated();
@@ -21,24 +21,23 @@ const NavBar: React.FC = () => {
                         <Nav.Link href="/matches">Matches</Nav.Link>
 
                         {isUserAuthenticated ? (
+                            // Links for authenticated users
                             <>
-                                {/* Admin-only links */}
                                 {userRole === "ROLE_ADMIN" && (
                                     <>
-                                        <Nav.Link href="/adminDashboard">Admin Dashboard</Nav.Link>
-                                        <Nav.Link href="/manageUsers">Manage Users</Nav.Link>
-                                    </>  
-                                )}
+                                    <Nav.Link href="/adminDashboard">Admin Dashboard</Nav.Link>
+                                    <Nav.Link href="/home">Home</Nav.Link>
+                                    </>
 
-                                {/* Player-only links */}
+
+                                )}
                                 {userRole === "ROLE_PLAYER" && (
                                     <>  <Nav.Link href="/home">Home</Nav.Link>
+
                                         <Nav.Link href="/playerProfile">Profile</Nav.Link>
                                         {/* <Nav.Link href="/playerDashboard">Player Dashboard</Nav.Link> */}
                                     </>
                                 )}
-
-                                {/* Organizer-only links */}
                                 {userRole === "ROLE_ORGANISER" && (
                                     <>
                                         <Nav.Link href="/home">Home</Nav.Link>
@@ -50,6 +49,9 @@ const NavBar: React.FC = () => {
                         ) : (
                             // Authentication Links for non-authenticated users
                             <>
+                                <Nav.Link href="/">Home</Nav.Link>
+                                <Nav.Link href="/tournaments">Tournaments</Nav.Link>
+                                <Nav.Link href="/leaderboard">Leaderboard</Nav.Link>
                                 <Nav.Link href="/playerRegistration">Player Registration</Nav.Link>
                                 <Nav.Link href="/organiserRegistration">Organiser Registration</Nav.Link>
                                 <Nav.Link href="/login">Login</Nav.Link>
