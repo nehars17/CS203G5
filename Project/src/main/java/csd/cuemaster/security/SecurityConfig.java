@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,34 +19,64 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import csd.cuemaster.user.CustomAuthenticationSuccessHandler;
 
+/**
+ * Security configuration class for setting up web security in the application.
+ * This class configures authentication providers, security filter chains, CORS settings, and more.
+ * 
+ * <p>It uses JWT for authentication and integrates with OAuth2 for Google login.</p>
+ * 
+ * <p>It also defines various security rules for different endpoints and HTTP methods.</p>
+ */
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * Service to load user-specific data.
+     */
     private final UserDetailsService userDetailsService;
-    private final CustomAuthenticationSuccessHandler customSuccessHandler;
+
+    /**
+     * Filter for JWT authentication.
+     */
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Google client ID for OAuth2 login.
+     */
     @Value("${google.client-id}")
     private String clientId;
 
+    /**
+     * Google client secret for OAuth2 login.
+     */
     @Value("${google.client-secret}")
     private String clientSecret;
 
-    public SecurityConfig(UserDetailsService userDetailsService, CustomAuthenticationSuccessHandler customSuccessHandler,
+    /**
+     * URL of the client application.
+     */
+    @Value("${app.clientUrl}")
+    private String clienturl;
+
+    /**
+     * Constructor to initialize the SecurityConfig with required services.
+     * 
+     * @param userDetailsService the service to load user-specific data
+     * @param jwtAuthenticationFilter the filter for JWT authentication
+     */
+    public SecurityConfig(UserDetailsService userDetailsService,
                           JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
-        this.customSuccessHandler = customSuccessHandler;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
+    /**
+     * Bean for DaoAuthenticationProvider to handle authentication.
+     * 
+     * @return the DaoAuthenticationProvider bean
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -57,6 +85,13 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Bean for configuring the security filter chain.
+     * 
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -70,6 +105,11 @@ public class SecurityConfig {
                         "/tournaments", "/leaderboard", "/playerrank", "/userName/*","/user/*","/me").permitAll()
                 .requestMatchers(HttpMethod.GET, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
+                .requestMatchers(HttpMethod.POST, "/activate").permitAll()
+
+                .requestMatchers(HttpMethod.PUT, "/forgotPassword").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/resetPassword").permitAll()
+                .requestMatchers(HttpMethod.POST, "/verify-code").permitAll()
                 .requestMatchers(HttpMethod.POST, "/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
                 .requestMatchers(HttpMethod.GET, "/profilePhotos/**").permitAll()
@@ -90,8 +130,7 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
-                .loginPage("/googlelogin")
-                .successHandler(customSuccessHandler))
+                .loginPage("/googlelogin"))
             .logout(logout -> logout
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
@@ -106,15 +145,25 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Bean for BCryptPasswordEncoder to encode passwords.
+     * 
+     * @return the BCryptPasswordEncoder bean
+     */
     @Bean
     public BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Bean for configuring CORS settings.
+     * 
+     * @return the CorsFilter bean
+     */
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Your frontend origin
+        corsConfig.setAllowedOrigins(Arrays.asList(clienturl)); // Your frontend origin
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfig.setAllowedHeaders(Arrays.asList("*"));
         corsConfig.setAllowCredentials(true);

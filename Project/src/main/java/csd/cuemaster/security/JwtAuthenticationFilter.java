@@ -2,7 +2,6 @@ package csd.cuemaster.security;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,19 +14,22 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import csd.cuemaster.services.JwtService;
 import csd.cuemaster.user.CustomUserDetailsService;
-import csd.cuemaster.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/*
+ * This cmponent class is used to authenticate the user using JWT token.
+ * It extends OncePerRequestFilter class which is used to guarantee a single execution per request dispatch.
+ * It overrides the doFilterInternal method to authenticate the user using JWT token.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
-    @Autowired
-    private UserRepository users;
+   
 
     public JwtAuthenticationFilter(
         JwtService jwtService,

@@ -5,21 +5,29 @@ import RegisterPlayer from './components/User/RegisterPlayer';
 import RegisterOrganiser from './components/User/RegisterOrganiser';
 import CreateProfile from './components/Profile/CreateProfile';
 import ProfileDashboard from './components/Profile/ProfileDashboard';
+import EmailAuthForm from './components/User/EmailAuthForm';
 import Profile from './components/Profile/Profile';
 import Matches from './components/Matches/Matches';
 import Leaderboard from './components/Leaderboard/Leaderboard';
 import Tournament from './components/Tournament/Tournament';
 import NavBar from './components/NavBar/NavBar';
 import Error404 from './pages/Error404';
+import Forbidden403 from './pages/Forbidden403';
 import PrivateRoute from './components/PrivateRoute';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import Home from './components/Home/Home';
+import ResetPassword from './components/User/ResetPassword';
+import ForgotPassword from './components/User/ForgotPassword';
+import AccountActivated from './components/User/AccountActivated';
+
 import About from './pages/About';
 import Account from './components/Account/Account';
 import { isAuthenticated, getUserIdFromToken, getUserRole } from './components/authUtils';
 import { Navigate } from 'react-router-dom';
 import EditProfile from './components/Profile/EditProfile';
 
+
+// Define the AppRoutes component
 const AppRoutes: React.FC = () => {
     const isUserAuthenticated = isAuthenticated();
     const userId = getUserIdFromToken();
@@ -41,6 +49,11 @@ const AppRoutes: React.FC = () => {
                 <Route path="/tournaments" element={<Tournament />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/matches" element={<Matches />} />
+                <Route path="/emailauth" element={<EmailAuthForm />} />
+                <Route path="/activateaccount" element={<AccountActivated />} />
+                <Route path="/resetPassword" element={<ResetPassword />} />
+                <Route path="/forgotPassword" element={<ForgotPassword />} />
+                <Route path="/403" element={<Forbidden403 />} />
                 <Route path="*" element={<Error404 />} />
              
 
