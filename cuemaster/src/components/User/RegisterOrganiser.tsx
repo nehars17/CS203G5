@@ -5,6 +5,8 @@ import { Form, Button, Card, Container,Alert } from 'react-bootstrap';
 import { GoogleLogin } from '@react-oauth/google'; // New Google OAuth import
 import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA correctly
 import useRecaptcha from './useRecaptcha';
+import config from '../../config';
+
 const Register: React.FC = () => {
   const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
   const [message, setMessage] = useState('');
@@ -52,7 +54,7 @@ const Register: React.FC = () => {
     const email = userInfo.email;
 
     try {
-      const res = await fetch('http://localhost:8080/googlelogin', {
+      const res = await fetch(`${config.apiBaseUrl}/googlelogin`, {
         method: 'POST',
         credentials: 'include',
         headers: {

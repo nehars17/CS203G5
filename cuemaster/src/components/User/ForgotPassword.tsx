@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
+import config from '../../config';
 
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState<string>('');
@@ -10,8 +11,8 @@ const ForgotPassword: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const res = await fetch('http://localhost:8080/forgotPassword', {
-                method: 'POST',
+            const res = await fetch(`${config.apiBaseUrl}/forgotPassword`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },

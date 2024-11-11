@@ -4,6 +4,8 @@ import { Form, Button, Card, Container, Alert } from 'react-bootstrap';
 import { GoogleLogin } from '@react-oauth/google';
 import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA correctly
 import useRecaptcha from './useRecaptcha';
+import config from '../../config';
+
 const Login: React.FC = () => {
   const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
   const [email, setEmail] = useState('');
@@ -28,7 +30,7 @@ const Login: React.FC = () => {
     setIsSubmitting(true); // Disable form submission during the process
 
     try {
-      const res = await fetch('http://localhost:8080/normallogin', {
+      const res = await fetch(`${config.apiBaseUrl}/normallogin`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -66,7 +68,7 @@ const Login: React.FC = () => {
     const email = userInfo.email;
 
     try {
-      const res = await fetch('http://localhost:8080/googlelogin', {
+      const res = await fetch(`${config.apiBaseUrl}/googlelogin`, {
         method: 'POST',
         credentials: 'include',
         headers: {

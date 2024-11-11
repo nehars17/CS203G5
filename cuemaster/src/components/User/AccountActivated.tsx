@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Alert, Spinner } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
+import config from '../../config';
 
 const AccountActivated: React.FC = () => {
   const [message, setMessage] = useState('');
@@ -15,7 +16,7 @@ const AccountActivated: React.FC = () => {
     const activateAccount = async () => {
       if (activationToken) {
         try {
-          const res = await fetch('http://localhost:8080/activate', {
+          const res = await fetch(`${config.apiBaseUrl}/activate`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, Button, Container, Row, Col, Alert, Card } from 'react-bootstrap';
+import config from '../../config';
 
 const EmailAuthForm: React.FC = () => {
   const [error, setError] = useState('');
@@ -14,7 +15,7 @@ const EmailAuthForm: React.FC = () => {
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:8080/verify-code', {
+      const res = await fetch(`${config.apiBaseUrl}/verify-code`, {
         method: 'POST', // Ensure it's POST
         headers: {
           'Content-Type': 'application/json',

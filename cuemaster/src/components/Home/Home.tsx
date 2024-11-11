@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import API from '../../services/api';
+import config from '../../config';
 
 interface UserData {
   username: string;
@@ -13,7 +14,7 @@ const Home: React.FC = () => {
 
   const handleLogout = async () => {
     localStorage.removeItem('token');
-    await fetch('http://localhost:8080/logout', {
+    await fetch(`${config.apiBaseUrl}/logout`, {
       method: 'POST',
       credentials: 'include',
       headers: {

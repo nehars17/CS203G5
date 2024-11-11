@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useLocation,useNavigate } from 'react-router-dom';
+import config from '../../config';
 
 const ResetPassword: React.FC = () => {
     const [newPassword, setNewPassword] = useState<string>('');
@@ -35,8 +36,8 @@ const ResetPassword: React.FC = () => {
         }
 
         try {
-            const res = await fetch('http://localhost:8080/resetPassword', {
-                method: 'POST',
+            const res = await fetch(`${config.apiBaseUrl}/resetPassword`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },

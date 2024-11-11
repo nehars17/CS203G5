@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import config from '../../config';
 
 interface User {
     id: number;
@@ -19,7 +20,7 @@ const AdminDashboard: React.FC = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const res = await fetch('http://localhost:8080/users', {
+                const res = await fetch(`${config.apiBaseUrl}/users`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -50,7 +51,7 @@ const AdminDashboard: React.FC = () => {
         // Set the token when the app starts or user logs in
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`http://localhost:8080/user/${id}/account`, { // Correct URL interpolation
+            const res = await fetch(`${config.apiBaseUrl}/user/${id}/account`, { // Correct URL interpolation
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -73,7 +74,7 @@ const AdminDashboard: React.FC = () => {
     const unlockUser = async (id: number) => {
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`http://localhost:8080/user/${id}/account`, { // Correct URL interpolation
+            const res = await fetch(`${config.apiBaseUrl}/user/${id}/account`, { // Correct URL interpolation
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ const AdminDashboard: React.FC = () => {
     const viewProfile = async (id: number) => {
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`http://localhost:8080/user/${id}/profile/${id}`, { 
+            const res = await fetch(`${config.apiBaseUrl}/user/${id}/profile/${id}`, { 
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
