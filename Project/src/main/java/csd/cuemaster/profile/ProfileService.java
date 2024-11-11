@@ -15,7 +15,11 @@ public interface ProfileService {
     List<Profile> getPlayers();
     List<Profile> getOrganisers();
     Profile pointsSet(Long user_id, Integer points);
-    List<Profile> sortProfiles() ;
+    List<Profile> sortProfiles();
     Map<Long, Integer> setRank();
     String getName(long user_id);
+    List<Profile> getProfilesFromMatches(Long match_id);
+    double calculateExpectedScore(Long match_id, Long user_id);
+    List<Profile> updatePlayerStatistics(Long match_id, Long winner_id);
+    List<Profile> getProfilesFromTournaments(Long tournament_id);
 }

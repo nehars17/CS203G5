@@ -88,7 +88,6 @@ public class ProfileController {
         return profileService.addProfile(user, profile, profilePhoto);
     }
 
-
     // Return a sorted list of players.
     @GetMapping("/leaderboard")
     public List<Profile> getLeaderboard() {
@@ -102,11 +101,17 @@ public class ProfileController {
         return profileService.setRank();
     }
 
-    // Changes a player's points.
-    @PutMapping("/changepoints/{user_id}")
-    public Profile changePoints(@PathVariable(value = "user_id") Long user_id, @RequestBody Profile profile) {
+    // Change a player's points.
+    @PutMapping("/changepoints/{userId}")
+    public Profile changePoints(@PathVariable (value = "userId") Long userId, @RequestBody Profile profile) {
         Integer newpoints = profile.getPoints();
-        return profileService.pointsSet(user_id, newpoints);
+        return profileService.pointsSet(userId, newpoints);
     }
-    
+
+    // Change a player's stats.
+    @PutMapping("/playerstats/{matchId}/{winnerId}")
+    public List<Profile> changePlayerStats(@PathVariable (value = "matchId") Long matchId,
+            @PathVariable (value = "winnerId") Long winnerId) {
+        return profileService.updatePlayerStatistics(matchId, winnerId);
+    }
 }
