@@ -240,7 +240,7 @@ public class ProfileServicetest {
         user.setId(1L);
         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
         profile.setId(1L);
-        user.setProfile(profile);
+        profile.setUser(user);
 
         profileList.add(profile);
 
@@ -265,7 +265,7 @@ public class ProfileServicetest {
         user.setId(1L);
         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user);
         profile.setId(1L);
-        user.setProfile(profile);
+        profile.setUser(user);
 
         profileList.add(profile);
 
@@ -288,7 +288,7 @@ public class ProfileServicetest {
         user.setId(1L);
         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user);
         profile.setId(1L);
-        user.setProfile(profile);
+        profile.setUser(user);
 
         // Mock
         when(users.findById(1L)).thenReturn(Optional.of(user));
@@ -312,7 +312,7 @@ public class ProfileServicetest {
         user.setId(1L);
         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user);
         profile.setId(1L);
-        user.setProfile(profile);
+        profile.setUser(user);
 
         // Mock
         when(users.findById(1L)).thenReturn(Optional.of(user));
@@ -330,7 +330,7 @@ public class ProfileServicetest {
 
     // Test Case: Sort players based on points.
     @Test
-    void sort_UpdatePlayerPoints_ReturnSortedList() {
+    void sortProfiles_UpdatePlayerPoints_ReturnSortedList() {
         // Arrange
         List<Profile> leaderboard = new ArrayList<>();
 
@@ -339,14 +339,14 @@ public class ProfileServicetest {
         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
         profile1.setId(1L);
         profile1.setPoints(1200);
-        user1.setProfile(profile1);
+        profile1.setUser(user1);
 
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
         profile2.setId(2L);
         profile2.setPoints(2300);
-        user2.setProfile(profile2);
+        profile2.setUser(user2);
 
         leaderboard.add(profile1);
         leaderboard.add(profile2);
@@ -366,7 +366,7 @@ public class ProfileServicetest {
     // Test Case: Attempt to sort organisers which does not happen as they have no
     // points.
     @Test
-    void sort_UpdateOrganiserPoints_ReturnEmptyList() {
+    void sortProfiles_UpdateOrganiserPoints_ReturnEmptyList() {
         // Arrange
         List<Profile> leaderboard = new ArrayList<>();
 
@@ -374,12 +374,12 @@ public class ProfileServicetest {
         user1.setId(1L);
         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user1);
         profile1.setId(1L);
-        user1.setProfile(profile1);
+        profile1.setUser(user1);
         User user2 = new User("Koopa", "goodpassword", "ROLE_ORGANISER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", "Cuesports", user2);
         profile2.setId(2L);
-        user2.setProfile(profile2);
+        profile2.setUser(user2);
 
         leaderboard.add(profile1);
         leaderboard.add(profile2);
@@ -406,14 +406,14 @@ public class ProfileServicetest {
         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
         profile1.setId(1L);
         profile1.setPoints(1200);
-        user1.setProfile(profile1);
+        profile1.setUser(user1);
 
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
         profile2.setId(2L);
         profile2.setPoints(2300);
-        user2.setProfile(profile2);
+        profile2.setUser(user2);
 
         leaderboard.add(profile1);
         leaderboard.add(profile2);
@@ -442,21 +442,21 @@ public class ProfileServicetest {
         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", user1);
         profile1.setId(1L);
         profile1.setPoints(1200);
-        user1.setProfile(profile1);
+        profile1.setUser(user1);
 
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", user2);
         profile2.setId(2L);
         profile2.setPoints(2300);
-        user2.setProfile(profile2);
+        profile2.setUser(user2);
 
         User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user3.setId(3L);
         Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", user3);
         profile3.setId(3L);
         profile3.setPoints(2300);
-        user3.setProfile(profile3);
+        profile3.setUser(user3);
 
         leaderboard.add(profile1);
         leaderboard.add(profile2);
