@@ -62,6 +62,9 @@ jobs:
           mvn clean install -U
 
 
+
+
+
       - name: Clean npm cache and node_modules
         run: |
           rm -rf node_modules
