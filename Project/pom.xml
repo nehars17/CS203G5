@@ -136,17 +136,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
           
-   
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.0</version>
- <!-- Make sure the version is compatible with Java 17 -->
-                <configuration>
-                    <failOnError>false</failOnError>
 
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
