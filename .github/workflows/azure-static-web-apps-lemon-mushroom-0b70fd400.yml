@@ -62,8 +62,7 @@ jobs:
           mvn clean install -U
 
 
-      - name: Build the project without cleaning
-        run: mvn install -DskipClean
+
 
 
       - name: Clean npm cache and node_modules
