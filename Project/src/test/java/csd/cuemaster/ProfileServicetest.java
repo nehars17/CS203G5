@@ -637,6 +637,7 @@ public class ProfileServicetest {
 
         // Mock
         when(matches.findById(1L)).thenReturn(Optional.of(match));
+        when(users.findById(1L)).thenReturn(Optional.of(user1));
 
         // Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -644,7 +645,7 @@ public class ProfileServicetest {
         });
 
         // Assert
-        assertEquals("Match 1 does not have enough players to calculate expected score.", exception.getMessage());
+        assertEquals("Match 1 does not have two players to calculate expected score.", exception.getMessage());
     }
 
     // Test Case: Player does not exist in a match.
