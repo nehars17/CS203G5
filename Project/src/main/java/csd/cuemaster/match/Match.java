@@ -6,7 +6,6 @@ import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import csd.cuemaster.profile.Profile;
 import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.tournament.Tournament.Status;
 import csd.cuemaster.user.User;

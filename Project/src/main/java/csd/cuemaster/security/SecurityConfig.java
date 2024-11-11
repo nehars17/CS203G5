@@ -37,8 +37,8 @@ public class SecurityConfig {
     @Value("${google.client-secret}")
     private String clientSecret;
 
-    public SecurityConfig(UserDetailsService userDetailsService, CustomAuthenticationSuccessHandler customSuccessHandler,
-                          JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(UserDetailsService userDetailsService, CustomAuthenticationSuccessHandler customSuccessHandler, JwtAuthenticationFilter jwtAuthenticationFilter
+                          ) {
         this.userDetailsService = userDetailsService;
         this.customSuccessHandler = customSuccessHandler;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -66,7 +66,7 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/normallogin/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*",
-                        "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches",
+                        "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matchlist",
                         "/tournaments", "/leaderboard", "/me").permitAll()
                 .requestMatchers(HttpMethod.GET, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
@@ -80,7 +80,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
-                .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.POST, "/matches").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
                         .requestMatchers(HttpMethod.POST, "/matchmaking/*").permitAll()

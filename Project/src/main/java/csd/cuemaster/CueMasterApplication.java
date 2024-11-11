@@ -22,13 +22,16 @@ public class CueMasterApplication {
             User user = new User("admin@gmail.com", encoder.encode("goodpassword"), "ROLE_ADMIN", "normal", true);
             User user2 = new User("org@gmail.com", encoder.encode("goodpassword"), "ROLE_ORGANISER", "normal", true);
 
-            users.save(user);
-            users.save(user2);
-            System.out.println("[Add user]: " + user.getUsername());
+            try {
+                users.save(user);
+                users.save(user2);
+                System.out.println("[Add user]: " + user.getUsername());
+            } catch (Exception e) {
+                System.err.println("Error adding users: " + e.getMessage());
+            }
         } else {
             System.out.println("[User exists]: " + adminEmail);
         }
 
-        
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
+import csd.cuemaster.match.MatchNotFoundException;
+import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.user.User;
 
 @RestController
@@ -71,17 +74,41 @@ public class ProfileController {
         return sortedProfileList;
     }
 
-    // Change a player's points.
+    /**
+     * Update a player's points.
+     *
+     * @param userId the ID of the user whose points are to be updated
+     * @param profile containing the new points
+     * @return Updated profile with the new points
+     */
     @PutMapping("/changepoints/{userId}")
-    public Profile changePoints(@PathVariable (value = "userId") Long userId, @RequestBody Profile profile) {
-        Integer newpoints = profile.getPoints();
-        return profileService.pointsSet(userId, newpoints);
+    public Profile changePoints(@PathVariable(value = "userId") Long userId, @RequestBody Profile profile) {
+        Integer newPoints = profile.getPoints();
+        return profileService.pointsSet(userId, newPoints);
     }
 
-    // Change a player's stats.
+    /**
+     * Update player statistics based on match results.
+     *
+     * @param matchId  the ID of the match
+     * @param winnerId the ID of the winning user
+     * @return List of updated profiles (winner and loser)
+     */
     @PutMapping("/playerstats/{matchId}/{winnerId}")
-    public List<Profile> changePlayerStats(@PathVariable (value = "matchId") Long matchId,
-            @PathVariable (value = "winnerId") Long winnerId) {
-        return profileService.updatePlayerStatistics(matchId, winnerId);
+    public ResponseEntity<List<Profile>> changePlayerStats(
+            @PathVariable(value = "matchId") Long matchId,
+            @PathVariable(value = "winnerId") Long winnerId) {
+        try {
+            Profile winnerProfile = profileService.getProfile(winnerId, winnerId); // Get winner's profile
+            Profile loserProfile = profileService.getProfilesFromMatches(matchId).stream()
+                    .filter(profile -> !profile.getUser().getId().equals(winnerId))
+                    .findFirst()
+                    .orElseThrow(() -> new MatchNotFoundException(matchId));
+
+            profileService.updatePlayerStatistics(winnerProfile, loserProfile, matchId, Tournament.Status.ONGOING); // Assuming Status is ONGOING
+            return ResponseEntity.ok(List.of(winnerProfile, loserProfile));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 }

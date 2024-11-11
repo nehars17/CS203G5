@@ -136,6 +136,234 @@ Authorization: Basic admin@gmail.com goodpassword
 }
 
 #SHIYUN
+### Create a new tournament
+POST http://localhost:8080/tournaments
+Content-Type: application/json 
+Authorization: Basic org@gmail.com goodpassword
+
+{
+  "tournamentname": "New York Tournament",
+  "location": "New York",
+  "startDate": "2024-09-20",
+  "endDate": "2024-09-21",
+  "time": "10:00:00",
+  "status": "UPCOMING",
+  "description": "Test Tournament",
+  "winnerId": null,
+  "players": []
+}
+
+### Create a new tournament with invalid status
+POST http://localhost:8080/tournaments
+Content-Type: application/json
+
+{
+  "tournamentname": "New York Tournament",
+  "location": "New York",
+  "startDate": "2024-09-20",
+  "endDate": "2024-09-21",
+  "time": "10:00:00",
+  "status": "INVALID",
+  "description": "Test Tournament",
+  "winnerId": null,
+  "players": []
+}
+
+### Retrieve all tournaments
+GET http://localhost:8080/tournaments
+Authorization: Basic org@gmail.com goodpassword
+
+### Retrieve a specific tournament by ID
+GET http://localhost:8080/tournaments/1
+Authorization: Basic org@gmail.com goodpassword
+
+### Retrieve a specific tournament by ID that doesnt exist
+GET http://localhost:8080/tournaments/4
+Authorization: Basic org@gmail.com goodpassword
+
+### Update a tournament
+PUT http://localhost:8080/tournaments/1
+Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
+
+
+{
+  "tournamentname": "New York Tournament",
+  "location": "Los Angeles",
+  "startDate": "2024-09-22",
+  "endDate": "2024-09-23",
+  "time": "12:00:00",
+  "status": "ONGOING",
+  "description": "Updated Tournament",
+  "winnerId": 3,
+  "players": [3, 4]
+}
+
+### Update a tournament that doesnt exist
+PUT http://localhost:8080/tournaments/4
+Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
+
+
+{
+  "tournamentname": "New York Tournament",
+  "location": "Los Angeles",
+  "startDate": "2024-09-22",
+  "endDate": "2024-09-23",
+  "time": "12:00:00",
+  "status": "ONGOING",
+  "description": "Updated Tournament",
+  "winnerId": 3,
+  "players": [3, 4]
+}
+
+### Delete a tournament
+DELETE http://localhost:8080/tournaments/2
+Authorization: Basic org@gmail.com goodpassword
+
+
+### Delete a tournament that doesnt exist
+DELETE http://localhost:8080/tournaments/4
+Authorization: Basic org@gmail.com goodpassword
+
+
+#Canica
+###
+POST http://localhost:8080/matches/create
+Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
+
+
+{
+    "tournament": {
+        "id": 1
+    },
+    "user1": {
+        "id": 3
+    },
+    "user2": {
+        "id": 4
+    },
+    "matchDate": "2024-10-02",
+    "matchTime": "12:00",
+    "user1Score": 8,
+    "user2Score": 7
+}
+
+###
+GET http://localhost:8080/matches/1
+Authorization: Basic org@gmail.com goodpassword
+
+###
+GET http://localhost:8080/matches
+Authorization: Basic org@gmail.com goodpassword
+
+
+###
+PUT http://localhost:8080/matches/1
+Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
+
+{
+    "tournament": {
+        "id": 1
+    },
+    "user1": {
+        "id": 3
+    },
+    "user2": {
+        "id": 4
+    },
+    "matchDate": "2024-10-02",
+    "matchTime": "12:00",
+    "user1Score": 9,
+    "user2Score": 8
+}
+
+
+###
+DELETE http://localhost:8080/matches/1
+Authorization: Basic org@gmail.com goodpassword
+
+#BRYAN
+###
+GET http://localhost:8080/users
+
+###
+GET http://localhost:8080/profiles
+Content-Type: application/json
+
+###
+GET http://localhost:8080/user/2/profile/1
+Content-Type: application/json
+
+### (ORG PROFILE)
+POST http://localhost:8080/user/2/profile
+Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
+
+{
+    "firstname": "Bryan",
+    "lastname": "Ng",
+    "birthdate": "2000-01-01",
+    "birthlocation": "Singapore",
+    "organization": "SMU"
+}
+
+### (PLAYER PROFILE 1 )
+POST http://localhost:8080/user/2/profile
+Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
+
+{
+    "firstname": "Neha",
+    "lastname": "Rs",
+    "birthdate": "2003-01-01",
+    "birthlocation": "Singapore"
+}
+
+### (PLAYER PROFILE 2)
+POST http://localhost:8080/user/5/profile
+Content-Type: application/json
+Authorization: Basic ssam57@myyahoo.com nopassword
+
+{
+    "firstname": "Sam",
+    "lastname": "Roy",
+    "birthdate": "2003-01-01",
+    "birthlocation": "Singapore"
+}
+
+
+###
+PUT http://localhost:8080/user/2/profile/edit
+Content-Type: application/json
+Authorization: Basic org@gmail.com goodpassword
+
+{
+    "firstname": "Glenn",
+    "lastname": "Fann",
+    "birthdate": "2000-01-01",
+    "birthlocation": "Singapore",
+    "organization": "SCHOOL"  
+}
+
+#GLENN
+###
+GET http://localhost:8080/leaderboard
+Content-Type: application/json
+Authorization: Basic nehars.rs@gmail.com goodpassword
+
+###
+PUT http://localhost:8080/changepoints/4
+Content-Type: application/json
+Authorization: Basic admin@gmail.com goodpassword
+
+{
+    "points": "2300"
+}
+
+#SHIYUN
 ### Join a tournament
 POST http://localhost:8080/tournaments/27/join
 Content-Type: application/json 

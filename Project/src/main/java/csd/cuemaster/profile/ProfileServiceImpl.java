@@ -2,17 +2,14 @@ package csd.cuemaster.profile;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import csd.cuemaster.user.User;
-import csd.cuemaster.user.UserNotFoundException;
-import csd.cuemaster.user.UserRepository;
 import csd.cuemaster.match.Match;
 import csd.cuemaster.match.MatchNotFoundException;
 import csd.cuemaster.match.MatchRepository;
@@ -21,6 +18,9 @@ import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.tournament.Tournament.Status;
 import csd.cuemaster.tournament.TournamentNotFoundException;
 import csd.cuemaster.tournament.TournamentRepository;
+import csd.cuemaster.user.User;
+import csd.cuemaster.user.UserNotFoundException;
+import csd.cuemaster.user.UserRepository;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
@@ -220,9 +220,9 @@ public class ProfileServiceImpl implements ProfileService{
     public List<Profile> getProfilesFromTournaments(Long tournamentId) {
         Tournament tournament = tournaments.findById(tournamentId).orElseThrow(()-> new TournamentNotFoundException(tournamentId));
         List<Profile> retrieved = new ArrayList<>();
-        List<User> players = tournament.getPlayers();
-        for (User player : players) {
-            addProfileIfExists(player, retrieved);
+        List<Profile> players = tournament.getPlayers();
+        for (Profile player : players) {
+            addProfileIfExists(player.getUser(), retrieved);
         }
         return retrieved;
     }
@@ -234,7 +234,53 @@ public class ProfileServiceImpl implements ProfileService{
         }
     }
 
+    //to refactor
+    @Override
+    public List<Profile> sortProfiles() {
+        List<Profile> profileList = getPlayers();
+        
+        if (profileList == null || profileList.isEmpty()) {
+            return profileList;
+        }
 
+        profileList.sort(Comparator.comparingInt(Profile::getPoints).reversed());
+        
+        return profileList;
+    }
 
+    // Set all players ranks based on the sorted points.
+    @Override
+    public Map<Long, Integer> setRank() {
+        List<Profile> sortedPlayers = sortProfiles();
+        Map<Long, Integer> rankMap = new HashMap<>();
+        
+        if (sortedPlayers == null || sortedPlayers.isEmpty()) {
+            return rankMap;
+        }
+        
+        int currentRank = 1;
+        Profile currentPlayer = sortedPlayers.get(0);
+        User currentUser = currentPlayer.getUser();
+        Long userId = currentUser.getId();
+        rankMap.put(userId, currentRank);
+        
+        for (int i = 1; i < sortedPlayers.size(); i++) {
+            currentPlayer = sortedPlayers.get(i);
+            currentUser = currentPlayer.getUser();
+            userId = currentUser.getId();
+            Integer p1 = currentPlayer.getPoints();
+            Integer p2 = sortedPlayers.get(i - 1).getPoints();
+
+            // Check for ties.
+            if (i > 0 && p1.equals(p2)) {
+                rankMap.put(userId, currentRank); // Same rank for players with the same points
+            } else {
+                currentRank = i + 1; // Increment the rank if points are different
+                rankMap.put(userId, currentRank);
+            }
+        }
+        
+        return rankMap;
+    }
 
 }

@@ -4,7 +4,8 @@ import java.util.List;
 
 public interface MatchService {
 
-    Match createMatch(Match match);
+    List<Match> createMatchesFromTournaments(Long tournamentId);
+
     Match updateMatch(Long id, Match match);
     
     void deleteMatchById(Long matchId);
@@ -13,8 +14,4 @@ public interface MatchService {
     
     List<Match> getAllMatches();
     Match getMatchById(Long matchId);
-    List<Match> getMatchesByTournamentId(Long tournamentId);
-
-    
-    List<Match> createMatchesFromTournaments(Long tournamentId);
 }

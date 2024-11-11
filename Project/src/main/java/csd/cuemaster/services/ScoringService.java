@@ -1,9 +1,7 @@
 package csd.cuemaster.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import csd.cuemaster.profile.ProfileService;
 import csd.cuemaster.tournament.Tournament.Status;
 
 @Service
@@ -11,7 +9,7 @@ public class ScoringService {
     
     // Elo calculation constants
 
-    private static final int BASE_RATING = 1200;
+    // private static final int BASE_RATING = 1200;
     private static final int LOW_RATING_THRESHOLD = 1400;
     private static final int MID_RATING_THRESHOLD = 2000;
     private static final int HIGH_K_FACTOR = 40;
@@ -24,9 +22,6 @@ public class ScoringService {
     private static final int MID_PLAYER_EXPERIENCE_THRESHOLD = 50;
     private static final int NEW_PLAYER_ADJUSTMENT = 10;
     private static final int MID_PLAYER_ADJUSTMENT = 5;
-
-    @Autowired
-    private ProfileService profileService;
 
     /**
      * Calculate the expected score for player A against player B.
@@ -83,16 +78,16 @@ public class ScoringService {
         return (int) (playerRating + dynamicKFactor * (result - expectedScore));
     }
 
-    /**
-     * Helper method to validate that the winner is in the match.
-     * @param winnerId ID of the player declared as the winner
-     * @param userId1 ID of the first player in the match
-     * @param userId2 ID of the second player in the match
-     */
-    private void validateWinner(Long winnerId, Long userId1, Long userId2) {
-        if (!winnerId.equals(userId1) && !winnerId.equals(userId2)) {
-            throw new IllegalArgumentException("Player " + winnerId + " is not in the match.");
-        }
-    }
+    // /**
+    //  * Helper method to validate that the winner is in the match.
+    //  * @param winnerId ID of the player declared as the winner
+    //  * @param userId1 ID of the first player in the match
+    //  * @param userId2 ID of the second player in the match
+    //  */
+    // private void validateWinner(Long winnerId, Long userId1, Long userId2) {
+    //     if (!winnerId.equals(userId1) && !winnerId.equals(userId2)) {
+    //         throw new IllegalArgumentException("Player " + winnerId + " is not in the match.");
+    //     }
+    // }
 
 }

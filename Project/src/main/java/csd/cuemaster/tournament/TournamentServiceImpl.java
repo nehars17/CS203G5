@@ -79,8 +79,8 @@ public class TournamentServiceImpl implements TournamentService {
         User player = userRepository.findById(playerId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!tournament.getPlayers().contains(player)) {
-            tournament.getPlayers().add(player);
+        if (!tournament.getPlayers().contains(player.getProfile())) {
+            tournament.getPlayers().add(player.getProfile());
             tournamentRepository.save(tournament);
         }
 

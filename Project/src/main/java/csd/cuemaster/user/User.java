@@ -77,6 +77,17 @@ public class User implements UserDetails {
     @JsonIgnore
     private Profile profile;
 
+    // // Many-to-Many relationship with Tournament
+    // @ManyToMany
+    // @JoinTable(
+    //     name = "user_tournament", // Junction table name
+    //     joinColumns = @JoinColumn(name = "user_id"),  // Foreign key for the User side
+    //     inverseJoinColumns = @JoinColumn(name = "tournament_id")  // Foreign key for the Tournament side
+    // )
+    // @JsonIgnore
+    // private Set<Tournament> tournaments;  // Users can be associated with multiple tournaments
+
+
     public User(String username, String password, String authorities, String provider, boolean enabled) {
         this.username = username;
         this.password = password;

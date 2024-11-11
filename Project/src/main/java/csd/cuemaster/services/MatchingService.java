@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import csd.cuemaster.match.Match;
+import csd.cuemaster.profile.Profile;
 import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.user.User;
 
@@ -23,31 +24,34 @@ public class MatchingService {
         this.dynamicThreshold = dynamicThreshold;
     }
 
-    // Method to create pairs based on user ratings within the dynamic threshold
-    public List<Match> createPairs(List<User> players, Tournament tournament) {
+    public List<Match> createPairs(List<Profile> profiles, Tournament tournament) {
         List<Match> matches = new ArrayList<>();
 
-        // Sort users by rating (profile points)
-        players.sort(Comparator.comparing(user -> user.getProfile().getPoints()));
+        // Sort profiles by rating (points)
+        profiles.sort(Comparator.comparing(profile -> profile.getPoints()));
 
         // Pair users with similar ratings within the threshold
-        for (int i = 0; i < players.size() - 1; i++) {
-            User userA = players.get(i);
-            User userB = players.get(i + 1);
+        for (int i = 0; i < profiles.size() - 1; i++) {
+            Profile profileA = profiles.get(i);
+            Profile profileB = profiles.get(i + 1);
 
             // Ensure the players' ratings are within the dynamic threshold for pairing
-            if (Math.abs(userA.getProfile().getPoints() - userB.getProfile().getPoints()) <= dynamicThreshold) {
-                LocalDate matchDate = LocalDate.now(); // You can customize match date
-                LocalTime matchTime = LocalTime.now(); // You can customize match time
+            if (Math.abs(profileA.getPoints() - profileB.getPoints()) <= dynamicThreshold) {
+                User userA = profileA.getUser();
+                User userB = profileB.getUser();  
+
+                LocalDate matchDate = LocalDate.now();  // You can customize match date
+                LocalTime matchTime = LocalTime.now();  // You can customize match time
                 Match match = new Match(tournament, userA, userB, matchDate, matchTime, 0, 0, "UPCOMING");
 
                 matches.add(match);
-                i++;  // Skip the next user since they're paired
+                i++;  // Skip the next profile since it's already paired
             }
         }
 
         return matches;
     }
+
 
     // Method to dynamically calculate the threshold based on user profiles
     public int calculateDynamicThreshold(List<User> users) {

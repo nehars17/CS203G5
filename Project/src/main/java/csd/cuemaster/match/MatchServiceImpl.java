@@ -2,20 +2,14 @@ package csd.cuemaster.match;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator.Validity;
-
 import csd.cuemaster.profile.Profile;
 import csd.cuemaster.profile.ProfileService;
 import csd.cuemaster.services.MatchingService;
-import csd.cuemaster.services.MatchingServiceImpl;
 import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.tournament.TournamentRepository;
 import csd.cuemaster.user.User;
@@ -95,7 +89,7 @@ public class MatchServiceImpl implements MatchService {
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
         // Ensure there are enough players for the round
-        List<User> players = tournament.getPlayers();
+        List<Profile> players = tournament.getPlayers();
         checkSufficientPlayers(players, getRequiredPlayersForNextRound(tournament));
 
         // Create match pairs based on tournament round status
@@ -112,12 +106,22 @@ public class MatchServiceImpl implements MatchService {
 
     private int getRequiredPlayersForNextRound(Tournament tournament) {
         switch (tournament.getStatus()) {
-            case ROUND_OF_32: return 64;
-            case ROUND_OF_16: return 32;
-            case QUARTER_FINALS: return 16;
-            case SEMI_FINAL: return 8;
-            case FINAL: return 2;
-            default: throw new IllegalStateException("Invalid tournament status");
+            case ROUND_OF_32 -> {
+                return 64;
+            }
+            case ROUND_OF_16 -> {
+                return 32;
+            }
+            case QUARTER_FINALS -> {
+                return 16;
+            }
+            case SEMI_FINAL -> {
+                return 8;
+            }
+            case FINAL -> {
+                return 2;
+            }
+            default -> throw new IllegalStateException("Invalid tournament status");
         }
     }
 
@@ -128,38 +132,28 @@ public class MatchServiceImpl implements MatchService {
     /**
      * Update the tournament status to the next round.
      */
-    private void updateTournamentStatus(Tournament tournament) {
+    public void updateTournamentStatus(Tournament tournament) {
         switch (tournament.getStatus()) {
-            case ROUND_OF_32: 
-                tournament.setStatus(Tournament.Status.ROUND_OF_16); 
-                break;
-            case ROUND_OF_16: 
-                tournament.setStatus(Tournament.Status.QUARTER_FINALS); 
-                break;
-            case QUARTER_FINALS: 
-                tournament.setStatus(Tournament.Status.SEMI_FINAL); 
-                break;
-            case SEMI_FINAL: 
-                tournament.setStatus(Tournament.Status.FINAL); 
-                break;
-            case FINAL: 
-                tournament.setStatus(Tournament.Status.COMPLETED); 
-                break;
-            default: throw new IllegalStateException("Unexpected tournament status: " + tournament.getStatus());
+            case ROUND_OF_32 -> tournament.setStatus(Tournament.Status.ROUND_OF_16);
+            case ROUND_OF_16 -> tournament.setStatus(Tournament.Status.QUARTER_FINALS);
+            case QUARTER_FINALS -> tournament.setStatus(Tournament.Status.SEMI_FINAL);
+            case SEMI_FINAL -> tournament.setStatus(Tournament.Status.FINAL);
+            case FINAL -> tournament.setStatus(Tournament.Status.COMPLETED);
+            default -> throw new IllegalStateException("Unexpected tournament status: " + tournament.getStatus());
         }
         tournamentRepository.save(tournament);
     }
 
-    // Helper method to create match pairs (even vs. odd player count, etc.)
-    private void createMatchPairs(List<User> players, List<Match> matches) {
-        for (int i = 0; i < players.size(); i += 2) {
-            if (i + 1 < players.size()) { // Only create pairs if there's a second player
-                matches.add(createMatch(players.get(i), players.get(i + 1)));
-            } else { // In case there's an odd number of players, handle "BYE" cases
-                matches.add(createMatch(players.get(i), null));  // One player gets a bye
-            }
-        }
-    }
+    // // Helper method to create match pairs (even vs. odd player count, etc.)
+    // private void createMatchPairs(List<User> players, List<Match> matches) {
+    //     for (int i = 0; i < players.size(); i += 2) {
+    //         if (i + 1 < players.size()) { // Only create pairs if there's a second player
+    //             matches.add(createMatch(players.get(i), players.get(i + 1)));
+    //         } else { // In case there's an odd number of players, handle "BYE" cases
+    //             matches.add(createMatch(players.get(i), null));  // One player gets a bye
+    //         }
+    //     }
+    // }
 
     private Match createMatch(User player1, User player2) {
         // Retrieve the tournament for the match by using either player1 or player2
@@ -209,10 +203,9 @@ public class MatchServiceImpl implements MatchService {
      * @param players
      * @param requiredPlayers
      */
-    private void checkSufficientPlayers(List<User> players, int requiredPlayers) {
+    private void checkSufficientPlayers(List<Profile> players, int requiredPlayers) {
         if (players.size() < requiredPlayers) {
             throw new IllegalArgumentException("Insufficient players for this round. Required: " + requiredPlayers);
         }
     }
-
 }

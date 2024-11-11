@@ -15,9 +15,6 @@ public interface ProfileService {
     // String addProfilePhoto(Long userID, byte[] image);
     
     List<Profile> getPlayers();
-    List<Profile> sortProfiles();
-    
-    Map<Long, Integer> setRank();
     
     Profile pointsSet(Long user_id, Integer points);
     
@@ -26,4 +23,8 @@ public interface ProfileService {
     void updatePlayerStatistics(Profile winnerProfile, Profile loserProfile, Long tournamentId, Status matchStatus);
     
     List<Profile> getProfilesFromTournaments(Long tournament_id);
+
+    List<Profile> sortProfiles();
+
+    Map<Long, Integer> setRank();
 }
