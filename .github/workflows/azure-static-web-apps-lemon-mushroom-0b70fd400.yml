@@ -18,93 +18,79 @@ jobs:
        id-token: write
        contents: read
     steps:
-      # Step 1: Checkout the repository
       - uses: actions/checkout@v3
         with:
           submodules: true
           lfs: false
 
-      # Step 2: Install OIDC Client from Core Package
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
 
-      # Step 3: Get GitHub ID Token for Authentication
       - name: Get Id Token
         uses: actions/github-script@v6
         id: idtoken
         with:
            script: |
-               const core = require('@actions/core')
-               return await core.getIDToken()
+               const coredemo = require('@actions/core')
+               return await coredemo.getIDToken()
            result-encoding: string
 
-      # Step 4: Set up Node.js version
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
 
-      # Step 5: Set up JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'temurin'
-
-      # Step 6: Make Maven Wrapper executable (if needed)
+          distribution: 'temurin'  # Use Temurin for JDK 17
       - name: Make mvnw executable
         run: chmod +x ./Project/mvnw
-
-      # Step 7: Verify Java version
+      # Verify Java version to ensure correct JDK is used
       - name: Verify Java Version
         run: java -version
 
-      # Step 8: Verify Maven version
+      # Verify Maven version to ensure compatibility with JDK 17
       - name: Verify Maven Version
         run: mvn -v
 
-      # Step 9: Navigate to the backend project directory and build Maven project
-      - name: Build Maven Project
+      # Navigate to the backend project directory and run Maven
+      - name: Navigate to Project Directory and Build
         run: |
           cd ./Project  # Replace with the correct directory for the backend project
           mvn clean install -U
-
-      # Step 10: Clean npm cache and node_modules for the frontend
       - name: Clean npm cache and node_modules
         run: |
           rm -rf node_modules
           npm cache clean --force
-
-      # Step 11: Install npm dependencies with --force
       - name: Install Dependencies with --force
         run: npm install --force
 
-      # Step 12: Run Tests with Maven (if needed) - Optional (can be skipped if not required)
-      - name: Run Tests with Maven
-        run: |
-          cd ./Project
-          mvn test
+      - name: Build with Maven
+        run: mvn -f Project/pom.xml clean install
 
-      # Step 13: Build but skip re-compiling the JAR file. Use pre-built JAR
+      - name: Run Tests
+        run: mvn -f Project/pom.xml test
+
+         # Step 13: Build but skip re-compiling the JAR file. Use pre-built JAR
       - name: Skip Maven Build, Use Pre-built JAR
         run: |
-          # Assuming the JAR file is in ./Project/target/
-          # You can replace this with the correct location where your JAR file is stored
           echo "Skipping Maven build, using pre-built JAR"
           cp ./Project/target/week5-0.0.1-SNAPSHOT.jar ./my-app.jar
 
-      # Step 14: Build And Deploy to Azure Static Web Apps, using pre-built JAR
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LEMON_MUSHROOM_0B70FD400 }}
           action: "upload"
-          app_location: "/cuemaster" # App source code path for frontend
-          api_location: "/Project"   # Api source code path for backend
-          output_location: "build"   # Built app content directory
+          app_location: "/cuemaster" # App source code path
+          api_location: "/Project" # Api source code path - optional
+          output_location: "build" # Built app content directory - optional
           github_id_token: ${{ steps.idtoken.outputs.result }}
           prebuilt_jar_file: './my-app.jar'  # Reference to the pre-built JAR file
+
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -112,7 +98,6 @@ jobs:
     
     name: Close Pull Request Job
     steps:
-      # Step 15: Close Pull Request Deployment
       - name: Close Pull Request
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
