@@ -35,11 +35,9 @@ const EmailAuthForm: React.FC = () => {
       localStorage.setItem('token', data.token); // Store token
       
       // Navigate based on role
-      if (role == 'ROLE_PLAYER') {
-        navigate('/playerProfile');
-      } else if (role == 'ROLE_ORGANISER') {
-        navigate('/organiserProfile');
-      } else {
+      if (role == 'ROLE_PLAYER' || role == 'ROLE_ORGANISER') {
+        navigate('/ProfileCreation');
+      }  else {
         navigate('/adminDashboard');
       }
     } catch (error) {

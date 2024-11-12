@@ -162,7 +162,7 @@ const EditProfile: React.FC = () => {
 
       alert('Profile updated successfully');
       navigate(`/profile/${userId}`);
-    } catch (err: unknown) {
+    } catch (err) {
       alert('Error updating profile');
       console.error(err);
     }

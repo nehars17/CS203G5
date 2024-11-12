@@ -78,7 +78,7 @@ const AppRoutes: React.FC = () => {
                     }
                 />
                 <Route
-                    path="/ProfileCreation/:userId"
+                    path="/ProfileCreation"
                     element={
                         <PrivateRoute isAuthenticated={isUserAuthenticated}>
                             <CreateProfile />

@@ -140,7 +140,8 @@ public class SecurityConfig {
             .httpBasic(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .headers(headers -> headers.frameOptions().disable()); 
         return http.build();
     }
 

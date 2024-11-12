@@ -109,6 +109,9 @@ public class UserServiceImpl implements UserService {
             return foundUser;
         }
         if (encoder.matches(user.getPassword(), foundUser.getPassword())) {
+            foundUser.setSecret(null);
+            foundUser.setTotpToken(null);
+            users.save(foundUser);
             Key secretKey = totpService.generateSecret();
             System.out.println(secretKey);
             TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
@@ -144,6 +147,7 @@ public class UserServiceImpl implements UserService {
         user.setTotpToken(totpCode);
         user.setActivationToken(totpCode.getCode());
         user.setProvider("normal");
+        user.setUnlocked(true);
         return users.save(user);
     }
 

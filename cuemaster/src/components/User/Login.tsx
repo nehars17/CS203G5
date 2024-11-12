@@ -14,13 +14,14 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false); // Track form submission state
   const navigate = useNavigate();
+  const userId = getUserIdFromToken();
+
 
   function Refresh() {
     setTimeout(function() {
       window.location.reload(); // This reloads the current page
     }, 3000); // Adjust the time (in milliseconds) as needed
   }
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,12 +83,9 @@ const Login: React.FC = () => {
       });
       const data = await res.json();
       localStorage.setItem('token', data.token); // Store token
-      if (data.role == "ROLE_PLAYER") {
-        window.location.href = '/playerProfile';
-      } else if (data.role == "ROLE_ORGANISER") {
-        window.location.href = '/organiserProfile';
-
-      }
+      if (data.role == "ROLE_PLAYER" || data.role == "ROLE_ORGANISER") {
+        window.location.href = '/ProfileCreation';
+      } 
     } catch (error) {
       console.error('Error during Google login:', error);
       setError('Google login failed, please try again.');
