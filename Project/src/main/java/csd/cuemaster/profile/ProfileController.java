@@ -75,17 +75,9 @@ public class ProfileController {
     @PostMapping("create/profile/{user_id}")
     @ResponseStatus(HttpStatus.CREATED)
     public Profile postProfile(@PathVariable(value = "user_id") Long user_id,
-                               @RequestPart("profile") @Valid Profile profile, 
-                               @RequestPart("profilePhoto") MultipartFile profilePhoto){
-
-        User user = users.findById(user_id).orElseThrow(() -> new UserNotFoundException(user_id));
-
-        if (profiles.findByUserId(user_id).isPresent()) {
-
-            throw new ProfileAlreadyExistsException(user_id);
-        }
-
-        return profileService.addProfile(user, profile, profilePhoto);
+                               @RequestPart("profile") @Valid Profile profile,
+                               @RequestPart("profilePhoto") MultipartFile profilePhoto) {
+        return profileService.addProfile(user_id, profilePhoto);
     }
 
     // Return a sorted list of players.

@@ -41,16 +41,14 @@ public class ProfileServiceImpl implements ProfileService{
     @Autowired
     private TournamentRepository tournaments;
 
-    @Override 
+    @Override
     public List<Profile> getAllProfile(){
         return profiles.findAll();
     }
 
     @Override 
     public Profile getProfile(Long userId) {
-        if (!users.existsById(userId)){
-            throw new UserNotFoundException(userId);
-        }
+        checkIfUserExists(userId);
         return profiles.findByUserId(userId)
                       .orElseThrow(()-> new UserProfileNotFoundException(userId));
     }
@@ -59,78 +57,39 @@ public class ProfileServiceImpl implements ProfileService{
     //can be used for PUT and POST method 
     @Override
     public Profile updateProfile(Long userId, Profile newProfileInfo, MultipartFile profilephoto){
-
-        User user = users.findById(userId)       
-                      .orElseThrow(() -> new UserNotFoundException(userId));
-
+        User user = getUser(userId);
         return profiles.findByUserId(userId).map(profile -> {
             profile.setFirstname(newProfileInfo.getFirstname());
             profile.setLastname(newProfileInfo.getLastname());
             profile.setBirthdate(newProfileInfo.getBirthdate());
             profile.setBirthlocation(newProfileInfo.getBirthlocation());
 
-            if(profilephoto != null && !profilephoto.isEmpty()){
+            // Check if the profile photo exists.
+            checkProfilePhoto(profilephoto, user, profile);
+            boolean isOrganiser = getIsOrganiser(user);
 
-                String photoPath = imageService.saveImage(user.getId(), profilephoto);
-                profile.setProfilephotopath(photoPath);
-            }
-
-            boolean isOrganizer = user.getAuthorities().stream()
-                                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANISER"));  //getAuthorities return a Collections
-            if (isOrganizer){
-                if (newProfileInfo.getOrganization() == null || newProfileInfo.getOrganization().isEmpty()){
-                    throw new OrganizationCannotBeNullException();
-                }
-                profile.setOrganization(newProfileInfo.getOrganization());
-            }else {
-                profile.setOrganization(null);
-                profile.setMatchCount(newProfileInfo.getMatchCount());
-                profile.setMatchWinCount(newProfileInfo.getMatchWinCount());
-                profile.setTournamentCount(newProfileInfo.getTournamentCount());
-                profile.setTournamentWinCount(newProfileInfo.getTournamentWinCount());
-            }
-
+            // Update profile details.
+            updateDetails(newProfileInfo, profile, isOrganiser);
             return profiles.save(profile);
         }).orElse(null);
     }
 
     @Override
-    public Profile addProfile(User user, Profile profile, MultipartFile profilephoto){ 
-        // User user = users.findById(userId)           
-        //                 .orElseThrow(() -> new UserNotFoundException(userId));
+    public Profile addProfile(Long userId, MultipartFile profilephoto) {
+        User user = getUser(userId);
+        checkIfUserProfileExists(userId, user);
+        Profile profile = checkIfProfileExists(userId);
 
-        // profiles.findByUserId(userId).ifPresent(existingProfile ->{
-        //                     throw new ProfileAlreadyExistsException(userId);});
+        // Check if the profile photo exists.
+        checkProfilePhoto(profilephoto, user, profile);
+        boolean isOrganiser = getIsOrganiser(user);
+        boolean isPlayer = getIsPlayer(user);
 
-        if(profilephoto != null && !profilephoto.isEmpty()){
-
-            String photoPath = imageService.saveImage(user.getId(), profilephoto);
-            profile.setProfilephotopath(photoPath);
-        }else {
-            throw new ProfilePhotoRequiredException();
-        }
-        
-        boolean isOrganizer = user.getAuthorities().stream()
-                        .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANIZER"));  //getAuthorities return a Collections
-        boolean isPlayer = user.getAuthorities().stream()
-                        .anyMatch(authority -> authority.getAuthority().equals("ROLE_PLAYER"));
-
+        // Link profile to user.
         profile.setUser(user);
-        
-        if (isOrganizer){
-            profile.setPoints(null);
-            profile.setMatchCount(null);
-            profile.setMatchWinCount(null);
-            profile.setTournamentCount(null);
-            profile.setTournamentWinCount(null);
-        }else if (isPlayer){
-            profile.setPoints(1200);
-            profile.setMatchCount(0);
-            profile.setMatchWinCount(0);
-            profile.setTournamentCount(0);
-            profile.setTournamentWinCount(0);
-            profile.setOrganization(null);
-        }
+
+        // Create profile details.
+        setDetails(profile, isOrganiser, isPlayer);
         return profiles.save(profile);
     }
 
@@ -141,13 +100,7 @@ public class ProfileServiceImpl implements ProfileService{
         if (profileList == null || profileList.isEmpty()) {
             return profileList;
         }
-        return profileList.stream()
-                .filter(profile -> {
-                    User user = profile.getUser();
-                    return user != null && user.getAuthorities().stream()
-                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"));
-                })
-                .collect(Collectors.toList());
+        return filterByPlayers(profileList);
     }
 
     @Override
@@ -156,20 +109,13 @@ public class ProfileServiceImpl implements ProfileService{
         if (profileList == null || profileList.isEmpty()) {
             return new ArrayList<>();
         }
-        return profileList.stream()
-        .filter(profile -> {
-            User user = profile.getUser();
-            return user != null && user.getAuthorities().stream()
-                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ORGANISER"));
-        })
-                .collect(Collectors.toList());
+        return filterByOrganisers(profileList);
     }
 
     // Set a player's points.
     @Override
     public Profile pointsSet(Long userId, Integer points) {
-        User user = users.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User user = getUser(userId);
         Profile profile = profiles.findByUserId(userId)
                 .orElseThrow(() -> new UserProfileNotFoundException(userId));
         user = profile.getUser();
@@ -209,76 +155,54 @@ public class ProfileServiceImpl implements ProfileService{
             Integer p2 = sortedPlayers.get(i - 1).getPoints();
 
             // Check for ties.
-            if (i > 0 && p1.equals(p2)) {
-                rankMap.put(userId, currentRank);
-            } else {
-                currentRank = i + 1;
-                rankMap.put(userId, currentRank);
-            }
+            currentRank = checkTies(rankMap, currentRank, userId, i, p1, p2);
         }
         return rankMap;
     }
 
     @Override
-    public String getName(long user_id){
-        User user = users.findById(user_id)           
-                        .orElseThrow(() -> new UserNotFoundException(user_id));
+    public String getName(long userId){
+        User user = users.findById(userId)           
+                        .orElseThrow(() -> new UserNotFoundException(userId));
 
-        // Retrieve the profile using the user_id
-        Profile profile = profiles.findByUserId(user_id)
-                                .orElseThrow(() -> new ProfileIdNotFoundException(user_id));    // Handle case where profile is not found
-
+        // Retrieve the profile using userId.
+        Profile profile = profiles.findByUserId(userId)
+                        .orElseThrow(() -> new ProfileIdNotFoundException(userId));
         String fullname = profile.getFirstname() + " " + profile.getLastname();
         return fullname;
     }
 
     public void increaseTournamentCount(Long userId){
-
-        User user = users.findById(userId)           
-                        .orElseThrow(() -> new UserNotFoundException(userId));
-
+        User user = getUser(userId);
         Profile profile = profiles.findByUserId(userId)
-                        .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
-        
+                .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
         int tournamentcount = profile.getTournamentCount() + 1;
         profile.setTournamentCount(tournamentcount);
         profiles.save(profile);
     }
 
     public void TournamentWinCount(Long userId){
-
-        User user = users.findById(userId)           
-                        .orElseThrow(() -> new UserNotFoundException(userId));
-
+        User user = getUser(userId);
         Profile profile = profiles.findByUserId(userId)
-                        .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
-        
+                .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
         int tournamentWincount = profile.getTournamentWinCount() + 1;
         profile.setTournamentWinCount(tournamentWincount);
         profiles.save(profile);
     }
 
     public void increaseMatchCount(Long userId){
-
-        User user = users.findById(userId)           
-                        .orElseThrow(() -> new UserNotFoundException(userId));
-
+        User user = getUser(userId);
         Profile profile = profiles.findByUserId(userId)
-                        .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
-        
+                .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
         int matchcount = profile.getMatchCount() + 1;
         profile.setMatchCount(matchcount);
         profiles.save(profile);
     }
 
     public void MatchWinCount(Long userId){
-
-        User user = users.findById(userId)           
-                        .orElseThrow(() -> new UserNotFoundException(userId));
-
+        User user = getUser(userId);
         Profile profile = profiles.findByUserId(userId)
-                        .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
-        
+                .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
         int matchWincount = profile.getMatchWinCount() + 1;
         profile.setTournamentWinCount(matchWincount);
         profiles.save(profile);
@@ -297,8 +221,7 @@ public class ProfileServiceImpl implements ProfileService{
     // Calculate the expected score of a given player in a given match.
     @Override
     public double calculateExpectedScore(Long matchId, Long userId) {
-        User user = users.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User user = getUser(userId);
         List<Profile> players = getProfilesFromMatches(matchId);
 
         // Check if the player exists in the match.
@@ -354,9 +277,130 @@ public class ProfileServiceImpl implements ProfileService{
         return retrieved;
     }
 
+    // START OF HELPER METHODS
+
+    // Helper method to check if user exists.
+    private void checkIfUserExists(Long userId) {
+        if (!users.existsById(userId)){
+            throw new UserNotFoundException(userId);
+        }
+    }
+
+    // Helper method to retrieve user.
+    private User getUser(Long userId) {
+        User user = users.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        return user;
+    }
+
+    // Helper method to check if user already has a profile.
+    private void checkIfUserProfileExists(Long userId, User user) {
+        if (user.getProfile() != null) {
+            throw new ProfileAlreadyExistsException(userId);
+        }
+    }
+
+    // Helper method to check if profile exists.
+    private Profile checkIfProfileExists(Long userId) {
+        Profile profile = profiles.findByUserId(userId)
+                .orElseThrow(() -> new ProfileIdNotFoundException(userId));
+        return profile;
+    }
+
+    // Helper method to check if profile photo exists.
+    private void checkProfilePhoto(MultipartFile profilephoto, User user, Profile profile) {
+        if (profilephoto != null && !profilephoto.isEmpty()){
+            String photoPath = imageService.saveImage(user.getId(), profilephoto);
+            profile.setProfilephotopath(photoPath);
+        } else {
+            //throw new ProfilePhotoRequiredException();
+        }
+    }
+
+    // Helper method to check if the user is an organiser.
+    private boolean getIsOrganiser(User user) {
+        boolean isOrganiser = user.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANIZER"));
+        return isOrganiser;
+    }
+
+    // Helper method to check if the user is a player.
+    private boolean getIsPlayer(User user) {
+        boolean isPlayer = user.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_PLAYER"));
+        return isPlayer;
+    }
+
+    // Helper method to update profile details.
+    private void updateDetails(Profile newProfileInfo, Profile profile, boolean isOrganizer) {
+        if (isOrganizer){
+            if (newProfileInfo.getOrganization() == null || newProfileInfo.getOrganization().isEmpty()){
+                throw new OrganizationCannotBeNullException();
+            }
+            profile.setOrganization(newProfileInfo.getOrganization());
+        } else {
+            profile.setOrganization(null);
+            profile.setMatchCount(newProfileInfo.getMatchCount());
+            profile.setMatchWinCount(newProfileInfo.getMatchWinCount());
+            profile.setTournamentCount(newProfileInfo.getTournamentCount());
+            profile.setTournamentWinCount(newProfileInfo.getTournamentWinCount());
+        }
+    }
+
+    // Helper method to set default profile details.
+    private void setDetails(Profile profile, boolean isOrganizer, boolean isPlayer) {
+        if (isOrganizer) {
+            profile.setPoints(null);
+            profile.setMatchCount(null);
+            profile.setMatchWinCount(null);
+            profile.setTournamentCount(null);
+            profile.setTournamentWinCount(null);
+        } else if (isPlayer) {
+            profile.setPoints(1200);
+            profile.setMatchCount(0);
+            profile.setMatchWinCount(0);
+            profile.setTournamentCount(0);
+            profile.setTournamentWinCount(0);
+            profile.setOrganization(null);
+        }
+    }
+
+    // Helper method to filter out the list of profiles by players.
+    private List<Profile> filterByPlayers(List<Profile> profileList) {
+        return profileList.stream()
+                .filter(profile -> {
+                    User user = profile.getUser();
+                    return user != null && user.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"));
+                })
+                .collect(Collectors.toList());
+    }
+
+    // Helper method to filter out the list of profiles by organisers.
+    private List<Profile> filterByOrganisers(List<Profile> profileList) {
+        return profileList.stream()
+        .filter(profile -> {
+            User user = profile.getUser();
+            return user != null && user.getAuthorities().stream()
+                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ORGANISER"));
+        })
+                .collect(Collectors.toList());
+    }
+
     // Helper method to sort points based on points.
     private void sort(List<Profile> players) {
         players.sort(Comparator.comparingInt(profile -> ((Profile) profile).getPoints()).reversed());
+    }
+
+    // Helper method to check for ties.
+    private int checkTies(Map<Long, Integer> rankMap, int currentRank, Long userId, int i, Integer p1, Integer p2) {
+        if (i > 0 && p1.equals(p2)) {
+            rankMap.put(userId, currentRank);
+        } else {
+            currentRank = i + 1;
+            rankMap.put(userId, currentRank);
+        }
+        return currentRank;
     }
 
     // Helper method to add profiles to the list if not null.

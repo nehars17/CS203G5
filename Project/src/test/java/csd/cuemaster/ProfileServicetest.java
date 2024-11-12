@@ -172,10 +172,12 @@ public class ProfileServicetest {
         profile.setId(1L);
 
         // Mock
+        when(users.findById(1L)).thenReturn(Optional.of(user));
+        when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile));
         when(profiles.save(any(Profile.class))).thenReturn(profile);
 
         // Act
-        Profile addedProfile = profileService.addProfile(user, profile, null);
+        Profile addedProfile = profileService.addProfile(1L, null);
 
         // Assert
         assertNotNull(addedProfile);
@@ -198,11 +200,10 @@ public class ProfileServicetest {
 
         // Mock
         when(users.findById(1L)).thenReturn(Optional.of(user));
-        when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile1));
 
         // Act
         ProfileAlreadyExistsException exception = assertThrows(ProfileAlreadyExistsException.class, () -> {
-            profileService.addProfile(user, profile2, null);
+            profileService.addProfile(1L, null);
         });
 
         // Assert
