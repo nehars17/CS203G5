@@ -7,7 +7,7 @@ public interface MatchService {
     Match createMatch(Match match);
     Match updateMatch(Long id, Match match);
     Match getMatchById(Long matchId);
-    void declareWinner(Long matchId, Long winnerId);
+    Match declareWinner(Long matchId, Long winnerId);
     List<Match> getAllMatches();
     void deleteMatchById(Long matchId);
     List<Match> getMatchesByTournamentId(Long tournamentId);

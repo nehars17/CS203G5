@@ -28,25 +28,27 @@ public class MatchController {
     //     return matchService.createMatch(match);     
     // }
 
-    //create match
-    @PostMapping("/matches/create")
-    public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
+    // //create match
+    // @PostMapping("/matches/")
+    // public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
         
-        Match createdMatch = matchService.createMatch(match);
-        // return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
-        return ResponseEntity.ok("match created: id =" + createdMatch.getId());
-    }
-    
-    // public Match updateMatch(@PathVariable Long id, @Valid @RequestBody Match match) {
-        
-    //     Match updatedMatch = matchService.updateMatch(id, match);
-        
-    //     if (updatedMatch == null) {
-    //         throw new ResourceNotFoundException("match with this id does not exist:" + id);
-    //     }
-
-    //     return updatedMatch;
+    //     Match createdMatch = matchService.createMatch(match);
+    //     // return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
+    //     return ResponseEntity.ok("match created: id =" + createdMatch.getId());
     // }
+    
+    // Create matches for a tournament's next round
+    @PostMapping("/matches/tournament/{tournamentId}/next-round")
+    public ResponseEntity<List<Match>> createMatchesForNextRound(@PathVariable Long tournamentId) {
+        try {
+            List<Match> matches = matchService.createMatchesFromTournaments(tournamentId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(matches);
+        } catch (IllegalStateException | IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
     
     //update match
     @PutMapping("/matches/{matchId}")
@@ -69,20 +71,20 @@ public class MatchController {
         return matchService.getMatchById(matchId);
     }
 
-    //tempo: get all matches
+    //get all matches
     @GetMapping("/matches")
-    public List<Match> getAllMatches() {
-        return matchService.getAllMatches();
+    public ResponseEntity<List<Match>> getAllMatches() {
+        List<Match> matches = matchService.getAllMatches();
+        return ResponseEntity.ok(matches);
     }
     
 
-    //get all matches per tournament
-    //need edits
-    // @GetMapping("/tournament/{tournamentId}")
-    // public ResponseEntity<List<Match>> getAllMatchesByTournamentId(@PathVariable Long tournamentId) {
-    //     List<Match> matches = matchService.getMatchesByTournamentId(tournamentId);
-    //     return ResponseEntity.ok(matches);
-    // }
+    // Get all matches for a specific tournament
+    @GetMapping("/matches/tournament/{tournamentId}")
+    public ResponseEntity<List<Match>> getMatchesByTournamentId(@PathVariable Long tournamentId) {
+        List<Match> matches = matchService.getMatchesByTournamentId(tournamentId);
+        return ResponseEntity.ok(matches);
+    }
 
     //delete a match
     @DeleteMapping("/matches/{matchId}")
@@ -91,7 +93,7 @@ public class MatchController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/matches/{matchId}/declareWinner/{winnerId}")
+    @PostMapping("/matches/{matchId}/winner/{winnerId}")
     public ResponseEntity<Match> declareWinner(@PathVariable Long matchId, @PathVariable Long winnerId) {
         try {
             Match updatedMatch = matchService.declareWinner(matchId, winnerId);
@@ -103,10 +105,10 @@ public class MatchController {
         }
     }
 
-    @PostMapping("/matchmaking/{tournamentId}")
-    public List<Match> createMatches(@PathVariable (value = "tournamentId") Long tournamentId) {
-        return matchService.createMatchesFromTournaments(tournamentId);
-    }
+    // @PostMapping("/matchmaking/{tournamentId}")
+    // public List<Match> createMatches(@PathVariable (value = "tournamentId") Long tournamentId) {
+    //     return matchService.createMatchesFromTournaments(tournamentId);
+    // }
 
     // Exceptions handler
     @ExceptionHandler(ResourceNotFoundException.class)

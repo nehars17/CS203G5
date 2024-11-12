@@ -156,17 +156,17 @@ public class MatchServiceImpl implements MatchService {
 
     // Set the winner of the match
     @Override
-    public void declareWinner(Long matchId, Long winnerId) {
+    public Match declareWinner(Long matchId, Long winnerId) {
         Match match = matchRepository.findById(matchId)
             .orElseThrow(() -> new RuntimeException("Match not found"));
 
         User winner = userRepository.findById(winnerId)
             .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Profile winnerProfile = winner.getProfile();
-        Profile loserProfile = match.getUser1().getId().equals(winnerId)
-            ? match.getUser2().getProfile()
-            : match.getUser1().getProfile();
+        // Profile winnerProfile = winner.getProfile();
+        // Profile loserProfile = match.getUser1().getId().equals(winnerId)
+        //     ? match.getUser2().getProfile()
+        //     : match.getUser1().getProfile();
 
         match.setWinner(winner);
         matchRepository.save(match);
@@ -175,7 +175,10 @@ public class MatchServiceImpl implements MatchService {
 
         // Update player statistics
         profileService.updatePlayerStatistics(matchId, winnerId);
+
+        return match;
     }
+
     /* Helpers Methods */
 
     /** Prevent organizers from creating matches without enough players for the given starting round. Ex: Starting with Round of 32 will need 32 players  
