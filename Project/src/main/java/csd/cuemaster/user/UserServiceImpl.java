@@ -3,7 +3,6 @@ package csd.cuemaster.user;
 import java.security.Key;
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -109,6 +108,9 @@ public class UserServiceImpl implements UserService {
             return foundUser;
         }
         if (encoder.matches(user.getPassword(), foundUser.getPassword())) {
+            foundUser.setSecret(null);
+            foundUser.setTotpToken(null);
+            users.save(foundUser);
             Key secretKey = totpService.generateSecret();
             System.out.println(secretKey);
             TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
@@ -138,12 +140,12 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(encoder.encode(user.getPassword()));
         Key secretKey = totpService.generateSecret();
-        System.out.println(secretKey);
         TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
         user.setSecret(secretKey);
         user.setTotpToken(totpCode);
         user.setActivationToken(totpCode.getCode());
         user.setProvider("normal");
+        user.setUnlocked(true);
         return users.save(user);
     }
 

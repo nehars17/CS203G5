@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: 'https://cuemaster-g0dvbuawbuczcbbn.canadacentral-01.azurewebsites.net/', // Your backend URL
+    baseURL: 'http://localhost:8080', // Your backend URL
 });
 
 // For setting up authorization token in headers
