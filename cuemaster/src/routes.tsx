@@ -30,8 +30,10 @@ import CreateTournament from './components/Tournament/CreateTournament';
 import UpdateTournament from './components/Tournament/UpdateTournament';
 
 //Match
-import CreateMatch from './components/Matches/CreateMatch';
 import Matches from './components/Matches/TournamentMatches';
+import TournamentMatches from './components/Matches/TournamentMatches';
+import EditMatch from './components/Matches/EditMatch';
+import CreateMatch from './components/Matches/CreateMatch';
 
 // Define the AppRoutes component
 const AppRoutes: React.FC = () => {
@@ -52,9 +54,6 @@ const AppRoutes: React.FC = () => {
                 
                 {/*Tournament Routes */}
                 <Route path="/tournaments" element={<Tournament />} />
-                <Route path="/tournaments/create-tournament" element={<CreateTournament />} />
-                <Route path="/tournaments/update-tournament/:id" element={<UpdateTournament />}/>
-
 
                 <Route path="/leaderboard" element={<Leaderboard />} />
              
@@ -67,10 +66,11 @@ const AppRoutes: React.FC = () => {
                 <Route path="*" element={<Error404 />} />
              
                 {/*Match Management route*/}
-                <Route path="/matches" element={<CreateMatch />} />
-                {/*View matches */}
-                <Route path="/matches/tournaments/:tournamentId" element={<Matches />} />
-                <Route path="/tournaments/:id/edit" element={<UpdateTournament />} />
+                <Route path="/matches/tournament/:tournamentId" element={<TournamentMatches />} />
+                {/*get matches per tournament */}
+
+                {/*delete & update*/}
+                <Route path="/matches/:matchId" element={<EditMatch />} />
 
                 {/* Private Routes */}
                 <Route
@@ -81,16 +81,17 @@ const AppRoutes: React.FC = () => {
                         </PrivateRoute>
                     }
                 />
-               <Route
-                    path="/adminDashboard"
-                    element={
-                        isUserAuthenticated && userId === 1 ? ( // Check if authenticated and user_id is '1'
-                            <AdminDashboard />
-                        ) : (
-                            <Navigate to="/login" />
-                        )
-                    }
+                <Route
+                path="/adminDashboard"
+                element={
+                    isUserAuthenticated && isRole === "ROLE_ADMIN" ? ( // Check if authenticated and user role is admin
+                        <AdminDashboard />
+                    ) : (
+                        <Navigate to="/login" />
+                    )
+                }
                 />
+
                 <Route
                     path="/ProfileCreation"
                     element={
@@ -112,6 +113,23 @@ const AppRoutes: React.FC = () => {
                     element={
                         <PrivateRoute isAuthenticated={isUserAuthenticated}>
                             <Account />
+                        </PrivateRoute>
+                    }
+                />
+
+<Route
+                    path="/tournaments/create-tournament"
+                    element={
+                        <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>
+                            <CreateTournament />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/tournaments/update-tournament/:id"
+                    element={
+                        <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>
+                            <UpdateTournament />
                         </PrivateRoute>
                     }
                 />

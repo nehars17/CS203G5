@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import './CreateTournament.css';
-// import { getAuthToken } from '../authUtils';
+import { getAuthToken } from '../authUtils';
 
 const UpdateTournament: React.FC = () => {
     const navigate = useNavigate();
@@ -16,12 +16,10 @@ const UpdateTournament: React.FC = () => {
     const [description, setDescription] = useState('');
     const [winnerId, setWinnerId] = useState<string | null>(null);
     const [players, setPlayers] = useState<string[]>([]);
-    const [matches, setMatches] = useState<{ player1: string; player2: string }[]>([]);
+    const [matches, setMatches] = useState<{
+        status: string; player1: string; player2: string 
+}[]>([]);
 
-
-        // Placeholder token for testing
-        const token = "mockTokenForTesting"; // Replace with any string for testing
-        
     // Fetch tournament details when the component mounts
     useEffect(() => {
         const fetchTournamentDetails = async () => {
@@ -96,20 +94,9 @@ const UpdateTournament: React.FC = () => {
             console.error('Error:', error);
         }
     };
-
-    // Function to generate matches from players
-    const generateMatches = () => {
-        const newMatches: { player1: string; player2: string }[] = [];
-        const shuffledPlayers = [...players].sort(() => Math.random() - 0.5); // Randomly shuffle players
-
-        //temp for testing only
-        // Pair players for matches
-        for (let i = 0; i < shuffledPlayers.length; i += 2) {
-            if (shuffledPlayers[i + 1]) {
-                newMatches.push({ player1: shuffledPlayers[i], player2: shuffledPlayers[i + 1] });
-            }
-        }
-        setMatches(newMatches);
+    // Navigate to the TournamentMatches page
+    const navigateToMatches = () => {
+        navigate(`/matches/tournament/${id}`);
     };
 
     return (
@@ -239,22 +226,37 @@ const UpdateTournament: React.FC = () => {
                 <button type="submit" className="btn btn-primary">Update</button>
             </form>
             
-            {/* Generate Matches button */}
-            <button onClick={generateMatches} className="generate-matches-button">
-                Generate Matches
-            </button>
-
-            {/* Display Matches */}
+{/* Navigate to the Tournament Matches page */}
+            <Link to="/matches/tournament/${tournamentId}" className="create-button">
+                    View Matches
+            </Link>
+{/* Match Display - Carousel */}
             {matches.length > 0 && (
-                <div className="matches-section">
+                <div className="carousel mt-4">
                     <h2>Matches</h2>
-                    <ul className="matches-list">
-                        {matches.map((match, index) => (
-                            <li key={index}>
-                                {match.player1} vs {match.player2}
-                            </li>
-                        ))}
-                    </ul>
+                    <div id="matchesCarousel" className="carousel slide" data-bs-ride="carousel">
+                        <div className="carousel-inner">
+                            {/* Generate rounds dynamically based on matches */}
+                            {['ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINALS', 'SEMIFINALS', 'FINAL', 'COMPLETED'].map((status, index) => (
+                                <div className={`carousel-item ${index === 0 ? 'active' : ''}`} key={status}>
+                                    <h3>{status}</h3>
+                                    <ul>
+                                        {matches.filter((match) => match.status === status).map((match, idx) => (
+                                            <li key={idx}>{match.player1} vs {match.player2}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                        <button className="carousel-control-prev" type="button" data-bs-target="#matchesCarousel" data-bs-slide="prev">
+                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span className="visually-hidden">Previous</span>
+                        </button>
+                        <button className="carousel-control-next" type="button" data-bs-target="#matchesCarousel" data-bs-slide="next">
+                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span className="visually-hidden">Next</span>
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
