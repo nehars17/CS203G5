@@ -5,32 +5,32 @@
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  font-family: inherit; /* Inherit font family from the body */
 }
 
 .dashboard-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: cursive;
   font-weight: bold;
+  font-family: inherit; /* Inherit font family from the body */
 }
 
 .profile-card {
-  display: flex; 
+  display: flex;
   justify-content: space-between;
   background-color: #dfdfdf9f;
   border-radius: 8px;
   padding: 15px;
-  font-family: cursive;
   text-align: center;
   transition: transform 0.2s;
   margin-bottom: 10px;
-  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 100%; /* Make the profile card 90% of the container width */
   margin: 0 auto; /* Center the profile card within the container */
+  font-family: inherit; /* Inherit font family from the body */
 }
 
 .profiles-grid {
@@ -39,16 +39,17 @@
   gap: 20px; /* Optional: space between profile cards */
   align-items: center; /* Optional: center the profiles horizontally */
   padding: 20px;
+  font-family: inherit; /* Inherit font family from the body */
 }
 
 .profile-name {
   font-size: 40px;
   font-weight: bold;
   color: #0a0a0a;
-  font-family: cursive;
   margin: 10px 0;
   text-align: center; /* Center the name */
   flex-grow: 1; /* Allow the name to take up available space */
+  font-family: inherit; /* Inherit font family from the body */
 }
 
 .profile-card:hover {
@@ -63,6 +64,7 @@
   gap: 15px;
   width: 100%; /* Ensure profile content doesn't overflow */
   overflow: hidden; /* Prevent overflow of profile photo or text */
+  font-family: inherit; /* Inherit font family from the body */
 }
 
 .profile-photo {
@@ -80,10 +82,10 @@
   border-radius: 4px;
   padding: 12px 15px;
   font-size: 20px;
-  font-family: Georgia, serif;
   cursor: pointer;
   transition: background-color 0.3s;
   align-self: center; /* Align the button vertically */
+  font-family: inherit; /* Inherit font family from the body */
 }
 
 .viewbutton:hover {
@@ -98,10 +100,10 @@
   padding: 6px 14px;
   font-size: 16px;
   cursor: pointer;
-  font-family: Georgia, serif;
   transition: background-color 0.3s;
   margin-bottom: 10px;
   margin-right: 5px;
+  font-family: inherit; /* Inherit font family from the body */
 }
 
 .filterbutton:hover {

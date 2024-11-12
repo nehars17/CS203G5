@@ -85,6 +85,7 @@ const NavBar: React.FC = () => {
               <Nav.Link href="/profiles">ProfileDashboard</Nav.Link>
               <Nav.Link href="/leaderboard">Leaderboard</Nav.Link>
               <Nav.Link href="/tournaments">Tournaments</Nav.Link>
+              <Nav.Link href="/matches/tournament/id">Matches</Nav.Link>
             </Nav>
 
             {/* Links for non-logged-in users */}

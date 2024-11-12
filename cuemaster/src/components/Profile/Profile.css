@@ -30,13 +30,13 @@
     margin-left: 20px;
     color:rgb(31, 71, 250); 
     font-weight: bold;
-    font-family: cursive;
+    font-family: inherit;
   }
   
   .Name-info {
     margin-top: 10px;
     font-size: 50px;
-    font-family: cursive;
+    font-family: inherit;
     font-weight: bold;
     color: rgb(16, 36, 124);
   }

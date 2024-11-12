@@ -74,7 +74,7 @@ const Leaderboard = () => {
             <div className="top-3-profiles">
                 {top3Profiles.map((profile, index) => (
                     <div
-                        className={`top-profile top-profile-${index + 1}`}
+                        className={`top-profile top-profile-${index + 1}`} 
                         key={profile.id}
                         onClick={() => handleProfileClick(profile.user.id)} // Make the entire container clickable
                     >
@@ -86,13 +86,13 @@ const Leaderboard = () => {
                                 className="profile-leaderboard-photo"
                             />
                         </div>
-
+    
                         {/* Rank and Full Name beside each other */}
                         <div className="profile-leaderboard-top3-info">
                             <span className="rank">[{index + 1}]</span>
                             <span className="full-name">{profile.firstname} {profile.lastname}</span>
                         </div>
-
+    
                         {/* Points below Full Name */}
                         <div className="profile-leaderboard-top3-info">
                             <span className="points">{profile.points !== null ? profile.points : 'N/A'}</span>
@@ -100,7 +100,7 @@ const Leaderboard = () => {
                     </div>
                 ))}
             </div>
-
+    
             {/* Display rest of the profiles */}
             <table className="leaderboard-table">
                 <thead>

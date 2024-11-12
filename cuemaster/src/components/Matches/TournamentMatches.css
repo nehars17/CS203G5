@@ -1,0 +1,107 @@
+.matches-display {
+    padding: 20px;
+}
+
+.round-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+}
+
+h3 {
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.match-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.match-card {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 45%;
+}
+
+.match-card p {
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.player-options label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.generate-button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.generate-button:hover {
+    background-color: #218838;
+}
+
+.save-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
+.info-box {
+    background-color: #fff3cd;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.info-box p {
+    margin: 0;
+    font-weight: bold;
+}
+
+.create-button {
+    display: inline-block;  /* Makes it behave like a block-level element but inline */
+    padding: 10px 20px;     /* Add padding inside the button */
+    background-color: #007bff; /* Button background color */
+    color: white;           /* Button text color */
+    text-align: center;     /* Centers text inside the button */
+    text-decoration: none;  /* Removes underline */
+    border-radius: 5px;     /* Rounds the corners */
+    font-size: 16px;        /* Font size for the button text */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.create-button:hover {
+    background-color: #0056b3; /* Darker color when hovered */
+}
+
+.create-button:focus {
+    outline: none; /* Removes the focus outline */
+}
+
+.center-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Adds spacing above the button */
+}
