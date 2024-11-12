@@ -26,16 +26,16 @@ interface Profile {
 }
 
 const Profile: React.FC = () => {
-  const { userId } = useParams<{ userId: string }>(); // Change userId type to string
+  const { userId } = useParams<{ userId: string }>();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error message state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await API.get<Profile>(
-          `http://localhost:8080/profile/${Number(userId)}` // Convert userId to a number
+          `http://localhost:8080/profile/${Number(userId)}`
         );
         setProfile(response.data);
       } catch (err) {
@@ -57,52 +57,52 @@ const Profile: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  // Check if the logged-in user matches the profile ID or has an admin role
   const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'admin');
 
   return (
     <div className="profile-container">
-    {profile && (
-      <>
-        <div className="profile-info">
-          <div className="profile-image">
-            {profile.profilephotopath && (
-              <img
-                src={`http://localhost:8080/profilePhotos/${profile.profilephotopath}`}
-                alt="Profile Picture"
-                className="profile-pphoto" // Add a class for better control
-              />
-            )}
-            <h1 className="Name-info">{profile.firstname} {profile.lastname}</h1>
-          </div>
-  
-          <div className="profile-details-container">
-            <div className="profile-details">
-              <p className="profile-details-row"><strong>Date of Birth:</strong> <span className='profile-spaces'> {profile.birthdate} </span></p>
-              <p className="profile-details-row"><strong>Place of Birth:</strong> <span className='profile-spaces'> {profile.birthlocation} </span></p>
-              {profile.organization && <p className="profile-details-row"><strong>Organization:</strong><span className='profile-spaces'>{profile.organization}</span> </p>}
-              {profile.tournamentCount !== null && <p className="profile-details-row"><strong>Tournaments Played:</strong> <span className='profile-spaces'>{profile.tournamentCount}</span></p>}
-              {profile.tournamentWinCount !== null && <p className="profile-details-row"><strong>Tournaments Won:</strong> <span className='profile-spaces'>{profile.tournamentWinCount}</span></p>}
-              {profile.matchCount !== null && <p className="profile-details-row"><strong>Matches Played:</strong><span className='profile-spaces'> {profile.matchCount}</span></p>}
-              {profile.matchWinCount !== null && <p className="profile-details-row"><strong>Matches Won:</strong> <span className='profile-spaces'>{profile.matchWinCount}</span></p>}
-              {profile.points !== null && <p className="profile-details-row"><strong>Points:</strong><span className='profile-spaces'> {profile.points} </span></p>}
+      {profile && (
+        <>
+          <div className="profile-info">
+            <div className="profile-image">
+              {profile.profilephotopath && (
+                <img
+                  src={`http://localhost:8080/profilePhotos/${profile.profilephotopath}`}
+                  alt="Profile Picture"
+                  className="profile-pphoto"
+                />
+              )}
+              <h1 className="Name-info">{profile.firstname} {profile.lastname}</h1>
+            </div>
+
+            <div className="profile-details-container">
+              <div className="profile-details">
+                <p className="profile-details-row"><strong>Date of Birth:</strong> <span className='profile-spaces'> {profile.birthdate} </span></p>
+                <p className="profile-details-row"><strong>Place of Birth:</strong> <span className='profile-spaces'> {profile.birthlocation} </span></p>
+                {profile.organization && <p className="profile-details-row"><strong>Organization:</strong><span className='profile-spaces'>{profile.organization}</span> </p>}
+                {profile.tournamentCount !== null && <p className="profile-details-row"><strong>Tournaments Played:</strong> <span className='profile-spaces'>{profile.tournamentCount}</span></p>}
+                {profile.tournamentWinCount !== null && <p className="profile-details-row"><strong>Tournaments Won:</strong> <span className='profile-spaces'>{profile.tournamentWinCount}</span></p>}
+                {profile.matchCount !== null && <p className="profile-details-row"><strong>Matches Played:</strong><span className='profile-spaces'> {profile.matchCount}</span></p>}
+                {profile.matchWinCount !== null && <p className="profile-details-row"><strong>Matches Won:</strong> <span className='profile-spaces'>{profile.matchWinCount}</span></p>}
+                {profile.points !== null && <p className="profile-details-row"><strong>Points:</strong><span className='profile-spaces'> {profile.points} </span></p>}
+              </div>
             </div>
           </div>
-        </div>
-  
-        {canEdit && (
-          <div className="edit-button-container">
-            <button
-              className="editbutton"
-              onClick={() => (window.location.href = `/ProfileAmendment/${profile.user.id}`)}
-            >
-              Edit Profile
-            </button>
-          </div>
-        )}
-      </>
-    )}
-  </div>
-  );}
 
-  export default Profile;
+          {canEdit && (
+            <div className="edit-button-container">
+              <button
+                className="editbutton"
+                onClick={() => (window.location.href = `/ProfileAmendment/${profile.user.id}`)}
+              >
+                Edit Profile
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+export default Profile;

@@ -90,14 +90,14 @@ const Login: React.FC = () => {
       }// Store token
       const user_id = getUserIdFromToken();
       try {
-        const res = await fetch(`${config.apiBaseUrl}/profile/${user_id}`, {
+        const res2 = await fetch(`${config.apiBaseUrl}/profile/${user_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
         });
-        if (!res.ok) {
-          const profile = await res.json(); // Extract backend error message
+        if (!res2.ok) {
+            const profile = await res.json(); // Extract backend error message
 
         }
 

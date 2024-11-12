@@ -123,6 +123,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.POST, "/matches/tournament/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")

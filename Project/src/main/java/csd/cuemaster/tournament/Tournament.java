@@ -77,7 +77,7 @@ public class Tournament {
         ROUND_OF_16,
         QUARTER_FINALS,
         SEMI_FINAL,
-        FINAL
+        FINAL, COMPLETED
     }
 
     @JsonManagedReference

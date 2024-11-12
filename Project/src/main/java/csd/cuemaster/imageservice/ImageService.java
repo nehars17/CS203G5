@@ -1,36 +1,44 @@
 package csd.cuemaster.imageservice;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
 public class ImageService {
 
     @Value("${profile.photo.directory}")
     private String directoryPath;
-
+    
     public String saveImage(Long userId, MultipartFile image) {
         try {
-            Path path = Paths.get(directoryPath);
-            if (Files.notExists(path)) {
-                Files.createDirectories(path);
+            // Get the real path (current working directory)
+            String realPath = System.getProperty("user.dir") + "/" + directoryPath;
+            File folder = new File(realPath);
+            if (!folder.exists()) {
+                folder.mkdir();  // Create the directory if it doesn't exist
             }
 
             String filename = "ProfilePhoto_" + userId + ".jpg";
-            Path filePath = path.resolve(filename);
-            image.transferTo(filePath.toFile());
+            File newFile = new File(folder, filename);
 
-            return filename; // You can return the filename or full path as needed
+            // Save the uploaded file to the server's file system
+            try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                fos.write(image.getBytes());
+                fos.flush();
+            }
+
+            return filename;  // Return the filename
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to save profile photo", e);
@@ -39,7 +47,9 @@ public class ImageService {
 
     public ResponseEntity<Resource> getImage(String filename) {
         try {
-            Path filepath = Paths.get(directoryPath).resolve(filename);
+            // Get the real path (current working directory)
+            String realPath = System.getProperty("user.dir") + "/" + directoryPath;
+            Path filepath = Paths.get(realPath).resolve(filename);
             Resource resource = new UrlResource(filepath.toUri());
 
             // Ensure the resource exists before returning it
@@ -52,28 +62,31 @@ public class ImageService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).build(); // Handle any exceptions
+            return ResponseEntity.status(500).build();  // Handle any exceptions
         }
     }
 
     public ResponseEntity<Resource> deleteImage(String filename) {
         try {
-            // Resolve the file path based on the filename
-            Path filepath = Paths.get(directoryPath).resolve(filename);
+            // Get the real path (current working directory)
+            String realPath = System.getProperty("user.dir") + "/" + directoryPath;
+            Path filepath = Paths.get(realPath).resolve(filename);
             
             // Check if the file exists before attempting to delete it
-            if (Files.exists(filepath)) {
-                // Delete the file
-                Files.delete(filepath);
-                return ResponseEntity.ok().build();  // Return a success response
+            File file = filepath.toFile();
+            if (file.exists()) {
+                boolean deleted = file.delete();
+                if (deleted) {
+                    return ResponseEntity.ok().build();  // Return a success response
+                } else {
+                    return ResponseEntity.status(500).build(); // If deletion fails
+                }
             } else {
-                // If the file does not exist, return a 404 (Not Found) response
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.notFound().build();  // If the file doesn't exist
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // Return a 500 (Internal Server Error) response if something goes wrong
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(500).build();  // Return a 500 (Internal Server Error) response if something goes wrong
         }
     }
 }
