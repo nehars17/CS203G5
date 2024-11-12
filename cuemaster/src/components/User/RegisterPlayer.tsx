@@ -73,7 +73,8 @@ const Register: React.FC = () => {
       });
       const data = await res.json();
       localStorage.setItem('token', data.token); // Store token in localStorage
-      navigate('/playerProfile');
+      window.location.href = '/ProfileCreation';
+
     } catch (error) {
       console.error('Error during Google login:', error);
       setError('Google login failed, please try again');

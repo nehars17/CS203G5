@@ -6,6 +6,8 @@ import { GoogleLogin } from '@react-oauth/google'; // New Google OAuth import
 import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA correctly
 import useRecaptcha from './useRecaptcha';
 import config from '../../config';
+import { isAuthenticated, getUserIdFromToken, getUserRole } from '../../components/authUtils';
+
 
 const Register: React.FC = () => {
   const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
@@ -70,7 +72,8 @@ const Register: React.FC = () => {
       const data = await res.json();
       console.log(data);
       localStorage.setItem('token', data.token); // Store token
-      navigate('/organiserProfile');
+      window.location.href = '/ProfileCreation';
+
       
 
     } catch (error) {

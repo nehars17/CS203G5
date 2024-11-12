@@ -101,6 +101,7 @@ public class User implements UserDetails {
         this.authorities = authorities;
         this.enabled = enabled;
         this.unlocked = true;
+        this.failedLoginAttempts=0;
         this.provider = provider;
     }
 
