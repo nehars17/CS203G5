@@ -38,10 +38,11 @@ public class MatchController {
     // }
     
     // Create matches for a tournament's next round
-    @PostMapping("/matches/tournament/{tournamentId}/next-round")
-    public ResponseEntity<List<Match>> createMatchesForNextRound(@PathVariable Long tournamentId) {
+    @PostMapping("/matches/tournament/{tournamentId}")
+    public ResponseEntity<List<Match>> createMatchesForNextRound(@PathVariable String tournamentId) {
+        Long tournamentid = Long.parseLong(tournamentId);
         try {
-            List<Match> matches = matchService.createMatchesFromTournaments(tournamentId);
+            List<Match> matches = matchService.createMatchesFromTournaments(tournamentid);
             return ResponseEntity.status(HttpStatus.CREATED).body(matches);
         } catch (IllegalStateException | IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

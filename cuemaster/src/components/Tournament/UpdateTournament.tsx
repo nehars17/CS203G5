@@ -17,8 +17,8 @@ const UpdateTournament: React.FC = () => {
     const [winnerId, setWinnerId] = useState<string | null>(null);
     const [players, setPlayers] = useState<string[]>([]);
     const [matches, setMatches] = useState<{
-        status: string; player1: string; player2: string 
-}[]>([]);
+        status: string; player1: string; player2: string
+    }[]>([]);
 
     // Fetch tournament details when the component mounts
     useEffect(() => {
@@ -27,7 +27,7 @@ const UpdateTournament: React.FC = () => {
                 console.error("Tournament ID is undefined.");
                 return;
             }
-    
+
             try {
                 const token = localStorage.getItem('token');
                 const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
@@ -35,7 +35,7 @@ const UpdateTournament: React.FC = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-    
+
                 if (response.ok) {
                     const tournament = await response.json();
                     setTournamentName(tournament.tournamentname);
@@ -54,9 +54,9 @@ const UpdateTournament: React.FC = () => {
                 console.error('Error:', error);
             }
         };
-    
+
         fetchTournamentDetails();
-    }, [id]);    
+    }, [id]);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -225,12 +225,13 @@ const UpdateTournament: React.FC = () => {
 
                 <button type="submit" className="btn btn-primary">Update</button>
             </form>
-            
-{/* Navigate to the Tournament Matches page */}
-            <Link to="/matches/tournament/${tournamentId}" className="create-button">
-                    View Matches
+
+            {/* Navigate to the Tournament Matches page */}
+            <Link to={`/matches/tournament/?id=${id}`} className="create-button">
+                View Matches
             </Link>
-{/* Match Display - Carousel */}
+
+            {/* Match Display - Carousel */}
             {matches.length > 0 && (
                 <div className="carousel mt-4">
                     <h2>Matches</h2>

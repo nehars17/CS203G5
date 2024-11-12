@@ -4,8 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { isAuthenticated, getUserIdFromToken } from '../authUtils';
 import API from '../../services/api';
 import './NavBar.css';
+import config from '../../config';
 
-// Define the expected response structure
+interface Profile {
+  id: number;
+  profilephotopath: string;
+}
+
+// Define the expected response structure for the username
 interface UserResponse {
   username: string;
 }
@@ -14,13 +20,16 @@ const NavBar: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [showToast, setShowToast] = useState<boolean>(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  
   const isUserAuthenticated = isAuthenticated();
-  const userId = getUserIdFromToken(); // Extract the userId from the token
+  const userId = getUserIdFromToken();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     localStorage.removeItem('token');
-    await fetch('http://localhost:8080/logout', {
+    await fetch(`${config.apiBaseUrl}/logout`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -29,22 +38,25 @@ const NavBar: React.FC = () => {
     });
 
     setShowToast(true);
-
     setTimeout(() => {
       navigate('/');
     }, 1500);
   };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (isUserAuthenticated) {
+    const fetchProfile = async () => {
+      if (userId && isUserAuthenticated) {
         try {
-          // Fetch the username directly as a string from the backend
-          const response = await API.get<string>(`/userName/${userId}`);
-          setUsername(response.data); // Set the username directly as a string
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-          setUsername('Error fetching username');
+          const response = await API.get<Profile>(`/profile/${userId}`);
+          setProfile(response.data);
+
+          // Fetch the username directly
+          const userResponse = await API.get<UserResponse>(`/userName/${userId}`);
+          setUsername(userResponse.data.username);
+        } catch (err) {
+          const errorMessage = (err as any)?.response?.data?.message || 'Failed to load profile data';
+          setError(errorMessage);
+          console.error(err);
         } finally {
           setLoading(false);
         }
@@ -53,11 +65,13 @@ const NavBar: React.FC = () => {
       }
     };
 
-    fetchUserData();
+    fetchProfile();
   }, [isUserAuthenticated, userId]);
 
-  // Construct the profile photo URL based on the userId
-  const profilePhotoUrl = `http://localhost:8080/profilePhotos/ProfilePhoto_${userId}.jpg`;
+  // Construct the profile photo URL
+  const profilePhotoUrl = profile?.profilephotopath 
+    ? `${config.apiBaseUrl}/profilePhotos/${profile.profilephotopath}`
+    : `${config.apiBaseUrl}/profilePhotos/default.jpg`; // Default image if none exists
 
   return (
     <>
@@ -67,18 +81,15 @@ const NavBar: React.FC = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-                <>
-                  <Nav.Link href="/home">Home</Nav.Link>
-                  <Nav.Link href="/profiles">ProfileDashboard</Nav.Link>
-                  <Nav.Link href="/leaderboard">Leaderboard</Nav.Link>
-                  <Nav.Link href="/tournaments">Tournaments</Nav.Link>
-                  <Nav.Link href="/matches">Matches</Nav.Link>
-                </>
+              <Nav.Link href="/home">Home</Nav.Link>
+              <Nav.Link href="/profiles">ProfileDashboard</Nav.Link>
+              <Nav.Link href="/leaderboard">Leaderboard</Nav.Link>
+              <Nav.Link href="/tournaments">Tournaments</Nav.Link>
             </Nav>
-  
+
             {/* Links for non-logged-in users */}
             {!isUserAuthenticated && (
-              <Nav className="ms-auto"> {/* Add 'ms-auto' to push to the right */}
+              <Nav className="ms-auto">
                 <NavDropdown title="Registration" id="basic-nav-dropdown">
                   <NavDropdown.Item href="/playerRegistration">Player Registration</NavDropdown.Item>
                   <NavDropdown.Item href="/organiserRegistration">Organiser Registration</NavDropdown.Item>
@@ -86,35 +97,42 @@ const NavBar: React.FC = () => {
                 <Nav.Link href="/login">Login</Nav.Link>
               </Nav>
             )}
-  
+
             {/* Links for logged-in users */}
             {isUserAuthenticated && (
-              <Nav className="align-items-center">
-                <Nav.Link className="profile-nav-container">
-                  {loading ? 'Loading...' : (
-                    <>
-                      {profilePhotoUrl && (
-                        <Image
-                          src={profilePhotoUrl}
-                          className="profile-nav-image"
-                          alt="Profile"
-                        />
-                      )}
-                      <span className="nav-username">{username}</span> {/* Username next to the photo */}
-                    </>
-                  )}
-                </Nav.Link>
-                <NavDropdown title="Account" id="basic-nav-dropdown">
-                  <NavDropdown.Item href="/account">My Account</NavDropdown.Item>
-                  <NavDropdown.Item href={`/profile/${userId}`}>My Profile</NavDropdown.Item>
-                  <NavDropdown.Item href="#" onClick={handleLogout}>Logout</NavDropdown.Item>
-                </NavDropdown>
-              </Nav>
+              <>
+                {userId === 2 && (
+                  <Nav className="ms-auto">
+                    <Nav.Link href="/adminDashboard">Admin Dashboard</Nav.Link>
+                  </Nav>
+                )}
+                <Nav className="align-items-center">
+                  <Nav.Link className="profile-nav-container">
+                    {loading ? 'Loading...' : (
+                      <>
+                        {profilePhotoUrl && (
+                          <Image
+                            src={profilePhotoUrl}
+                            className="profile-nav-image"
+                            alt="Profile"
+                          />
+                        )}
+                        <span className="nav-username">{username}</span>
+                      </>
+                    )}
+                  </Nav.Link>
+                  <NavDropdown title="Account" id="basic-nav-dropdown">
+                    <NavDropdown.Item href="/account">My Account</NavDropdown.Item>
+                    <NavDropdown.Item href={`/profile/${userId}`}>My Profile</NavDropdown.Item>
+                    <NavDropdown.Item href="#" onClick={handleLogout}>Logout</NavDropdown.Item>
+                  </NavDropdown>
+                </Nav>
+              </>
             )}
           </Navbar.Collapse>
         </Container>
       </Navbar>
-  
+
       <Toast
         show={showToast}
         onClose={() => setShowToast(false)}
@@ -126,6 +144,6 @@ const NavBar: React.FC = () => {
       </Toast>
     </>
   );
-}
+};
 
 export default NavBar;

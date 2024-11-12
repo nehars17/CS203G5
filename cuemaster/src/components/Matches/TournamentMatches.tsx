@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAuthToken } from '../authUtils';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface Match {
     status: string;
@@ -13,15 +14,18 @@ interface TournamentMatchesProps {
     tournamentId: string;
 }
 
-const TournamentMatches: React.FC<TournamentMatchesProps> = ({ tournamentId }) => {
+const TournamentMatches: React.FC<TournamentMatchesProps> = () => {
     const [matches, setMatches] = useState<Match[]>([]);
+    const location = useLocation();
+    const query = new URLSearchParams(location.search);
+    const tournamentId = query.get('id');
+  
 
     // Fetch Matches for the Tournament
     const fetchMatches = async () => {
         try {
-            const token = getAuthToken();
-            const response = await fetch(`http://localhost:8080/matches/tournament/${tournamentId}`, {
-                headers: { 'Authorization': `Bearer ${token}` },
+            const response = await fetch(`http://localhost:8080/matches`, {
+                method: 'GET',
             });
 
             if (response.ok) {
@@ -38,7 +42,7 @@ const TournamentMatches: React.FC<TournamentMatchesProps> = ({ tournamentId }) =
     // Generate Matches for a specific round
     const generateMatchesForRound = async (round: string) => {
         try {
-            const token = getAuthToken();
+            const token = localStorage.getItem('token');
             const response = await fetch(`http://localhost:8080/matches/tournament/${tournamentId}`, {
                 method: 'POST',
                 headers: { 
