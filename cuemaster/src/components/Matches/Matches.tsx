@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import API from '../../services/api';
+import MatchCard from './MatchCard';
+// import { getAuthToken } from '../authUtils';
+
 
 // Define a type for the match item
 interface Match {
     player1: string;
     player2: string;
-    date: string; // Adjust types as necessary, e.g., Date if using Date objects
+    date: string; 
+    status: string;
+    winner: string;
 }
 
 const Matches: React.FC = () => {
@@ -25,29 +31,36 @@ const Matches: React.FC = () => {
                 setLoading(false); // Set loading to false after the fetch is complete
             }
         };
-
+    
         fetchMatches();
     }, []);
 
+    //spinny wheel
     if (loading) {
-        return <div>Loading...</div>; // Loading state
+        return <Spinner animation="border" variant="primary" /> 
     }
 
+    // Error message
     if (error) {
-        return <div>{error}</div>; // Error message
+    return <Alert variant="danger">{error}</Alert>;
     }
 
     return (
-        <div>
-            <h2>Tournament Matches</h2>
-            <ul>
+        <Container>
+            <h4>Tournament's Matches</h4>
+            <Row>
                 {matches.map((match, index) => (
-                    <li key={index}>
-                        {match.player1} vs {match.player2} - {match.date}
-                    </li>
+                    <Col  xs={12} md={6} lg={4} key={index}>
+                        <MatchCard 
+                            player1={match.player1}
+                            player2={match.player2}
+                            status={match.status}
+                            winner = {match.winner}
+                        />
+                    </Col>
                 ))}
-            </ul>
-        </div>
+            </Row>
+        </Container>
     );
 };
 

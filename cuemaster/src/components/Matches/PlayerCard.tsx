@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, ListGroup } from 'react-bootstrap';
-import { getAuthToken } from '../authUtils';
+// import { getAuthToken } from '../authUtils';
 
 interface PlayerCardProps {
     playerName: string;

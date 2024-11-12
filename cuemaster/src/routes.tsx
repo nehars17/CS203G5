@@ -7,9 +7,7 @@ import CreateProfile from './components/Profile/CreateProfile';
 import ProfileDashboard from './components/Profile/ProfileDashboard';
 import EmailAuthForm from './components/User/EmailAuthForm';
 import Profile from './components/Profile/Profile';
-import Matches from './components/Matches/Matches';
 import Leaderboard from './components/Leaderboard/Leaderboard';
-import Tournament from './components/Tournament/Tournament';
 import NavBar from './components/NavBar/NavBar';
 import Error404 from './pages/Error404';
 import Forbidden403 from './pages/Forbidden403';
@@ -26,6 +24,14 @@ import { isAuthenticated, getUserIdFromToken, getUserRole } from './components/a
 import { Navigate } from 'react-router-dom';
 import EditProfile from './components/Profile/EditProfile';
 
+//tournament
+import Tournament from './components/Tournament/Tournament';
+import CreateTournament from './components/Tournament/CreateTournament';
+import UpdateTournament from './components/Tournament/UpdateTournament';
+
+//Match
+import CreateMatch from './components/Matches/CreateMatch';
+import Matches from './components/Matches/Matches';
 
 // Define the AppRoutes component
 const AppRoutes: React.FC = () => {
@@ -43,12 +49,16 @@ const AppRoutes: React.FC = () => {
                 <Route path="/organiserRegistration" element={<RegisterOrganiser />} />
                 <Route path="/profiles" element={<ProfileDashboard />} />
                 <Route path="/profile/:userId" element={<Profile />} />
-                <Route path="/matches" element={<Matches />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/tournaments" element={<Tournament />} />  {/* Add the route here */}
+                
+                {/*Tournament Routes */}
                 <Route path="/tournaments" element={<Tournament />} />
+                <Route path="/tournaments/create-tournament" element={<CreateTournament />} />
+                <Route path="/tournaments/update-tournament/:id" element={<UpdateTournament />}/>
+
+
                 <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/matches" element={<Matches />} />
+             
+               
                 <Route path="/emailauth" element={<EmailAuthForm />} />
                 <Route path="/activateaccount" element={<AccountActivated />} />
                 <Route path="/resetPassword" element={<ResetPassword />} />
@@ -56,7 +66,11 @@ const AppRoutes: React.FC = () => {
                 <Route path="/403" element={<Forbidden403 />} />
                 <Route path="*" element={<Error404 />} />
              
-
+                {/*Match Management route*/}
+                <Route path="/matches" element={<CreateMatch />} />
+                {/*View matches */}
+                <Route path="/tournaments/:tournamentId/matches" element={<Matches />} />
+                <Route path="/tournaments/:id/edit" element={<UpdateTournament />} />
 
                 {/* Private Routes */}
                 <Route
