@@ -7,6 +7,11 @@ import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA correctly
 import useRecaptcha from './useRecaptcha';
 import config from '../../config';
 
+interface RegisterResponse{
+  userId:String;
+  username:String;
+}
+
 const Register: React.FC = () => {
   const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
   const [message, setMessage] = useState('');

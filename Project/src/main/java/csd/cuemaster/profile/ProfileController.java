@@ -1,80 +1,117 @@
 package csd.cuemaster.profile;
 
 import java.util.List;
+import java.util.Map;
 
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
 
 import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
+import csd.cuemaster.imageservice.ImageService;
 import csd.cuemaster.user.User;
 
 @RestController
+@MultipartConfig
 public class ProfileController {
-    private ProfileService profileService; 
+    private ProfileService profileService;
     private UserRepository users;
-    private ProfileRepository profiles; 
+    private ProfileRepository profiles;
 
-    public ProfileController (ProfileService profileService, UserRepository users, ProfileRepository profiles){
+    @Autowired
+    private ImageService imageService;
+
+    public ProfileController(ProfileService profileService, UserRepository users, ProfileRepository profiles) {
         this.profileService = profileService;
         this.users = users;
-        this.profiles = profiles; 
+        this.profiles = profiles;
     }
 
     @GetMapping("/profiles")
-    public List<Profile> getAllProfiles() {
+    public List<Profile> getAllProfiles(@RequestParam(required = false) String role) {
+        if (role != null && role.equals("Player")) {
+            System.out.println("player");
+            return profileService.getPlayers();
+        } else if (role != null && role.equals("Organizer")) {
+            System.out.println("organizer");
+            return profileService.getOrganisers();
+        }
         return profileService.getAllProfile();
     }
 
-    @GetMapping("/user/{user_id}/profile/{profile_id}")
-    public Profile getUserProfile(@PathVariable (value = "user_id") Long user_id,@PathVariable Long profile_id) {
-        return profileService.getProfile(user_id,profile_id);
-    }
-    
-    @PutMapping("/user/{user_id}/profile/edit")
-    public Profile putExistingProfile(@PathVariable (value = "user_id") Long user_id, @Valid @RequestBody Profile newProfileInfo) { 
-        return profileService.updateProfile(user_id, newProfileInfo);
+    @GetMapping("/profile/{user_id}")
+    public Profile getUserProfile(@PathVariable(value = "user_id") Long user_id) {
+        return profileService.getProfile(user_id);
     }
 
+    @GetMapping("/userName/{user_id}")
+    public String getUserName(@PathVariable(value = "user_id") Long user_id){
+        return profileService.getName(user_id);
+    }
+
+    @PutMapping("/user/{user_id}/profile/edit")
+    public Profile putExistingProfile(@PathVariable(value = "user_id") Long user_id,
+                                    @RequestPart("profile") @Valid Profile newProfileInfo, 
+                                    @RequestPart("profilePhoto") MultipartFile newprofilePhoto) {
+
+        return profileService.updateProfile(user_id, newProfileInfo, newprofilePhoto);
+    }
+
+    @PostMapping("create/profile/{user_id}")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("user/{user_id}/profile")
-    public Profile postProfile(@PathVariable (value = "user_id") Long user_id, @Valid @RequestBody Profile profile){
+    public Profile postProfile(@PathVariable(value = "user_id") Long user_id,
+                               @RequestPart("profile") @Valid Profile profile, 
+                               @RequestPart("profilePhoto") MultipartFile profilePhoto){
 
         User user = users.findById(user_id).orElseThrow(() -> new UserNotFoundException(user_id));
 
-        if(profiles.findByUserId(user_id).isPresent()){
-            
+        if (profiles.findByUserId(user_id).isPresent()) {
+
             throw new ProfileAlreadyExistsException(user_id);
         }
 
-        return profileService.addProfile(user, profile);
+        return profileService.addProfile(user, profile, profilePhoto);
     }
 
-    // @PostMapping("users/{user_id}/profile/profilephoto")
-    // public String postMethodName(@PathVariable (value = "user_id") Long user_id,  @RequestBody byte[] imageData) {
-    //     return profileService.addProfilePhoto(user_id,imageData);
-    // }
-
-    // Returns a sorted list of players.
+    // Return a sorted list of players.
     @GetMapping("/leaderboard")
     public List<Profile> getLeaderboard() {
-        List<Profile> sortedProfileList = profileService.sort();
-        // profileService.updateRank(profiles);
+        List<Profile> sortedProfileList = profileService.sortProfiles();
         return sortedProfileList;
     }
 
-    // Changes a player's points.
-    @PutMapping("/changepoints/{user_id}")
-    public Profile changePoints(@PathVariable (value = "user_id") Long user_id, @RequestBody Profile profile) {
+    // Return a sorted list of players.
+    @GetMapping("/playerrank")
+    public Map<Long, Integer> getPlayerRank() {
+        return profileService.setRank();
+    }
+
+    // Change a player's points.
+    @PutMapping("/changepoints/{userId}")
+    public Profile changePoints(@PathVariable (value = "userId") Long userId, @RequestBody Profile profile) {
         Integer newpoints = profile.getPoints();
-        return profileService.pointsSet(user_id, newpoints);
+        return profileService.pointsSet(userId, newpoints);
+    }
+
+    // Change a player's stats.
+    @PutMapping("/playerstats/{matchId}/{winnerId}")
+    public List<Profile> changePlayerStats(@PathVariable (value = "matchId") Long matchId,
+            @PathVariable (value = "winnerId") Long winnerId) {
+        return profileService.updatePlayerStatistics(matchId, winnerId);
     }
 }

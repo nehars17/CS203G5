@@ -35,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import csd.cuemaster.services.EmailService;
 import csd.cuemaster.services.JwtService;
+import csd.cuemaster.imageservice.ImageService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.ElementCollection;
 import jakarta.servlet.http.HttpServletRequest;
@@ -94,6 +95,8 @@ public class UserController {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private ImageService ImageService;
     @Lazy
     @Autowired
     private RestTemplate restTemplate;
@@ -104,6 +107,17 @@ public class UserController {
         return userService.listUsers();
     }
 
+    @GetMapping("/Provider/{user_id}")
+    public String getUserProvider(@PathVariable(value = "user_id") Long user_id){
+
+        return userService.getProvider(user_id);
+    }
+
+    @GetMapping("/user/{user_id}")
+    public User getUserByUserId(@PathVariable(value = "user_id") Long user_id) {
+        return userService.getUser(user_id);
+    }
+    
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
@@ -382,6 +396,7 @@ public class UserController {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (currentUser.getId() == 1 || currentUser.getId() == user_id) {
             userService.deleteUser(user_id);
+            ImageService.deleteImage("ProfilePhoto_" + user_id + ".jpg");
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this account");
         }
@@ -404,5 +419,4 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this account");
         }
     }
-
 }

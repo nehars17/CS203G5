@@ -1,0 +1,203 @@
+/* Leaderboard styling */
+.leaderboard {
+    font-family: Georgia, serif;
+    margin: 40px auto;
+    max-width: 800px;
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  .leaderboard h2 {
+    color: #333;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  
+  .leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .leaderboard-table thead {
+    background: linear-gradient(135deg, #04028f, #04028f);
+    color: #fff;
+  }
+  
+  .leaderboard-table th, 
+  .leaderboard-table td {
+    padding: 15px 20px;
+    text-align: center;
+  }
+  
+  .leaderboard-table th {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  .leaderboard-table tbody tr {
+    transition: background 0.3s ease;
+  }
+  
+  .leaderboard-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .leaderboard-table td {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .leaderboard-table td:first-child {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .leaderboard-table td:last-child {
+    font-weight: bold;
+    color: #4CAF50;
+    opacity: 1;  /* Prevent transparency */
+  }
+  
+  /* Styling for the top 3 profiles */
+  .top-3-profiles {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  
+  .top-profile {
+    width: 30%;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for smooth effect */
+  }
+
+    /* Hover effect to make the container pop up */
+    .top-profile:hover {
+        transform: scale(1.05); /* Slightly enlarge the container */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Increase the shadow to make it "pop" */
+    }
+  
+  .top-profile-1 {
+    background-color: #ffe23b; /* Gold */
+  }
+  
+  .top-profile-2 {
+    background-color: #c0c0c0; /* Silver */
+  }
+  
+  .top-profile-3 {
+    background-color: #f8a34e; /* Bronze */
+  }
+  
+  .rank {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .profile-leaderboard-top3-photo img {
+    width: 140px;
+    height: 140px;
+    border-radius: 10%;
+    margin-bottom: 10px;
+  }
+
+  .profile-leaderboard-top3-info {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .profile-leaderboard-top3-info .full-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-style: Georgia, serif;
+    color: #000500;
+  }
+  .profile-leaderboard-top3-info .rank {
+    font-size: 1.5rem;
+    color: #000500;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-right: 5px;
+  }
+  
+  .profile-leaderboard-top3-info .points {
+    font-size: 2rem;
+    color: #000500;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+
+
+  
+  .profile-leaderboard-photo img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .profile-leaderboard-info {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .profile-leaderboard-info .full-name {
+    font-weight: bold;
+  }
+  
+  .profile-leaderboard-info .points {
+    font-size: 1.2rem;
+    color: #000500;
+    margin-top: 5px;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 600px) {
+    .leaderboard-table th, 
+    .leaderboard-table td {
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+  
+    .leaderboard h2 {
+      font-size: 2rem;
+    }
+  
+    .top-3-profiles {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .top-leaderboard-profile {
+      width: 80%;
+      margin-bottom: 15px;
+    }
+  }
+
+  .view-profile-button {
+    padding: 8px 16px;
+    background-color: #0625b3; /* Same green color as the header */
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.view-profile-button:hover {
+    background-color: #45a049;
+}

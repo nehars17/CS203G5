@@ -43,7 +43,7 @@ public class Profile {
     @NotNull (message = "Location should not be null")
     private String birthlocation; 
 
-    // private String profilephotopath;
+    private String profilephotopath;
 
     private String organization;
 
@@ -62,52 +62,13 @@ public class Profile {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation){
+    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, String profilephotopath){
 
         this.firstname = firstname;
         this.lastname = lastname; 
         this.birthdate = birthdate;
         this.birthlocation = birthlocation;
-    }
-
-    public Profile(String firstname, String lastname, LocalDate birthdate, String birthlocation, User user, Integer points){
-        this.firstname = firstname;
-        this.lastname = lastname; 
-        this.birthdate = birthdate;
-        this.birthlocation = birthlocation;
-        this.user=user;
-        this.points = points; 
-    }
-
-    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, User user){
-
-        this.firstname = firstname;
-        this.lastname = lastname; 
-        this.birthdate = birthdate;
-        this.birthlocation = birthlocation;
-        // this.profilephotopath = profilephotopath;
-        this.TournamentCount = 0; 
-        this.MatchCount = 0;
-        this.organization = null; 
-        this.TournamentWinCount = 0; 
-        this.MatchWinCount = 0; 
-        this.points = 0; 
-        this.user = user; 
-    }
-
-    public Profile (String firstname, String lastname,LocalDate birthdate, String birthlocation, String organization, User user){
-        this.firstname = firstname;
-        this.lastname = lastname; 
-        this.birthdate = birthdate;
-        this.birthlocation = birthlocation;
-        // this.profilephotopath = profilephotopath;
-        this.organization = organization;
-        this.TournamentCount = null; 
-        this.MatchCount = null;
-        this.TournamentWinCount = null; 
-        this.MatchWinCount = null; 
-        this.points = null; 
-        this.user = user;
+        this.profilephotopath = profilephotopath;
     }
     
 }

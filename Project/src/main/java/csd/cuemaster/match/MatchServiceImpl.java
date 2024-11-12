@@ -1,24 +1,30 @@
 package csd.cuemaster.match;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import csd.cuemaster.tournament.*;
 import csd.cuemaster.user.*;
+import csd.cuemaster.profile.*;
 
 @Service
 public class MatchServiceImpl implements MatchService {
-    
+
+    @Autowired
+    private ProfileService profileService;
+
     @Autowired
     private MatchRepository matchRepository;
 
     @Autowired
-    private TournamentRepository tournamentRepository; 
+    private TournamentRepository tournamentRepository;
 
     @Autowired
-    private UserRepository userRepository; 
+    private UserRepository userRepository;
 
     // public MatchServiceImpl(MatchRepository matchRepository) {
     //     this.matchResponsitory = matchRepository;
@@ -101,5 +107,91 @@ public class MatchServiceImpl implements MatchService {
         match.setWinner(userRepository.findById(winnerId).orElseThrow(() -> new ResourceNotFoundException("User with ID " + winnerId + " does not exist")));
         
         return matchRepository.save(match);
+    }
+
+    // Create matches from a given tournament.
+    @Override
+    public List<Match> createMatchesFromTournaments(Long tournamentId) {
+        List<Profile> players = new ArrayList<>(profileService.getProfilesFromTournaments(tournamentId));
+        if (players.size() < 2) {
+            return new ArrayList<>();
+        }
+        List<Match> matches = new ArrayList<>();
+        Random random = new Random();
+        int pointsRange = 100;
+
+        // Matchmaking occurs here.
+        while (players.size() > 2) {
+            int player1 = random.nextInt(players.size());
+            int player2 = random.nextInt(players.size());
+            player2 = validatePlayer(players, random, player1, player2);
+            int difference = getDifference(players, player1, player2);
+
+            // Create match only when it is balanced.
+            if (difference <= pointsRange) {
+                createMatch(players, matches, player1, player2);
+                removePlayers(players, player1, player2);
+
+                // Reset the range back to 100.
+                pointsRange = 100;
+            } else {
+                pointsRange += 100;
+            }
+        }
+
+        // Create the last match if there are exactly two players left.
+        if (players.size() == 2) {
+            createLastMatch(players, matches);
+        }
+        matchRepository.saveAll(matches);
+        return matches;
+    }
+
+    // Helper method to check that the two players are different.
+    private int validatePlayer(List<Profile> players, Random random, int player1, int player2) {
+        while (player1 == player2) {
+            player2 = random.nextInt(players.size());
+        }
+        return player2;
+    }
+
+    // Helper method to get the points difference between the two players.
+    private int getDifference(List<Profile> players, int player1, int player2) {
+        Integer points1 = players.get(player1).getPoints();
+        Integer points2 = players.get(player2).getPoints();
+        int difference = Math.abs(points1 - points2);
+        return difference;
+    }
+
+    // Helper method to create matches.
+    private void createMatch(List<Profile> players, List<Match> matches, int player1, int player2) {
+        User user1 = players.get(player1).getUser();
+        User user2 = players.get(player2).getUser();
+        Match match = new Match();
+        matches.add(match);
+        match.setUser1(user1);
+        match.setUser2(user2);
+    }
+
+    // Helper method to remove the chosen players from the list.
+    private void removePlayers(List<Profile> players, int player1, int player2) {
+        if (player1 > player2) {
+            players.remove(player1);
+            players.remove(player2);
+        } else if (player2 > player1) {
+            players.remove(player2);
+            players.remove(player1);
+        }
+    }
+
+    // Helper method to create the last match if there are exactly two players left.
+    private void createLastMatch(List<Profile> players, List<Match> matches) {
+        User user1 = players.get(0).getUser();
+        User user2 = players.get(1).getUser();
+        Match match = new Match();
+        matches.add(match);
+        match.setUser1(user1);
+        match.setUser2(user2);
+        players.clear();
     }
 }

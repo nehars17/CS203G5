@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Card, Container, Alert } from 'react-bootstrap';
 import { GoogleLogin } from '@react-oauth/google';
+import { getUserIdFromToken } from 'cuemaster/src/components/authUtils';
 import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA correctly
 import useRecaptcha from './useRecaptcha';
 import config from '../../config';
@@ -15,6 +16,8 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false); // Track form submission state
   const navigate = useNavigate();
+  const userId = getUserIdFromToken();
+
 
   function Refresh() {
     setTimeout(function () {

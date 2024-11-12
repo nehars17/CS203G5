@@ -100,9 +100,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/normallogin/*").permitAll()
-                .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate/*",
-                        "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches",
-                        "/tournaments", "/leaderboard", "/me","/forgotPassword/*","/resetPassword/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*",
+                        "/loginSuccess", "/profiles", "/profile/*", "/tournaments/*", "/matches/*", "/matches",
+                        "/tournaments", "/leaderboard", "/playerrank", "/userName/*","/user/*","/me").permitAll()
                 .requestMatchers(HttpMethod.GET, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/activate").permitAll()
@@ -112,16 +112,21 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/verify-code").permitAll()
                 .requestMatchers(HttpMethod.POST, "/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
-                .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/profilePhotos/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/create/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/update/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/playerstats/*").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
+                        .requestMatchers(HttpMethod.POST, "/matchmaking/*").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2

@@ -283,4 +283,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(userId));
         users.delete(user);
     }
+
+    @Override
+    public String getProvider(Long userId){
+        User user = users.findById(userId)           
+                        .orElseThrow(() -> new UserNotFoundException(userId));
+        return user.getProvider();
+    }
 }

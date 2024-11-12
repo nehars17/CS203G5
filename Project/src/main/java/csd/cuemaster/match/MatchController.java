@@ -103,6 +103,11 @@ public class MatchController {
         }
     }
 
+    @PostMapping("/matchmaking/{tournamentId}")
+    public List<Match> createMatches(@PathVariable (value = "tournamentId") Long tournamentId) {
+        return matchService.createMatchesFromTournaments(tournamentId);
+    }
+
     // Exceptions handler
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
