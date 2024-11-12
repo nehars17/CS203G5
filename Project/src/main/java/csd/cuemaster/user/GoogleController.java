@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,13 +77,15 @@ public class GoogleController {
             @RequestBody Map<String, String> payload) {
         String email = payload.get("email");
         String role = payload.get("role");
+        Map<String, Object> errorResponse = new HashMap<>();
         try {
             System.out.println(role);
             // Validate or register the user using Google login
             User googleUser = userService.googleLogin(email, role);
-
+            System.out.println(googleUser);
             if(googleUser==null){
-                throw new UsernameNotFoundException("Please Register First");
+                errorResponse.put("message", "Please Register First");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
             }
 
             // Authenticate the user within Spring Security
@@ -111,7 +112,6 @@ public class GoogleController {
         } catch (Exception e) {
             System.err.println("Authentication failed: " + e.getMessage());
             // Return an error response
-            Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", "Authentication failed!");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }

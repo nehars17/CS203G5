@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, Button, Container, Row, Col, Alert, Card } from 'react-bootstrap';
 import config from '../../config';
-
+import { setAuthToken } from '../../services/api';
+import { isAuthenticated, getUserIdFromToken, getUserRole } from '../../components/authUtils';
+ 
 const EmailAuthForm: React.FC = () => {
   const [error, setError] = useState('');
   const [code, setCode] = useState('');
@@ -30,18 +32,48 @@ const EmailAuthForm: React.FC = () => {
       if (!res.ok) {
         throw new Error('Verification failed');
       }
+  
 
       const data = await res.json();
       localStorage.setItem('token', data.token); // Store token
-      
-      // Navigate based on role
-      if (role == 'ROLE_PLAYER') {
-        navigate('/playerProfile');
-      } else if (role == 'ROLE_ORGANISER') {
-        navigate('/organiserProfile');
-      } else {
-        navigate('/adminDashboard');
+      setAuthToken(localStorage.getItem('token'));      // Navigate based on role
+      console.log(role);
+      const user_id= getUserIdFromToken();
+      const profile = null;
+
+      try {
+        const res = await fetch(`${config.apiBaseUrl}/profile/${user_id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!res.ok) {
+            const profile = await res.json(); // Extract backend error message
+            
+        }
+
+     
+      } catch (error) {
+        setError((error instanceof Error) ? error.message : 'Unexpected Error'); 
       }
+      if (role === 'ROLE_PLAYER') {
+        window.location.href = '/playerProfile';
+        if(profile==null){
+        window.location.href = '/ProfileCreation';
+        }
+
+
+      } else if (role === 'ROLE_ORGANISER') {
+        if(profile==null){
+          window.location.href = '/ProfileCreation';
+
+          }
+          window.location.href = '/organiserProfile';
+        } else {
+          window.location.href = '/adminDashboard';
+        }
+      
     } catch (error) {
       console.error('Authentication failed:', error);
       setError('Authentication failed, please retry.');

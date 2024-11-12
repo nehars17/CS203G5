@@ -5,6 +5,8 @@ import { GoogleLogin } from '@react-oauth/google';
 import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA correctly
 import useRecaptcha from './useRecaptcha';
 import config from '../../config';
+import { isAuthenticated, getUserIdFromToken, getUserRole } from '../../components/authUtils';
+
 
 const Login: React.FC = () => {
   const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
@@ -15,11 +17,11 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   function Refresh() {
-    setTimeout(function() {
+    setTimeout(function () {
       window.location.reload(); // This reloads the current page
     }, 3000); // Adjust the time (in milliseconds) as needed
   }
-  
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +58,7 @@ const Login: React.FC = () => {
     } catch (error) {
       console.error('Login failed:', error);
       setError('Login failed, please check your credentials and try again.');
-     
+
     } finally {
       setIsSubmitting(false); // Re-enable the form
     }
@@ -66,7 +68,7 @@ const Login: React.FC = () => {
     const userInfoResponse = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${response.credential}`);
     const userInfo = await userInfoResponse.json();
     const email = userInfo.email;
-
+    const profile = null;
     try {
       const res = await fetch(`${config.apiBaseUrl}/googlelogin`, {
         method: 'POST',
@@ -79,11 +81,43 @@ const Login: React.FC = () => {
           email: email,
         }),
       });
+
       const data = await res.json();
-      localStorage.setItem('token', data.token); // Store token
-      if (data.role == "ROLE_PLAYER") {
+      setError(data.message);
+      if (data.token != "undefined") {
+        localStorage.setItem('token', data.token);
+      }// Store token
+      const user_id = getUserIdFromToken();
+      try {
+        const res = await fetch(`${config.apiBaseUrl}/profile/${user_id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!res.ok) {
+          const profile = await res.json(); // Extract backend error message
+
+        }
+
+
+      } catch (error) {
+        setError((error instanceof Error) ? error.message : 'Unexpected Error');
+      }
+
+
+      if (data.role === 'ROLE_PLAYER') {
         window.location.href = '/playerProfile';
-      } else if (data.role == "ROLE_ORGANISER") {
+        if (profile == null) {
+          window.location.href = '/ProfileCreation';
+        }
+
+
+      } else if (data.role === 'ROLE_ORGANISER') {
+        if (profile == null) {
+          window.location.href = '/ProfileCreation';
+
+        }
         window.location.href = '/organiserProfile';
 
       }
