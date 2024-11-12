@@ -64,5 +64,9 @@ export const getUserRole = (): string | null => {
     } catch (error) {
         console.error('Failed to decode token', error);
         return null; // Return null if decoding fails
-    }
+    }   
+};
+
+export const getAuthToken = () => {
+    return localStorage.getItem('token'); // Adjust according to your setup
 };

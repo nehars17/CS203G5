@@ -7,9 +7,7 @@ import CreateProfile from './components/Profile/CreateProfile';
 import ProfileDashboard from './components/Profile/ProfileDashboard';
 import EmailAuthForm from './components/User/EmailAuthForm';
 import Profile from './components/Profile/Profile';
-import Matches from './components/Matches/Matches';
 import Leaderboard from './components/Leaderboard/Leaderboard';
-import Tournament from './components/Tournament/Tournament';
 import NavBar from './components/NavBar/NavBar';
 import Error404 from './pages/Error404';
 import Forbidden403 from './pages/Forbidden403';
@@ -26,6 +24,16 @@ import { isAuthenticated, getUserIdFromToken, getUserRole } from './components/a
 import { Navigate } from 'react-router-dom';
 import EditProfile from './components/Profile/EditProfile';
 
+//tournament
+import Tournament from './components/Tournament/Tournament';
+import CreateTournament from './components/Tournament/CreateTournament';
+import UpdateTournament from './components/Tournament/UpdateTournament';
+
+//Match
+import Matches from './components/Matches/TournamentMatches';
+import TournamentMatches from './components/Matches/TournamentMatches';
+import EditMatch from './components/Matches/EditMatch';
+import CreateMatch from './components/Matches/CreateMatch';
 
 // Define the AppRoutes component
 const AppRoutes: React.FC = () => {
@@ -43,12 +51,13 @@ const AppRoutes: React.FC = () => {
                 <Route path="/organiserRegistration" element={<RegisterOrganiser />} />
                 <Route path="/profiles" element={<ProfileDashboard />} />
                 <Route path="/profile/:userId" element={<Profile />} />
-                <Route path="/matches" element={<Matches />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/tournaments" element={<Tournament />} />  {/* Add the route here */}
+                
+                {/*Tournament Routes */}
                 <Route path="/tournaments" element={<Tournament />} />
+
                 <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/matches" element={<Matches />} />
+             
+               
                 <Route path="/emailauth" element={<EmailAuthForm />} />
                 <Route path="/activateaccount" element={<AccountActivated />} />
                 <Route path="/resetPassword" element={<ResetPassword />} />
@@ -56,7 +65,12 @@ const AppRoutes: React.FC = () => {
                 <Route path="/403" element={<Forbidden403 />} />
                 <Route path="*" element={<Error404 />} />
              
+                {/*Match Management route*/}
+                <Route path="/matches/tournament/:tournamentId" element={<TournamentMatches />} />
+                {/*get matches per tournament */}
 
+                {/*delete & update*/}
+                <Route path="/matches/:matchId" element={<EditMatch />} />
 
                 {/* Private Routes */}
                 <Route
@@ -67,16 +81,17 @@ const AppRoutes: React.FC = () => {
                         </PrivateRoute>
                     }
                 />
-               <Route
-                    path="/adminDashboard"
-                    element={
-                        isUserAuthenticated && userId === 1 ? ( // Check if authenticated and user_id is '1'
-                            <AdminDashboard />
-                        ) : (
-                            <Navigate to="/login" />
-                        )
-                    }
+                <Route
+                path="/adminDashboard"
+                element={
+                    isUserAuthenticated && isRole === "ROLE_ADMIN" ? ( // Check if authenticated and user role is admin
+                        <AdminDashboard />
+                    ) : (
+                        <Navigate to="/login" />
+                    )
+                }
                 />
+
                 <Route
                     path="/ProfileCreation"
                     element={
@@ -98,6 +113,23 @@ const AppRoutes: React.FC = () => {
                     element={
                         <PrivateRoute isAuthenticated={isUserAuthenticated}>
                             <Account />
+                        </PrivateRoute>
+                    }
+                />
+
+<Route
+                    path="/tournaments/create-tournament"
+                    element={
+                        <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>
+                            <CreateTournament />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/tournaments/update-tournament/:id"
+                    element={
+                        <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>
+                            <UpdateTournament />
                         </PrivateRoute>
                     }
                 />
