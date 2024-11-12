@@ -104,6 +104,8 @@ public class SecurityConfig {
                         "/loginSuccess", "/profiles", "/profile/*", "/tournaments/*", "/matches/*", "/matches",
                         "/tournaments", "/leaderboard", "/playerrank", "/userName/*","/user/*","/me").permitAll()
                 .requestMatchers(HttpMethod.GET, "/googlelogin").permitAll()
+                .requestMatchers(HttpMethod.GET, "/profile/*").permitAll()
+
                 .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
                 .requestMatchers(HttpMethod.POST, "/activate").permitAll()
 
@@ -119,7 +121,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/update/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/playerstats/*").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/playerstats/*").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")

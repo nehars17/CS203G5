@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Card, Container, Alert } from 'react-bootstrap';
 import { GoogleLogin } from '@react-oauth/google';
-import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA correctly
+import ReCAPTCHA from 'react-google-recaptcha'; 
 import useRecaptcha from './useRecaptcha';
 import config from '../../config';
 import { isAuthenticated, getUserIdFromToken, getUserRole } from '../../components/authUtils';
-
 
 const Login: React.FC = () => {
   const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
@@ -15,15 +14,6 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false); // Track form submission state
   const navigate = useNavigate();
-  const userId = getUserIdFromToken();
-
-
-  function Refresh() {
-    setTimeout(function () {
-      window.location.reload(); // This reloads the current page
-    }, 3000); // Adjust the time (in milliseconds) as needed
-  }
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,16 +33,18 @@ const Login: React.FC = () => {
         body: JSON.stringify({
           username: email,
           password: password,
-          recaptchaToken: captchaToken
+          recaptchaToken: captchaToken,
         }),
       });
 
       if (!res.ok) {
+        const errorData = await res.json();
+        setError(errorData.message || 'Login failed');
         throw new Error('Login failed');
       }
 
       const data = await res.json();
-      if (data.message != null) {
+      if (data.message) {
         setError(data.message);
       } else {
         navigate('/emailauth', { state: { data } });
@@ -60,18 +52,17 @@ const Login: React.FC = () => {
     } catch (error) {
       console.error('Login failed:', error);
       setError('Login failed, please check your credentials and try again.');
-
     } finally {
       setIsSubmitting(false); // Re-enable the form
     }
   };
 
   const onSuccess = async (response: any) => {
-    const userInfoResponse = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${response.credential}`);
-    const userInfo = await userInfoResponse.json();
-    const email = userInfo.email;
-    const profile = null;
     try {
+      const userInfoResponse = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${response.credential}`);
+      const userInfo = await userInfoResponse.json();
+      const email = userInfo.email;
+
       const res = await fetch(`${config.apiBaseUrl}/googlelogin`, {
         method: 'POST',
         credentials: 'include',
@@ -85,43 +76,47 @@ const Login: React.FC = () => {
       });
 
       const data = await res.json();
-      setError(data.message);
-      if (data.token != "undefined") {
-        localStorage.setItem('token', data.token);
-      }// Store token
-      const user_id = getUserIdFromToken();
-      try {
-        const res2 = await fetch(`${config.apiBaseUrl}/profile/${user_id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        if (!res2.ok) {
-            const profile = await res.json(); // Extract backend error message
-
-        }
-
-
-      } catch (error) {
-        setError((error instanceof Error) ? error.message : 'Unexpected Error');
+      if (data.message) {
+        setError(data.message);
       }
 
+      if (data.token) {
+        localStorage.setItem('token', data.token); // Store token
 
-      if (data.role === 'ROLE_PLAYER') {
-        window.location.href = '/playerProfile';
-        if (profile == null) {
-          window.location.href = '/ProfileCreation';
+        // Fetch user profile based on role
+        const userRole = data.role;
+        let profileData = null;
+
+        // If the profile is needed, fetch it
+        if (userRole === 'ROLE_PLAYER' || userRole === 'ROLE_ORGANISER') {
+          const profileRes = await fetch(`${config.apiBaseUrl}/profile/${data.userId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (profileRes.ok) {
+            profileData = await profileRes.json();
+          }
         }
 
-
-      } else if (data.role === 'ROLE_ORGANISER') {
-        if (profile == null) {
-          window.location.href = '/ProfileCreation';
-
+        // Redirect based on the role and profile status
+        if (userRole === 'ROLE_PLAYER') {
+          if (!profileData) {
+            window.location.href = '/ProfileCreation';
+          } else {
+            window.location.href = '/home';
+          }
+        } else if (userRole === 'ROLE_ORGANISER') {
+          if (!profileData) {
+            window.location.href = '/ProfileCreation';
+          } else {
+            window.location.href = '/home';
+          }
         }
-        window.location.href = '/organiserProfile';
-
+      } else {
+        setError('Google login failed.');
       }
     } catch (error) {
       console.error('Error during Google login:', error);

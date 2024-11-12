@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import csd.cuemaster.match.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -58,4 +59,39 @@ public class TournamentServiceImpl implements TournamentService {
         }
         tournamentRepository.deleteById(id);
     }
+
+    @Transactional
+    public Tournament joinTournament(Long tournamentId, Long playerId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found"));
+        
+        // Add playerId to the list of players
+        if (!tournament.getPlayers().contains(playerId)) {
+            tournament.getPlayers().add(playerId);
+            tournamentRepository.save(tournament);
+        }
+        
+        return tournament;
+    }
+
+    @Transactional
+    public Tournament leaveTournament(Long tournamentId, Long playerId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found"));
+        
+        // Remove playerId from the list of players
+        tournament.getPlayers().remove(playerId); // This will remove the player if they exist
+        tournamentRepository.save(tournament);
+        
+        return tournament;
+    }
+
+    public Tournament setWinner(Long tournamentId, Long winnerId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+            .orElseThrow(() -> new TournamentNotFoundException(tournamentId));
+    
+        tournament.setWinnerId(winnerId);
+        return tournamentRepository.save(tournament);
+    }
+
 }

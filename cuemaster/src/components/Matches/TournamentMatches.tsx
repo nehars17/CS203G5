@@ -40,7 +40,7 @@ const TournamentMatches: React.FC<TournamentMatchesProps> = () => {
     };
 
     // Generate Matches for a specific round
-    const generateMatchesForRound = async (round: string) => {
+    const generateMatchesForRound = async () => {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`http://localhost:8080/matches/tournament/${tournamentId}`, {
@@ -49,7 +49,7 @@ const TournamentMatches: React.FC<TournamentMatchesProps> = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ tournamentId, round })
+                body: JSON.stringify({ tournamentId })
             });
 
             if (response.ok) {
@@ -93,7 +93,7 @@ const TournamentMatches: React.FC<TournamentMatchesProps> = () => {
                             {/* Generate Button with Inline Styling */}
                             <button 
                                 style={{ display: 'block', marginBottom: '10px', padding: '8px 12px', backgroundColor: '#28a745', color: 'white', border: 'none', cursor: 'pointer' }}
-                                onClick={() => generateMatchesForRound(status)}
+                                onClick={() => generateMatchesForRound()}
                             >
                                 + Generate
                             </button>

@@ -9,4 +9,8 @@ public interface TournamentService {
     Tournament updateTournament(Long id, Tournament tournamentDetails);
     void deleteTournament(Long id);
 
+    Tournament joinTournament(Long tournamentId, Long playerId);
+    Tournament leaveTournament(Long tournamentId, Long playerId);
+
+    Tournament setWinner(Long tournamentId, Long winnerId);
 }

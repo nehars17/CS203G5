@@ -63,6 +63,7 @@ public class Tournament {
 
     private Long winnerId; // stores the winner's player ID
 
+
     @ElementCollection
     private List<Long> players = new ArrayList<>();; // Storing player IDs participating in the tournament
     // Initializing players list to avoid null issues 
