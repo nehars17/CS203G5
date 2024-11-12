@@ -17,12 +17,6 @@
     </properties>
     <description>Demo project for Spring Boot</description>
 
-    <dependency>
-        <groupId>com.eatthepath</groupId>
-        <artifactId>java-otp</artifactId>
-        <version>0.2.0</version>
-    </dependency>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
