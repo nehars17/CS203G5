@@ -101,7 +101,7 @@ const NavBar: React.FC = () => {
             {/* Links for logged-in users */}
             {isUserAuthenticated && (
               <>
-                {userId === 2 && (
+                {userId === 1 && (
                   <Nav className="ms-auto">
                     <Nav.Link href="/adminDashboard">Admin Dashboard</Nav.Link>
                   </Nav>

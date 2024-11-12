@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
 import { Link } from 'react-router-dom';
 import { isAuthenticated, getUserRole, getUserIdFromToken} from '../authUtils';
-
+import config from '../../config';
 interface Tournament {
     id: number;
     tournamentname: string;
@@ -70,7 +70,7 @@ const Tournaments: React.FC = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/tournaments/${id}/join`, {
+            const response = await fetch(`${config.apiBaseUrl}/tournaments/${id}/join`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const Tournaments: React.FC = () => {
                 alert(`You have successfully joined!`);
 
                 // Fetch updated tournament data (as previously described)
-                const updatedResponse = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                const updatedResponse = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -114,7 +114,7 @@ const Tournaments: React.FC = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/tournaments/${id}/leave`, {
+            const response = await fetch(`${config.apiBaseUrl}/tournaments/${id}/leave`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ const Tournaments: React.FC = () => {
                 alert(`You have successfully left!`);
 
                 // Fetch updated tournament data to update state
-                const updatedResponse = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                const updatedResponse = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -152,7 +152,7 @@ const Tournaments: React.FC = () => {
         if (window.confirm('Are you sure you want to delete this tournament?')) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                const response = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,

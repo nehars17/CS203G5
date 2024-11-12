@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAuthToken } from '../authUtils';
 import { useLocation, useNavigate } from 'react-router-dom';
+import config from '../../config';
 
 interface Match {
     status: string;
@@ -24,7 +25,7 @@ const TournamentMatches: React.FC<TournamentMatchesProps> = () => {
     // Fetch Matches for the Tournament
     const fetchMatches = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/matches`, {
+            const response = await fetch(`${config.apiBaseUrl}/matches`, {
                 method: 'GET',
             });
 
@@ -43,7 +44,7 @@ const TournamentMatches: React.FC<TournamentMatchesProps> = () => {
     const generateMatchesForRound = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/matches/tournament/${tournamentId}`, {
+            const response = await fetch(`${config.apiBaseUrl}/matches/tournament/${tournamentId}`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

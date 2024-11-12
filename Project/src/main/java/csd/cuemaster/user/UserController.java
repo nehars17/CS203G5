@@ -395,7 +395,7 @@ public class UserController {
     @DeleteMapping("/user/{user_id}/account")
     public void deleteAccount(@PathVariable(value = "user_id") Long user_id) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentUser.getId() == 2 || currentUser.getId() == user_id) {
+        if (currentUser.getId() == 1 || currentUser.getId() == user_id) {
             userService.deleteUser(user_id);
             ImageService.deleteImage("ProfilePhoto_" + user_id + ".jpg");
         } else {
@@ -414,7 +414,7 @@ public class UserController {
     @PutMapping("/user/{user_id}/account")
     public void unlockAccount(@PathVariable(value = "user_id") Long user_id) throws MessagingException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentUser.getId() == 2) {
+        if (currentUser.getId() == 1) {
             userService.unlockAccount(user_id);
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this account");

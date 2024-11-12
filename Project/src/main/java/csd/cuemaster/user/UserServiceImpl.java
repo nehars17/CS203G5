@@ -85,6 +85,7 @@ public class UserServiceImpl implements UserService {
     public boolean unlockAccount(Long user_id) throws MessagingException {
         User foundUser = getUser(user_id);
         foundUser.setUnlocked(true);
+        foundUser.setFailedLoginAttempts(0);
         users.save(foundUser);
         emailService.sendUnlockedEmail(foundUser.getUsername());
         return true;

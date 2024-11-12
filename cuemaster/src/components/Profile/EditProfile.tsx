@@ -4,6 +4,7 @@ import API from '../../services/api';
 import './EditProfile.css';
 import { isAuthenticated, getUserIdFromToken, getUserRole } from 'cuemaster/src/components/authUtils';
 import { useNavigate } from 'react-router-dom';
+import config from '../../config';
 
 interface User {
   id: number;
@@ -40,7 +41,7 @@ const EditProfile: React.FC = () => {
     const fetchProfile = async () => {
       try {
         const response = await API.get<Profile>(
-          `http://localhost:8080/profile/${Number(userId)}`
+          `${config.apiBaseUrl}/profile/${Number(userId)}`
         );
         setProfile(response.data);
         setInitialProfile(response.data);
@@ -126,8 +127,8 @@ const EditProfile: React.FC = () => {
     }
   };
 
-  const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'admin');
-
+  const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'ROLE_ADMIN');
+  
   const handleSave = async () => {
     const formData = new FormData();
 
@@ -145,7 +146,7 @@ const EditProfile: React.FC = () => {
     }
 
     try {
-      const updatedProfileResponse = await fetch(`http://localhost:8080/user/${userId}/profile/edit`, {
+      const updatedProfileResponse = await fetch(`${config.apiBaseUrl}/user/${userId}/profile/edit`, {
         method: 'PUT',
         body: formData,
         headers: {
@@ -183,7 +184,7 @@ const EditProfile: React.FC = () => {
                 />
               ) : profile.profilephotopath ? (
                 <img
-                  src={`http://localhost:8080/profilePhotos/${profile.profilephotopath}`}
+                  src={`${config.apiBaseUrl}/profilePhotos/${profile.profilephotopath}`}
                   alt="Profile Picture"
                   className="profile-edit-photo"
                 />

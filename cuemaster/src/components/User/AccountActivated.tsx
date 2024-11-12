@@ -43,11 +43,9 @@ const AccountActivated: React.FC = () => {
   
         } catch (error) {
           console.error(error);
-          if (error instanceof Error) {
-            setError(error.message || 'Failed to Activate. Please try again.');
-          } else {
-            setError('Failed to Activate. Please try again.');
-          }
+         
+          setError('Failed to Activate. Please try again.');
+          
           setLoading(false);  // Stop loading if there's an error
         }
       } else {

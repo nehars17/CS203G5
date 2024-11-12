@@ -28,10 +28,18 @@ public class CueMasterApplication {
             Profile profile2 = new Profile( "admin", "admin",LocalDate.parse("2000-01-01"), "Singapore", "ProfilePhoto_123.jpg",user);
             users.save(user);
             profiles.save(profile2);
+            User user5 = new User("test@gmail.com", encoder.encode("goodpassword"), "ROLE_PLAYER", "normal", true);
+            user5.setFailedLoginAttempts(4);
+            users.save(user5);
             for (int i=1;i<=32;i++){
                 User user4 = new User("player"+i+"@gmail.com", encoder.encode("goodpassword"), "ROLE_PLAYER", "normal", true);
                 users.save(user4);
                 Profile profile1 = new Profile("Player"+i, "lastname",LocalDate.parse("2000-01-01"), "Singapore", "ProfilePhoto_123.jpg",user4);
+                profile1.setMatchCount(0);
+                profile1.setTournamentCount(0);
+                profile1.setMatchWinCount(0);
+                profile1.setPoints(1200);
+                profile1.setTournamentWinCount(0);
                 profiles.save(profile1);
             }
             System.out.println("[Add user]: " + user.getUsername());

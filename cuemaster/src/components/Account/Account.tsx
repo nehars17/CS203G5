@@ -86,6 +86,7 @@ const Account: React.FC = () => {
                 },
             });
             setShowAlert(true);
+            localStorage.removeItem('token');
             navigate('/login');
         } catch (error) {
             setError('Error deleting account. Please try again.');

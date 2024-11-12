@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './CreateTournament.css';
 import { getAuthToken } from '../authUtils';
+import config from '../../config';
 
 const UpdateTournament: React.FC = () => {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ const UpdateTournament: React.FC = () => {
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                const response = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -75,7 +76,7 @@ const UpdateTournament: React.FC = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
+            const response = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CreateTournament.css';
 import { getAuthToken } from '../authUtils'; // Import your auth utility
+import config from '../../config';
 
 const CreateTournament: React.FC = () => {
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ const CreateTournament: React.FC = () => {
 
         try {
             const token = getAuthToken(); // Get the auth token
-            const response = await fetch('http://localhost:8080/tournaments', {
+            const response = await fetch(`${config.apiBaseUrl}/tournaments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
