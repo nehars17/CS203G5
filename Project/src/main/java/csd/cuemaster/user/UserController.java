@@ -338,7 +338,6 @@ public class UserController {
         String username = (String) payload.get("username");
         User foundUser = userService.forgotPassword(username);
 
-        System.out.println(foundUser);
         if (foundUser != null) {
             emailService.sendPasswordResetEmail(username, foundUser.getId(), foundUser.getTotpToken().getCode());
             return ResponseEntity.ok("Password reset link has been sent to your email.");
@@ -348,7 +347,7 @@ public class UserController {
     }
 
     /**
-     * @PostMapping("/resetPassword")
+     * Resets the password of the specified user.
      * public ResponseEntity<String> resetPassword(@Valid @RequestBody Map<String,
      * Object> payload) throws Exception {
      *
@@ -358,12 +357,14 @@ public class UserController {
      * @throws Exception if an error occurs during the process
      */
 
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody Map<String, Object> payload) throws Exception {
+    @PutMapping("/resetPassword")
+    public ResponseEntity<String> resettingPassword(@Valid @RequestBody Map<String, Object> payload) throws Exception {
         String token = (String) payload.get("token");
         String newPassword = (String) payload.get("password");
         String user_id = (String) payload.get("user_id");
         Long id = Long.valueOf(user_id);
         String message = userService.resetPassword(id, newPassword, token);
+        System.out.println(message);
         return ResponseEntity.ok(message);
     }
 

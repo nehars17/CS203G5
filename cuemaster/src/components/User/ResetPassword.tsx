@@ -42,12 +42,21 @@ const ResetPassword: React.FC = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    password: newPassword, token: resetToken, user_id: userId
+                    password: newPassword,
+                    token: resetToken,
+                    user_id: userId
                 }),
+                
             });
-            setMessage(await res.json());
+            const errorText = await res.text();
+            if(res.ok) {
+            setMessage(errorText); // Assuming the message property is what you want to display
             setError(''); // Clear any previous errors
             navigate('/login');
+            }
+            else {
+                setError(errorText || 'Failed to reset password. Please try again.');
+            }
         } catch (error) {
             setMessage('');
             setError('Failed to reset password. Please try again.');
