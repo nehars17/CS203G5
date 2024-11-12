@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { getAuthToken } from '../authUtils';
+<<<<<<< Updated upstream
+=======
+import { useParams } from 'react-router-dom';
+>>>>>>> Stashed changes
 
 interface Match {
     status: string;
@@ -9,19 +13,36 @@ interface Match {
     winner?: string;
 }
 
-interface TournamentMatchesProps {
-    tournamentId: string;
-}
+const TournamentMatches: React.FC = () => {
 
+    const { id } = useParams<{ id: string }>();  // Retrieves tournamentId as a string
+
+   // Convert the string to a number
+   const tournamentIdNumber = id ? Number(id) : null;
+
+   // Handle invalid or null tournamentId
+   if (tournamentIdNumber === null) {
+       console.error("Invalid tournamentId.");
+   }
+
+<<<<<<< Updated upstream
 const TournamentMatches: React.FC<TournamentMatchesProps> = ({ tournamentId }) => {
+=======
+>>>>>>> Stashed changes
     const [matches, setMatches] = useState<Match[]>([]);
 
     // Fetch Matches for the Tournament
     const fetchMatches = async () => {
         try {
             const token = getAuthToken();
+<<<<<<< Updated upstream
             const response = await fetch(`http://localhost:8080/matches/tournament/${tournamentId}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
+=======
+            const response = await fetch(`http://localhost:8080/matches/tournament/${tournamentIdNumber}`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+>>>>>>> Stashed changes
             });
 
             if (response.ok) {
@@ -36,16 +57,33 @@ const TournamentMatches: React.FC<TournamentMatchesProps> = ({ tournamentId }) =
     };
 
     // Generate Matches for a specific round
+<<<<<<< Updated upstream
     const generateMatchesForRound = async (round: string) => {
         try {
             const token = getAuthToken();
             const response = await fetch(`http://localhost:8080/matches/tournament/${tournamentId}`, {
+=======
+    const generateMatchesForRound = async () => {
+        
+        if (!id) {
+            console.error('Cannot generate matches: tournamentId is undefined');
+            return;
+        }
+
+        try {
+            const token = getAuthToken();
+            const response = await fetch(`http://localhost:8080/matches/tournament/${tournamentIdNumber}`, {
+>>>>>>> Stashed changes
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
+<<<<<<< Updated upstream
                 body: JSON.stringify({ tournamentId, round })
+=======
+                body: JSON.stringify({ })
+>>>>>>> Stashed changes
             });
 
             if (response.ok) {
@@ -60,7 +98,7 @@ const TournamentMatches: React.FC<TournamentMatchesProps> = ({ tournamentId }) =
 
     useEffect(() => {
         fetchMatches();
-    }, [tournamentId]);
+    }, [id]);
 
     return (
         <div className="matches-display">
@@ -101,7 +139,8 @@ const TournamentMatches: React.FC<TournamentMatchesProps> = ({ tournamentId }) =
                                         .filter((match) => match.status === status)
                                         .map((match, idx) => (
                                             <li key={idx}>
-                                                {match.player1} vs {match.player2}
+                                                {match.player1} vs {match.player2} 
+                                                {match.winner && ` - Winner: ${match.winner}`}
                                             </li>
                                         ))}
                                 </ul>

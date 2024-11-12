@@ -1,5 +1,14 @@
 package csd.cuemaster.profile;
 
+<<<<<<< Updated upstream
+=======
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import csd.cuemaster.user.User;
+>>>>>>> Stashed changes
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -60,6 +69,7 @@ public class Profile {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, String profilephotopath){

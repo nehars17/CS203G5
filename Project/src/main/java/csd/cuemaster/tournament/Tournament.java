@@ -13,6 +13,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,6 +36,9 @@ import lombok.ToString;
 public class Tournament {
 
     private @Id @GeneratedValue (strategy = GenerationType.IDENTITY) Long id;
+
+
+    
 
     @NotNull(message = "Tournament name should not be null")
     private String tournamentname;
@@ -63,7 +67,11 @@ public class Tournament {
 
     private Long winnerId; // stores the winner's player ID
 
+<<<<<<< Updated upstream
     @ElementCollection
+=======
+    @ElementCollection (fetch = FetchType.EAGER)
+>>>>>>> Stashed changes
     private List<Long> players = new ArrayList<>();; // Storing player IDs participating in the tournament
     // Initializing players list to avoid null issues 
     
@@ -90,6 +98,7 @@ public class Tournament {
         this.players = new ArrayList<>(); // Avoids null pointer exceptions when adding players
     }
 
+
     // Additional overloaded constructors if needed
     public Tournament(String tournamentname, String location, LocalDate startDate, LocalDate endDate, 
     LocalTime time, Status status, String description, Long winnerId, List<Long> players) {
@@ -102,5 +111,7 @@ public class Tournament {
         this.description = description;
         this.winnerId = winnerId;
         this.players = players != null ? players : new ArrayList<>(); // Ensure players list is not null
-    }    
+    }   
+    
+   
 }

@@ -66,7 +66,11 @@ const AppRoutes: React.FC = () => {
                 <Route path="*" element={<Error404 />} />
              
                 {/*Match Management route*/}
+<<<<<<< Updated upstream
                 <Route path="/matches/tournament/:tournamentId" element={<TournamentMatches />} />
+=======
+                <Route path="/matches/tournament/:id" element={<TournamentMatches />} />
+>>>>>>> Stashed changes
                 {/*get matches per tournament */}
 
                 {/*delete & update*/}
@@ -117,7 +121,7 @@ const AppRoutes: React.FC = () => {
                     }
                 />
 
-<Route
+                <Route
                     path="/tournaments/create-tournament"
                     element={
                         <PrivateRoute isAuthenticated={isUserAuthenticated && isRole === "ROLE_ORGANISER"}>

@@ -11,7 +11,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -91,7 +93,7 @@ public class User implements UserDetails {
     private LocalDateTime expiryDate;
 
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonManagedReference 
     private Profile profile;
 
     public User(String username, String password, String authorities, String provider, boolean enabled) {

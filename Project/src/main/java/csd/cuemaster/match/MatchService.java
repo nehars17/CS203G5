@@ -4,7 +4,10 @@ import java.util.List;
 
 public interface MatchService {
 
+<<<<<<< Updated upstream
     Match createMatch(Match match);
+=======
+>>>>>>> Stashed changes
     Match updateMatch(Long id, Match match);
     Match getMatchById(Long matchId);
     Match declareWinner(Long matchId, Long winnerId);

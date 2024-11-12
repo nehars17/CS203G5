@@ -3,12 +3,8 @@ package csd.cuemaster.profile;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.core.io.Resource;
 
-import csd.cuemaster.user.UserNotFoundException;
-import csd.cuemaster.user.UserRepository;
 import csd.cuemaster.imageservice.ImageService;
 import csd.cuemaster.user.User;
+import csd.cuemaster.user.UserNotFoundException;
+import csd.cuemaster.user.UserRepository;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.validation.Valid;
 
 @RestController
 @MultipartConfig
@@ -112,6 +109,8 @@ public class ProfileController {
     @PutMapping("/playerstats/{matchId}/{winnerId}")
     public List<Profile> changePlayerStats(@PathVariable (value = "matchId") Long matchId,
             @PathVariable (value = "winnerId") Long winnerId) {
+
         return profileService.updatePlayerStatistics(matchId, winnerId);
+
     }
 }

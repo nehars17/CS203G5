@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import csd.cuemaster.tournament.Tournament;
 
-
 @Repository
 public interface MatchRepository extends JpaRepository <Match, Long> {
 
@@ -19,5 +18,6 @@ public interface MatchRepository extends JpaRepository <Match, Long> {
 
     // public List<Match> findByTournamentIdAndIsCompleted(Long tournamentId, boolean b);
 
-    public List<Match> findByTournamentIdAndStatus(Long id, Tournament.Status previousRoundStatus);
+    List<Match> findByTournamentIdAndStatus(Long id, Tournament.Status previousRoundStatus);
+
 }

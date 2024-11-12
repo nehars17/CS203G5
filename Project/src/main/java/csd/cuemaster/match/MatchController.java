@@ -28,18 +28,24 @@ public class MatchController {
     //     return matchService.createMatch(match);     
     // }
 
-    // //create match
-    // @PostMapping("/matches/")
-    // public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
+    //create match
+    @PostMapping("/matches/")
+    public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
         
-    //     Match createdMatch = matchService.createMatch(match);
-    //     // return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
-    //     return ResponseEntity.ok("match created: id =" + createdMatch.getId());
-    // }
+        Match createdMatch = matchService.createMatch(match);
+        // return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
+        return ResponseEntity.ok("match created: id =" + createdMatch.getId());
+    }
     
     // Create matches for a tournament's next round
+<<<<<<< Updated upstream
     @PostMapping("/matches/tournament/{tournamentId}/next-round")
     public ResponseEntity<List<Match>> createMatchesForNextRound(@PathVariable Long tournamentId) {
+=======
+    @PostMapping("/matches/tournament/{tournamentId}")
+    public ResponseEntity<List<Match>> createMatchesForNextRound(@PathVariable Long tournamentId) {
+        
+>>>>>>> Stashed changes
         try {
             List<Match> matches = matchService.createMatchesFromTournaments(tournamentId);
             return ResponseEntity.status(HttpStatus.CREATED).body(matches);
@@ -115,10 +121,10 @@ public class MatchController {
         }
     }
 
-    // @PostMapping("/matchmaking/{tournamentId}")
-    // public List<Match> createMatches(@PathVariable (value = "tournamentId") Long tournamentId) {
-    //     return matchService.createMatchesFromTournaments(tournamentId);
-    // }
+    @PostMapping("/matchmaking/{tournamentId}")
+    public List<Match> createMatches(@PathVariable (value = "tournamentId") Long tournamentId) {
+        return matchService.createMatchesFromTournaments(tournamentId);
+    }
 
     // Exceptions handler
     @ExceptionHandler(ResourceNotFoundException.class)

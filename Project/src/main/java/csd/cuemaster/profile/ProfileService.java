@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import csd.cuemaster.user.*;
 
 public interface ProfileService {
+
     List<Profile> getAllProfile();
     Profile getProfile(Long userId);
     Profile updateProfile(Long userId, Profile newProfileInfo, MultipartFile profilephoto);
@@ -20,6 +21,6 @@ public interface ProfileService {
     String getName(long user_id);
     List<Profile> getProfilesFromMatches(Long match_id);
     double calculateExpectedScore(Long match_id, Long user_id);
-    List<Profile> updatePlayerStatistics(Long match_id, Long winner_id);
+    List<Profile> updatePlayerStatistics(Long matchId, Long winnerId);
     List<Profile> getProfilesFromTournaments(Long tournament_id);
 }

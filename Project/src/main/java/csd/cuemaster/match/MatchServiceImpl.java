@@ -1,14 +1,20 @@
 package csd.cuemaster.match;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import csd.cuemaster.profile.Profile;
 import csd.cuemaster.profile.ProfileService;
+import csd.cuemaster.services.MatchingService;
+import csd.cuemaster.services.ScoringService;
 import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.tournament.TournamentRepository;
 import csd.cuemaster.user.User;
@@ -31,66 +37,69 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> createMatchesFromTournaments(Long tournamentId) {
+<<<<<<< Updated upstream
         
+=======
+>>>>>>> Stashed changes
         // Retrieve the tournament from the repository using the tournamentId
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
-    
-        List<Profile> players;
-    
-        // If the tournament is in its first round, fetch initial players.
-        if (tournament.getStatus() == Tournament.Status.ROUND_OF_32) {
-            players = new ArrayList<>(profileService.getProfilesFromTournaments(tournamentId));
-        } else {
-            // Otherwise, get winners from the previous round
-            players = getWinnersFromPreviousRound(tournament);
-        }
-    
-        // Ensure sufficient players to proceed in the tournament bracket.
-        checkSufficientPlayers(players, getRequiredPlayersForNextRound(tournament));
-    
-        if (players.size() < 2) {
-            return new ArrayList<>();
-        }
-    
-        List<Match> matches = new ArrayList<>();
-        Random random = new Random();
-        int pointsRange = 100;
-    
-        // Matchmaking for the current round.
-        while (players.size() > 2) {
-            int player1 = random.nextInt(players.size());
-            int player2 = random.nextInt(players.size());
-            player2 = validatePlayer(players, random, player1, player2);
-            int difference = getDifference(players, player1, player2);
-    
-            // Only create a match if it's balanced within the specified points range.
-            if (difference <= pointsRange) {
-                createMatch(players, matches, player1, player2);
-                removePlayers(players, player1, player2);
-    
-                // Reset the range back to 100 after a successful pairing.
-                pointsRange = 100;
-            } else {
-                pointsRange += 100;
-            }
-        }
-    
-        // If exactly two players remain, create the final match for the round.
-        if (players.size() == 2) {
-            createLastMatch(players, matches);
-        }
-    
-        // Save the newly created matches to the repository.
+
+        // Ensure there are enough players for the round
+        List<Profile> players = tournament.getPlayers().stream()
+            .map(profileService::getProfile)  // Assuming getProfile retrieves by userId
+            .collect(Collectors.toList());        
+            
+            checkSufficientPlayers(players, getRequiredPlayersForNextRound(tournament));
+
+        // Create match pairs based on tournament round status
+        List<Match> matches = MatchingService.createPairs(players, tournament);
+
+        // Save the matches in the repository
         matchRepository.saveAll(matches);
-    
-        // Update the tournament status to progress to the next round.
+
+        // Update the tournament status to the next round
         updateTournamentStatus(tournament);
-    
+
         return matches;
     }
+<<<<<<< Updated upstream
     
     //back up method for manual match creation
+=======
+
+    // // Helper method to create match pairs
+    // private void createMatchPairs(List<User> players, List<Match> matches, Tournament tournament) {
+    //     for (int i = 0; i < players.size(); i += 2) {
+    //         if (i + 1 < players.size()) {
+    //             // Even number of players, create a pair
+    //             User userA = players.get(i);
+    //             User userB = players.get(i + 1);
+    //             // Get the match date and time (Assuming you have logic to determine this)
+    //             LocalDate matchDate = LocalDate.now();  // Example, modify as needed
+    //             LocalTime matchTime = LocalTime.now();  // Example, modify as needed
+                
+    //             Match match = new Match(tournament, userA, userB, matchDate, matchTime, 
+    //                     userA.getProfile().getPoints(), userB.getProfile().getPoints(), tournament.getStatus());
+
+    //             matchRepository.save(match);
+
+    //             matches.add(match);
+    //         } else {
+    //             // Odd number of players, one gets a "BYE"
+    //             User userA = players.get(i);
+                
+    //             Match match = new Match(tournament, userA, null, LocalDate.now(), LocalTime.now(), 
+    //                     userA.getProfile().getPoints(), 0, tournament.getStatus());  // Null for the "BYE" player
+                
+    //                     matchRepository.save(match);
+
+    //             matches.add(match);
+    //         }
+    //     }
+    // }
+    // //back up method for manual match creation
+>>>>>>> Stashed changes
     @Override
     public Match createMatch(Match match) {
         if (match.getTournament() == null || !tournamentRepository.existsById(match.getTournament().getId())) {
@@ -163,18 +172,35 @@ public class MatchServiceImpl implements MatchService {
         User winner = userRepository.findById(winnerId)
             .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Profile winnerProfile = winner.getProfile();
-        // Profile loserProfile = match.getUser1().getId().equals(winnerId)
-        //     ? match.getUser2().getProfile()
-        //     : match.getUser1().getProfile();
-
         match.setWinner(winner);
         matchRepository.save(match);
 
+        // Determine the loser based on match outcome
+        User loser = (winnerId.equals(match.getUser1().getId())) ? match.getUser2() : match.getUser1();
+
         Long tournamentId = match.getTournament().getId();
 
+        Profile winnerProfile = winner.getProfile(); 
+        Profile loserProfile = loser.getProfile();
+
         // Update player statistics
-        profileService.updatePlayerStatistics(matchId, winnerId);
+        profileService.updatePlayerStatistics(winnerId, matchId);
+
+        // After the match, update player ratings using ScoringService
+        int user1Points = match.getUser1Score();
+        int user2Points = match.getUser2Score();
+
+        double expectedScore1 = ScoringService.calculateExpectedScore(user1Points, user2Points);
+        double expectedScore2 = ScoringService.calculateExpectedScore(user2Points, user1Points);
+
+        // Calculate new ratings based on the match outcome (1 = win, 0 = lose)
+        int newUser1Rating = ScoringService.calculateNewRating(user1Points, expectedScore1, 1, match.getTournament().getStatus(), match.getUser1().getProfile().getMatchCount());
+
+        int newUser2Rating = ScoringService.calculateNewRating(user2Points, expectedScore2, 0, match.getTournament().getStatus(), match.getUser2().getProfile().getMatchCount());
+
+        // Save the updated player profiles
+        match.getUser1().getProfile().setPoints(newUser1Rating);
+        match.getUser2().getProfile().setPoints(newUser2Rating);
 
         return match;
     }
@@ -228,15 +254,15 @@ public class MatchServiceImpl implements MatchService {
         return difference;
     }
 
-    // Helper method to create matches.
-    private void createMatch(List<Profile> players, List<Match> matches, int player1, int player2) {
-        User user1 = players.get(player1).getUser();
-        User user2 = players.get(player2).getUser();
-        Match match = new Match();
-        matches.add(match);
-        match.setUser1(user1);
-        match.setUser2(user2);
-    }
+    // // Helper method to create matches.
+    // private void createMatch(List<Profile> players, List<Match> matches, int player1, int player2) {
+    //     User user1 = players.get(player1).getUser();
+    //     User user2 = players.get(player2).getUser();
+    //     Match match = new Match();
+    //     matches.add(match);
+    //     match.setUser1(user1);
+    //     match.setUser2(user2);
+    // }
 
     // Helper method to remove the chosen players from the list.
     private void removePlayers(List<Profile> players, int player1, int player2) {
@@ -249,16 +275,16 @@ public class MatchServiceImpl implements MatchService {
         }
     }
 
-    // Helper method to create the last match if there are exactly two players left.
-    private void createLastMatch(List<Profile> players, List<Match> matches) {
-        User user1 = players.get(0).getUser();
-        User user2 = players.get(1).getUser();
-        Match match = new Match();
-        matches.add(match);
-        match.setUser1(user1);
-        match.setUser2(user2);
-        players.clear();
-    }
+    // // Helper method to create the last match if there are exactly two players left.
+    // private void createLastMatch(List<Profile> players, List<Match> matches) {
+    //     User user1 = players.get(0).getUser();
+    //     User user2 = players.get(1).getUser();
+    //     Match match = new Match();
+    //     matches.add(match);
+    //     match.setUser1(user1);
+    //     match.setUser2(user2);
+    //     players.clear();
+    // }
 
     /**
      * Update the tournament status to the next round.

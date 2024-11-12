@@ -225,10 +225,17 @@ const UpdateTournament: React.FC = () => {
 
                 <button type="submit" className="btn btn-primary">Update</button>
             </form>
+<<<<<<< Updated upstream
             
 {/* Navigate to the Tournament Matches page */}
             <Link to="/matches/tournament/${tournamentId}" className="create-button">
                     View Matches
+=======
+
+            {/* Navigate to the Tournament Matches page */}
+            <Link to={`/matches/tournament/${id}`} className="create-button">
+                View Matches
+>>>>>>> Stashed changes
             </Link>
 {/* Match Display - Carousel */}
             {matches.length > 0 && (

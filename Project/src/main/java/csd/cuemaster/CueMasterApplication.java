@@ -5,6 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+<<<<<<< Updated upstream
+=======
+import csd.cuemaster.profile.Profile;
+import csd.cuemaster.profile.ProfileRepository;
+import csd.cuemaster.services.MatchingService;
+>>>>>>> Stashed changes
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserRepository;
 
