@@ -26,6 +26,9 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProfileRepository profileRepository;
+
     // public MatchServiceImpl(MatchRepository matchRepository) {
     //     this.matchResponsitory = matchRepository;
     // }
@@ -121,7 +124,7 @@ public class MatchServiceImpl implements MatchService {
         int pointsRange = 100;
 
         // Matchmaking occurs here.
-        while (players.size() > 2) {
+        while (players.size() >= 2) {
             int player1 = random.nextInt(players.size());
             int player2 = random.nextInt(players.size());
             player2 = validatePlayer(players, random, player1, player2);
@@ -130,6 +133,7 @@ public class MatchServiceImpl implements MatchService {
             // Create match only when it is balanced.
             if (difference <= pointsRange) {
                 createMatch(players, matches, player1, player2);
+                setMatchCount(players, player1, player2);
                 removePlayers(players, player1, player2);
 
                 // Reset the range back to 100.
@@ -138,14 +142,11 @@ public class MatchServiceImpl implements MatchService {
                 pointsRange += 100;
             }
         }
-
-        // Create the last match if there are exactly two players left.
-        if (players.size() == 2) {
-            createLastMatch(players, matches);
-        }
         matchRepository.saveAll(matches);
         return matches;
     }
+
+    // START OF HELPER METHODS
 
     // Helper method to check that the two players are different.
     private int validatePlayer(List<Profile> players, Random random, int player1, int player2) {
@@ -173,6 +174,15 @@ public class MatchServiceImpl implements MatchService {
         match.setUser2(user2);
     }
 
+    // Helper method to increase match count of the chosen players.
+    private void setMatchCount(List<Profile> players, int player1, int player2) {
+        Integer matchCount1 = players.get(player1).getMatchCount();
+        Integer matchCount2 = players.get(player2).getMatchCount();
+        players.get(player1).setMatchCount(matchCount1 + 1);
+        players.get(player2).setMatchCount(matchCount2 + 1);
+        profileRepository.saveAll(players);
+    }
+
     // Helper method to remove the chosen players from the list.
     private void removePlayers(List<Profile> players, int player1, int player2) {
         if (player1 > player2) {
@@ -182,16 +192,5 @@ public class MatchServiceImpl implements MatchService {
             players.remove(player2);
             players.remove(player1);
         }
-    }
-
-    // Helper method to create the last match if there are exactly two players left.
-    private void createLastMatch(List<Profile> players, List<Match> matches) {
-        User user1 = players.get(0).getUser();
-        User user2 = players.get(1).getUser();
-        Match match = new Match();
-        matches.add(match);
-        match.setUser1(user1);
-        match.setUser2(user2);
-        players.clear();
     }
 }

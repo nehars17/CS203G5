@@ -301,6 +301,7 @@ void testCreateMatch_Success() {
         profile1.setId(1L);
         user1.setProfile(profile1);
         profile1.setPoints(1200);
+        profile1.setMatchCount(0);
 
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
@@ -308,6 +309,7 @@ void testCreateMatch_Success() {
         profile2.setId(2L);
         user2.setProfile(profile2);
         profile2.setPoints(2300);
+        profile2.setMatchCount(0);
 
         User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user3.setId(3L);
@@ -315,6 +317,7 @@ void testCreateMatch_Success() {
         profile3.setId(3L);
         user3.setProfile(profile3);
         profile3.setPoints(2300);
+        profile3.setMatchCount(0);
 
         Tournament tournament = new Tournament();
         tournament.setId(1L);
@@ -335,7 +338,8 @@ void testCreateMatch_Success() {
         // Assert
         assertNotNull(retrievedMatches);
         assertFalse(retrievedMatches.isEmpty());
-        assertEquals(1, retrievedMatches.size());
+        assertEquals(1, profile2.getMatchCount());
+        assertEquals(1, profile3.getMatchCount());
     }
 
     // Test Case: Get list of matches from a tournament.
@@ -348,6 +352,7 @@ void testCreateMatch_Success() {
         profile1.setId(1L);
         user1.setProfile(profile1);
         profile1.setPoints(1200);
+        profile1.setMatchCount(0);
 
         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
         user2.setId(2L);
@@ -355,6 +360,7 @@ void testCreateMatch_Success() {
         profile2.setId(2L);
         user2.setProfile(profile2);
         profile2.setPoints(2300);
+        profile2.setMatchCount(0);
 
         Tournament tournament = new Tournament();
         tournament.setId(1L);
@@ -374,6 +380,8 @@ void testCreateMatch_Success() {
         assertNotNull(retrievedMatches);
         assertFalse(retrievedMatches.isEmpty());
         assertEquals(1, retrievedMatches.size());
+        assertEquals(1, profile1.getMatchCount());
+        assertEquals(1, profile2.getMatchCount());
     }
 
     // Test Case: Not enough players to create matches.
