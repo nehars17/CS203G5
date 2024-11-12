@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CreateTournament.css';
-// import { getAuthToken } from '../authUtils'; // Import your auth utility
+import { getAuthToken } from '../authUtils'; // Import your auth utility
 
 const CreateTournament: React.FC = () => {
     const navigate = useNavigate();

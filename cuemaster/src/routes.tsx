@@ -31,7 +31,7 @@ import UpdateTournament from './components/Tournament/UpdateTournament';
 
 //Match
 import CreateMatch from './components/Matches/CreateMatch';
-import Matches from './components/Matches/Matches';
+import Matches from './components/Matches/TournamentMatches';
 
 // Define the AppRoutes component
 const AppRoutes: React.FC = () => {
@@ -69,7 +69,7 @@ const AppRoutes: React.FC = () => {
                 {/*Match Management route*/}
                 <Route path="/matches" element={<CreateMatch />} />
                 {/*View matches */}
-                <Route path="/tournaments/:tournamentId/matches" element={<Matches />} />
+                <Route path="/matches/tournaments/:tournamentId" element={<Matches />} />
                 <Route path="/tournaments/:id/edit" element={<UpdateTournament />} />
 
                 {/* Private Routes */}

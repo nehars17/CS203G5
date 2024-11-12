@@ -31,7 +31,7 @@ const UpdateTournament: React.FC = () => {
             }
     
             try {
-                const token = getAuthToken();
+                const token = localStorage.getItem('token');
                 const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -76,7 +76,7 @@ const UpdateTournament: React.FC = () => {
         };
 
         try {
-            const token = getAuthToken();
+            const token = localStorage.getItem('token');
             const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
                 method: 'PUT',
                 headers: {

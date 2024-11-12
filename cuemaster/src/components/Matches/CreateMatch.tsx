@@ -9,7 +9,7 @@ const CreateMatch: React.FC = () => {
     const [newMatch, setNewMatch] = useState({ player1: '', player2: '' });
 
     // Placeholder token for testing
-    const token = "mockTokenForTesting"; // Replace with any string for testing
+    const token = localStorage.getItem('token'); // Replace with any string for testing
 
     useEffect(() => {
         fetchMatches();

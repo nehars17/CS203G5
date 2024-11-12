@@ -52,11 +52,11 @@ public class MatchController {
     
     //update match
     @PutMapping("/matches/{matchId}")
-    public ResponseEntity<String> updateMatch(@PathVariable Long matchId, @Valid @RequestBody Match match) {
+    public ResponseEntity<Match> updateMatch(@PathVariable Long matchId, @Valid @RequestBody Match match) {
         match.setId(matchId);
         //Match updatedMatch = 
-        matchService.updateMatch(matchId, match);
-        return ResponseEntity.ok("match updated: id =" + matchId);
+        Match updatedMatch = matchService.updateMatch(matchId, match);
+        return ResponseEntity.ok(updatedMatch);
     }
 
     //get match info by id
@@ -75,6 +75,11 @@ public class MatchController {
     @GetMapping("/matches")
     public ResponseEntity<List<Match>> getAllMatches() {
         List<Match> matches = matchService.getAllMatches();
+
+        if (matches.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(matches); // 204 No Content for an empty list
+        }
+
         return ResponseEntity.ok(matches);
     }
     
@@ -83,6 +88,11 @@ public class MatchController {
     @GetMapping("/matches/tournament/{tournamentId}")
     public ResponseEntity<List<Match>> getMatchesByTournamentId(@PathVariable Long tournamentId) {
         List<Match> matches = matchService.getMatchesByTournamentId(tournamentId);
+
+        if (matches.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(matches); // 204 No Content for an empty list
+        }
+
         return ResponseEntity.ok(matches);
     }
 
@@ -121,5 +131,8 @@ public class MatchController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGenericException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
+    }
 }
