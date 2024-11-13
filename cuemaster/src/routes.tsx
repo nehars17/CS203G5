@@ -66,11 +66,11 @@ const AppRoutes: React.FC = () => {
                 <Route path="*" element={<Error404 />} />
              
                 {/*Match Management route*/}
-                <Route path="/matches/tournament/:id" element={<TournamentMatches />} />
+                <Route path="/matches/tournament" element={<TournamentMatches />} />
                 {/*get matches per tournament */}
 
 
-                {/*delete & update*/}
+                {/* delete & update */}
                 <Route path="/matches/:matchId" element={<EditMatch />} />
 
                 {/* Private Routes */}

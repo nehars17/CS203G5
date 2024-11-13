@@ -19,7 +19,7 @@ const TournamentMatches: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const tournamentId = queryParams.get('id'); 
+    // const tournamentId = queryParams.get('id'); 
     
     // Helper function to shuffle an array randomly
     const shuffleArray = <T,>(array: T[]): T[] => {
@@ -88,7 +88,7 @@ const TournamentMatches: React.FC = () => {
 
     return (
         <div className="matches-display">
-            <h2>Tournament Matches - ID: {tournamentId}</h2>
+            <h2>Tournament Matches</h2>
 
             <div className="info-box">
                 <p>Please correctly declare the winner of each match.</p>
