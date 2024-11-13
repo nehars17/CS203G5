@@ -99,6 +99,7 @@ const Tournaments: React.FC = () => {
             } else {
                 console.error('Failed to join tournament:', response1.statusText);
             }
+            fetchTournaments();
         } catch (error) {
             console.error('Error:', error);
         }
@@ -144,6 +145,7 @@ const Tournaments: React.FC = () => {
             } else {
                 console.error('Failed to leave tournament:', response2.statusText);
             }
+            fetchTournaments();
         } catch (error) {
             console.error('Error:', error);
         }
