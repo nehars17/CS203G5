@@ -112,7 +112,7 @@
 }
 
 /* Save button container */
-.button-container {
+.button-edit-container {
   display: flex;
   justify-content: flex-end; /* Align buttons to the right */
   gap: 20px; /* Space between buttons */
@@ -125,7 +125,7 @@
 }
 
 /* Styling for the buttons */
-.cancel-button, .save-button {
+.cancel-edit-button, .save-edit-button {
   padding: 10px 20px;
   font-size: 16px;
   font-weight: bolder;
@@ -134,24 +134,24 @@
   border: none; /* Remove border */
 }
 
-.cancel-button {
+.cancel-edit-button {
   background-color: #ee0505; /* Red for cancel button */
   color: white;
 }
 
-.cancel-button:hover {
+.cancel-edit-button:hover {
   background-color: #09bd27; /* Hover color for save button */
 }
 
-.save-button {
+.save-edit-button {
   background-color: #0625b3; /* Blue for save button */
   color: white;
 }
 
-.save-button:hover {
+.save-edit-button:hover {
   background-color: #09bd27; /* Hover color for save button */
 }
 
-.save-button:active {
+.save-edit-button:active {
   background-color: #003f8f; /* Active color for save button */
 }

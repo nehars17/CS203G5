@@ -246,7 +246,7 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.tournamentCount || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, tournamentCount: Number(e.target.value) })}
                 />
               </p>
@@ -254,7 +254,7 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.tournamentWinCount || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, tournamentWinCount: Number(e.target.value) })}
                 />
               </p>
@@ -262,7 +262,7 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.matchCount || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, matchCount: Number(e.target.value) })}
                 />
               </p>
@@ -270,7 +270,7 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.matchWinCount || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, matchWinCount: Number(e.target.value) })}
                 />
               </p>
@@ -278,16 +278,16 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.points || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, points: Number(e.target.value) })}
                 />
               </p>
             </div>
           </div>
           {canEdit && (
-            <div className="button-container">
-              <button className="cancel-button" onClick={handleCancel}>Cancel</button>
-              <button className="save-button" onClick={handleSave}>Save</button>
+            <div className="button-edit-container">
+              <button className="cancel-edit-button" onClick={handleCancel}>Cancel</button>
+              <button className="save-edit-button" onClick={handleSave}>Save</button>
             </div>
           )}
         </>

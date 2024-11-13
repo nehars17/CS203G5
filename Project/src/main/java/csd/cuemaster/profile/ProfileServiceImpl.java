@@ -88,6 +88,7 @@ public class ProfileServiceImpl implements ProfileService{
                 profile.setMatchWinCount(newProfileInfo.getMatchWinCount());
                 profile.setTournamentCount(newProfileInfo.getTournamentCount());
                 profile.setTournamentWinCount(newProfileInfo.getTournamentWinCount());
+                profile.setPoints(newProfileInfo.getPoints());
             }
 
             return profiles.save(profile);

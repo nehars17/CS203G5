@@ -57,7 +57,7 @@ const Profile: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'admin');
+  const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'ROLE_ADMIN');
 
   return (
     <div className="profile-container">
