@@ -339,6 +339,7 @@ public class ProfileServiceImpl implements ProfileService{
             }
             profile.setOrganization(newProfileInfo.getOrganization());
         } else {
+            profile.setPoints(newProfileInfo.getPoints());
             profile.setOrganization(null);
             profile.setMatchCount(newProfileInfo.getMatchCount());
             profile.setMatchWinCount(newProfileInfo.getMatchWinCount());
