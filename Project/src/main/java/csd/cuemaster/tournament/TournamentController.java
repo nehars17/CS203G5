@@ -2,8 +2,10 @@ package csd.cuemaster.tournament;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import csd.cuemaster.profile.ProfileService;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -13,6 +15,9 @@ public class TournamentController {
 
     @Autowired
     private TournamentService tournamentService;
+
+    @Autowired
+    private ProfileService profileService;
 
     /**
      * Add a new tournament with POST request to "/tournaments"
@@ -88,4 +93,33 @@ public class TournamentController {
         //     throw new TournamentNotFoundException(id);
         // }
     }
+
+    @PostMapping("/tournaments/{id}/join")
+    public ResponseEntity<Tournament> joinTournament(@PathVariable Long id, @RequestBody Long playerId) {
+        Tournament updatedTournament = tournamentService.joinTournament(id, playerId);
+        profileService.increaseTournamentCount(playerId);
+        return ResponseEntity.ok(updatedTournament);
+    }
+
+    @PostMapping("/tournaments/{id}/leave")
+    public ResponseEntity<Tournament> leaveTournament(@PathVariable Long id, @RequestBody Long playerId) {
+        Tournament updatedTournament = tournamentService.leaveTournament(id, playerId);
+        profileService.decreaseTournamentCount(playerId);
+        return ResponseEntity.ok(updatedTournament);
+    }
+
+    @PostMapping("/tournaments/{id}/set-winner")
+    public ResponseEntity<?> setTournamentWinner(@PathVariable Long id, @RequestBody Long winnerId) {
+        try {
+            Tournament tournament = tournamentService.setWinner(id, winnerId);
+            profileService.TournamentWinCount(winnerId); // Increment win count for winner
+            return ResponseEntity.ok(tournament);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to set tournament winner: " + e.getMessage());
+        }
+    }
+
+    
+
+
 }

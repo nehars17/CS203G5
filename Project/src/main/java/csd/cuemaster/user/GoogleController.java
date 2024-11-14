@@ -82,7 +82,6 @@ public class GoogleController {
             System.out.println(role);
             // Validate or register the user using Google login
             User googleUser = userService.googleLogin(email, role);
-            System.out.println(googleUser);
             if(googleUser==null){
                 errorResponse.put("message", "Please Register First");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
@@ -106,7 +105,7 @@ public class GoogleController {
             response.put("message", "Login successful!");
             response.put("token", jwtToken);
             response.put("role", userRole);
-
+            response.put("userId", googleUser.getId());
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {

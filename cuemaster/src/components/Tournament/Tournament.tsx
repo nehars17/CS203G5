@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
 import { Link } from 'react-router-dom';
 import { isAuthenticated, getUserRole, getUserIdFromToken} from '../authUtils';
-
+import config from '../../config';
 interface Tournament {
     id: number;
     tournamentname: string;
@@ -70,7 +70,7 @@ const Tournaments: React.FC = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/tournaments/${id}/join`, {
+            const response1 = await fetch(`${config.apiBaseUrl}/tournaments/${id}/join`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -79,12 +79,13 @@ const Tournaments: React.FC = () => {
                 body: JSON.stringify(playerId),  // Send playerId as a plain number
             });
     
-            if (response.ok) {
+            if (response1.ok) {
                 console.log(`Player ${playerId} joined tournament ${id}.`);
                 alert(`You have successfully joined!`);
 
                 // Fetch updated tournament data (as previously described)
-                const updatedResponse = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                const updatedResponse = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
+                    method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -96,8 +97,9 @@ const Tournaments: React.FC = () => {
                     )
                 );
             } else {
-                console.error('Failed to join tournament:', response.statusText);
+                console.error('Failed to join tournament:', response1.statusText);
             }
+            fetchTournaments();
         } catch (error) {
             console.error('Error:', error);
         }
@@ -114,7 +116,7 @@ const Tournaments: React.FC = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/tournaments/${id}/leave`, {
+            const response2 = await fetch(`${config.apiBaseUrl}/tournaments/${id}/leave`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,12 +125,13 @@ const Tournaments: React.FC = () => {
                 body: JSON.stringify(playerId),  // Send playerId as a plain number
             });
     
-            if (response.ok) {
+            if (response2.ok) {
                 console.log(`Player ${playerId} left tournament ${id}.`);
                 alert(`You have successfully left!`);
 
                 // Fetch updated tournament data to update state
-                const updatedResponse = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                const updatedResponse = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
+                    method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -140,8 +143,9 @@ const Tournaments: React.FC = () => {
                     )
                 );
             } else {
-                console.error('Failed to leave tournament:', response.statusText);
+                console.error('Failed to leave tournament:', response2.statusText);
             }
+            fetchTournaments();
         } catch (error) {
             console.error('Error:', error);
         }
@@ -152,7 +156,7 @@ const Tournaments: React.FC = () => {
         if (window.confirm('Are you sure you want to delete this tournament?')) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                const response = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,

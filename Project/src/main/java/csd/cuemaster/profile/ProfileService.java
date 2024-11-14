@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import csd.cuemaster.user.*;
+import csd.cuemaster.user.User;
 
 public interface ProfileService {
     List<Profile> getAllProfile();
@@ -22,4 +22,7 @@ public interface ProfileService {
     double calculateExpectedScore(Long match_id, Long user_id);
     List<Profile> updatePlayerStatistics(Long match_id, Long winner_id);
     List<Profile> getProfilesFromTournaments(Long tournament_id);
+    void increaseTournamentCount(Long userId);
+    void decreaseTournamentCount(Long userId);
+    void TournamentWinCount(Long userId);
 }

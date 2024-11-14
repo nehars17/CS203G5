@@ -4,6 +4,7 @@ import API from '../../services/api';
 import './EditProfile.css';
 import { isAuthenticated, getUserIdFromToken, getUserRole } from 'cuemaster/src/components/authUtils';
 import { useNavigate } from 'react-router-dom';
+import config from '../../config';
 
 interface User {
   id: number;
@@ -40,7 +41,7 @@ const EditProfile: React.FC = () => {
     const fetchProfile = async () => {
       try {
         const response = await API.get<Profile>(
-          `http://localhost:8080/profile/${Number(userId)}`
+          `${config.apiBaseUrl}/profile/${Number(userId)}`
         );
         setProfile(response.data);
         setInitialProfile(response.data);
@@ -126,8 +127,8 @@ const EditProfile: React.FC = () => {
     }
   };
 
-  const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'admin');
-
+  const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'ROLE_ADMIN');
+  
   const handleSave = async () => {
     const formData = new FormData();
 
@@ -145,7 +146,7 @@ const EditProfile: React.FC = () => {
     }
 
     try {
-      const updatedProfileResponse = await fetch(`http://localhost:8080/user/${userId}/profile/edit`, {
+      const updatedProfileResponse = await fetch(`${config.apiBaseUrl}/user/${userId}/profile/edit`, {
         method: 'PUT',
         body: formData,
         headers: {
@@ -183,7 +184,7 @@ const EditProfile: React.FC = () => {
                 />
               ) : profile.profilephotopath ? (
                 <img
-                  src={`http://localhost:8080/profilePhotos/${profile.profilephotopath}`}
+                  src={`${config.apiBaseUrl}/profilePhotos/${profile.profilephotopath}`}
                   alt="Profile Picture"
                   className="profile-edit-photo"
                 />
@@ -245,7 +246,7 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.tournamentCount || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, tournamentCount: Number(e.target.value) })}
                 />
               </p>
@@ -253,7 +254,7 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.tournamentWinCount || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, tournamentWinCount: Number(e.target.value) })}
                 />
               </p>
@@ -261,7 +262,7 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.matchCount || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, matchCount: Number(e.target.value) })}
                 />
               </p>
@@ -269,7 +270,7 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.matchWinCount || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, matchWinCount: Number(e.target.value) })}
                 />
               </p>
@@ -277,16 +278,16 @@ const EditProfile: React.FC = () => {
                 <input
                   type="number"
                   value={profile.points || 0}
-                  disabled={!canEdit || getUserRole() !== 'admin'}
+                  disabled={!canEdit || getUserRole() !== 'ROLE_ADMIN'}
                   onChange={(e) => setProfile({ ...profile, points: Number(e.target.value) })}
                 />
               </p>
             </div>
           </div>
           {canEdit && (
-            <div className="button-container">
-              <button className="cancel-button" onClick={handleCancel}>Cancel</button>
-              <button className="save-button" onClick={handleSave}>Save</button>
+            <div className="button-edit-container">
+              <button className="cancel-edit-button" onClick={handleCancel}>Cancel</button>
+              <button className="save-edit-button" onClick={handleSave}>Save</button>
             </div>
           )}
         </>

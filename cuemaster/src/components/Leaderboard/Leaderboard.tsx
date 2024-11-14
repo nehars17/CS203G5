@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Leaderboard.css';
-
+import config from '../../config';
 interface User {
     id: number;
     username: string;
@@ -31,7 +31,7 @@ const Leaderboard = () => {
 
     useEffect(() => {
         // Fetch sorted profiles
-        fetch('http://localhost:8080/leaderboard')
+        fetch(`${config.apiBaseUrl}/leaderboard`)
             .then(response => response.json())
             .then(data => {
                 setProfiles(data);
@@ -40,7 +40,7 @@ const Leaderboard = () => {
             .catch(error => console.error('Error fetching leaderboard:', error));
 
         // Fetch ranks
-        fetch('http://localhost:8080/playerrank')
+        fetch(`${config.apiBaseUrl}/playerrank`)
             .then(response => response.json())
             .then(data => {
                 setRanks(data);
@@ -74,25 +74,25 @@ const Leaderboard = () => {
             <div className="top-3-profiles">
                 {top3Profiles.map((profile, index) => (
                     <div
-                        className={`top-profile top-profile-${index + 1}`}
+                        className={`top-profile top-profile-${index + 1}`} 
                         key={profile.id}
                         onClick={() => handleProfileClick(profile.user.id)} // Make the entire container clickable
                     >
                         {/* Profile photo at the top */}
                         <div className="profile-leaderboard-top3-photo">
                             <img
-                                src={`http://localhost:8080/profilePhotos/${profile.profilephotopath}`}
+                                src={`${config.apiBaseUrl}/profilePhotos/${profile.profilephotopath}`}
                                 alt={`${profile.firstname} ${profile.lastname}`}
                                 className="profile-leaderboard-photo"
                             />
                         </div>
-
+    
                         {/* Rank and Full Name beside each other */}
                         <div className="profile-leaderboard-top3-info">
                             <span className="rank">[{index + 1}]</span>
                             <span className="full-name">{profile.firstname} {profile.lastname}</span>
                         </div>
-
+    
                         {/* Points below Full Name */}
                         <div className="profile-leaderboard-top3-info">
                             <span className="points">{profile.points !== null ? profile.points : 'N/A'}</span>
@@ -100,7 +100,7 @@ const Leaderboard = () => {
                     </div>
                 ))}
             </div>
-
+    
             {/* Display rest of the profiles */}
             <table className="leaderboard-table">
                 <thead>
@@ -118,7 +118,7 @@ const Leaderboard = () => {
                             <td>{ranks[profile.user.id] !== undefined ? ranks[profile.user.id] : 'N/A'}</td>
                             <td>
                                 <img
-                                    src={`http://localhost:8080/profilePhotos/${profile.profilephotopath}`}
+                                    src={`${config.apiBaseUrl}/profilePhotos/${profile.profilephotopath}`}
                                     alt={`${profile.firstname} ${profile.lastname}`}
                                     className="profile-leaderboard-photo"
                                 />

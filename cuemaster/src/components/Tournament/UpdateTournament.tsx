@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './CreateTournament.css';
 import { getAuthToken } from '../authUtils';
+import config from '../../config';
 
 const UpdateTournament: React.FC = () => {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ const UpdateTournament: React.FC = () => {
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
+                const response = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -75,7 +76,7 @@ const UpdateTournament: React.FC = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/tournaments/${id}`, {
+            const response = await fetch(`${config.apiBaseUrl}/tournaments/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -226,40 +227,12 @@ const UpdateTournament: React.FC = () => {
                 <button type="submit" className="btn btn-primary">Update</button>
             </form>
 
-            {/* Navigate to the Tournament Matches page */}
-            <Link to={`/matches/tournament/?id=${id}`} className="create-button">
-                View Matches
-            </Link>
+            <div className="center-button">
+                <Link to={`/matches/tournament`} className="create-button">
+                    View Matches
+                </Link>
+            </div>
 
-            {/* Match Display - Carousel */}
-            {matches.length > 0 && (
-                <div className="carousel mt-4">
-                    <h2>Matches</h2>
-                    <div id="matchesCarousel" className="carousel slide" data-bs-ride="carousel">
-                        <div className="carousel-inner">
-                            {/* Generate rounds dynamically based on matches */}
-                            {['ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINALS', 'SEMIFINALS', 'FINAL', 'COMPLETED'].map((status, index) => (
-                                <div className={`carousel-item ${index === 0 ? 'active' : ''}`} key={status}>
-                                    <h3>{status}</h3>
-                                    <ul>
-                                        {matches.filter((match) => match.status === status).map((match, idx) => (
-                                            <li key={idx}>{match.player1} vs {match.player2}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ))}
-                        </div>
-                        <button className="carousel-control-prev" type="button" data-bs-target="#matchesCarousel" data-bs-slide="prev">
-                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span className="visually-hidden">Previous</span>
-                        </button>
-                        <button className="carousel-control-next" type="button" data-bs-target="#matchesCarousel" data-bs-slide="next">
-                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span className="visually-hidden">Next</span>
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

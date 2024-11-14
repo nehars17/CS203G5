@@ -98,25 +98,8 @@ const AdminDashboard: React.FC = () => {
     // View profile action 
     const viewProfile = async (id: number) => {
         const token = localStorage.getItem('token');
-        try {
-            const res = await fetch(`${config.apiBaseUrl}/user/${id}/profile/${id}`, { 
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (!res.ok) {
-                const errorText = await res.text(); // Extract backend error message
-                throw new Error(errorText);
-            }
-
-            // Implement routing to a detailed profile page here if needed
-        } catch (error) {
-            setError((error instanceof Error) ? error.message : 'Unexpected Error');
-        }
-    };
+        window.location.href = `/profile/${id}`; // Redirect to the profile page
+    }
 
     return (
         <div className="container mt-4">

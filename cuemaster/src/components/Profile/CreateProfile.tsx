@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import API from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { isAuthenticated,getUserIdFromToken, getUserRole } from 'cuemaster/src/components/authUtils';
+import config from '../../config';
 
 const CreateProfile: React.FC = () => {
   //Variables - uses useState to add state to functional components 
@@ -93,7 +94,7 @@ const CreateProfile: React.FC = () => {
     formData.append("profilePhoto", profilePhoto);
 
     try {
-      const response = await fetch(`http://localhost:8080/create/profile/${userId}`, {
+      const response = await fetch(`${config.apiBaseUrl}/create/profile/${userId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`, // Include the token in the Authorization header

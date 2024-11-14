@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
 import './ProfileDashboard.css';
+import config from '../../config';
 
 interface User {
   id: number;
@@ -72,7 +73,7 @@ const ProfileDashboard: React.FC = () => {
       ) : (
         <div className="profiles-grid">
           {profiles.map((profile) => {
-            const imageUrl = `http://localhost:8080/profilePhotos/${profile.profilephotopath}`;
+            const imageUrl = `${config.apiBaseUrl}/profilePhotos/${profile.profilephotopath}`;
             console.log(`Image URL: ${imageUrl}`); // Log the image URL
 
             return (

@@ -31,6 +31,8 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> createMatchesFromTournaments(Long tournamentId) {
+
+        System.out.println("IM CALLED PLSSS");
         
         // Retrieve the tournament from the repository using the tournamentId
         Tournament tournament = tournamentRepository.findById(tournamentId)
@@ -90,21 +92,21 @@ public class MatchServiceImpl implements MatchService {
         return matches;
     }
     
-    //back up method for manual match creation
-    @Override
-    public Match createMatch(Match match) {
-        if (match.getTournament() == null || !tournamentRepository.existsById(match.getTournament().getId())) {
-            throw new ResourceNotFoundException("Tournament with ID " + match.getTournament().getId() + " does not exist");
-        }
-        if (!userRepository.existsById(match.getUser1().getId())) {
-            throw new ResourceNotFoundException("User with ID " + match.getUser1().getId() + " does not exist");
-        }
-        if (!userRepository.existsById(match.getUser2().getId())) {
-            throw new ResourceNotFoundException("User with ID " + match.getUser2().getId() + " does not exist");
-        }
+    // //back up method for manual match creation
+    // @Override
+    // public Match createMatch(Match match) {
+    //     if (match.getTournament() == null || !tournamentRepository.existsById(match.getTournament().getId())) {
+    //         throw new ResourceNotFoundException("Tournament with ID " + match.getTournament().getId() + " does not exist");
+    //     }
+    //     if (!userRepository.existsById(match.getUser1().getId())) {
+    //         throw new ResourceNotFoundException("User with ID " + match.getUser1().getId() + " does not exist");
+    //     }
+    //     if (!userRepository.existsById(match.getUser2().getId())) {
+    //         throw new ResourceNotFoundException("User with ID " + match.getUser2().getId() + " does not exist");
+    //     }
         
-        return matchRepository.save(match);
-    }
+    //     return matchRepository.save(match);
+    // }
 
     //update exisiting match
     @Override

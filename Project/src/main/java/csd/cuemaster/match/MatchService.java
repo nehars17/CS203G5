@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface MatchService {
 
-    Match createMatch(Match match);
+    // Match createMatch(Match match);
     Match updateMatch(Long id, Match match);
     Match getMatchById(Long matchId);
     Match declareWinner(Long matchId, Long winnerId);

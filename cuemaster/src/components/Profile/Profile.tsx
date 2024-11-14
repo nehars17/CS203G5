@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import API from '../../services/api';
 import './Profile.css';
 import { isAuthenticated, getUserIdFromToken, getUserRole } from 'cuemaster/src/components/authUtils';
+import config from '../../config';
 
 interface User {
   id: number;
@@ -35,7 +36,7 @@ const Profile: React.FC = () => {
     const fetchProfile = async () => {
       try {
         const response = await API.get<Profile>(
-          `http://localhost:8080/profile/${Number(userId)}`
+          `${config.apiBaseUrl}/profile/${Number(userId)}`
         );
         setProfile(response.data);
       } catch (err) {
@@ -57,7 +58,7 @@ const Profile: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'admin');
+  const canEdit = isAuthenticated() && (getUserIdFromToken() === Number(userId) || getUserRole() === 'ROLE_ADMIN');
 
   return (
     <div className="profile-container">
@@ -67,7 +68,7 @@ const Profile: React.FC = () => {
             <div className="profile-image">
               {profile.profilephotopath && (
                 <img
-                  src={`http://localhost:8080/profilePhotos/${profile.profilephotopath}`}
+                  src={`${config.apiBaseUrl}/profilePhotos/${profile.profilephotopath}`}
                   alt="Profile Picture"
                   className="profile-pphoto"
                 />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { getAuthToken } from '../authUtils';
+import config from '../../config';
 
 interface CreateMatchProps {
     tournamentId: string;
@@ -11,7 +12,7 @@ const CreateMatch: React.FC<CreateMatchProps> = ({ tournamentId, refetchMatches 
     const generateMatches = async () => {
         try {
             const token = getAuthToken();
-            const response = await fetch(`http://localhost:8080/matches/tournament/${tournamentId}`, {
+            const response = await fetch(`${config.apiBaseUrl}/matches/tournament/${tournamentId}`, {
                 method: 'POST', // Assuming POST method for generating matches
                 headers: { 'Authorization': `Bearer ${token}` },
             });

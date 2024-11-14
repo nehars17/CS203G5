@@ -8,23 +8,23 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import csd.cuemaster.imageservice.ImageService;
-import csd.cuemaster.user.User;
-import csd.cuemaster.user.UserNotFoundException;
-import csd.cuemaster.user.UserRepository;
 import csd.cuemaster.match.Match;
 import csd.cuemaster.match.MatchNotFoundException;
 import csd.cuemaster.match.MatchRepository;
 import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.tournament.TournamentNotFoundException;
 import csd.cuemaster.tournament.TournamentRepository;
+import csd.cuemaster.user.User;
+import csd.cuemaster.user.UserNotFoundException;
+import csd.cuemaster.user.UserRepository;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
@@ -88,12 +88,13 @@ public class ProfileServiceImpl implements ProfileService{
                 profile.setMatchWinCount(newProfileInfo.getMatchWinCount());
                 profile.setTournamentCount(newProfileInfo.getTournamentCount());
                 profile.setTournamentWinCount(newProfileInfo.getTournamentWinCount());
+                profile.setPoints(newProfileInfo.getPoints());
             }
 
             return profiles.save(profile);
         }).orElse(null);
     }
-
+    
     @Override
     public Profile addProfile(User user, Profile profile, MultipartFile profilephoto){ 
         // User user = users.findById(userId)           
@@ -241,6 +242,19 @@ public class ProfileServiceImpl implements ProfileService{
                         .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
         
         int tournamentcount = profile.getTournamentCount() + 1;
+        profile.setTournamentCount(tournamentcount);
+        profiles.save(profile);
+    }
+
+    public void decreaseTournamentCount(Long userId){
+
+        User user = users.findById(userId)           
+                        .orElseThrow(() -> new UserNotFoundException(userId));
+
+        Profile profile = profiles.findByUserId(userId)
+                        .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
+        
+        int tournamentcount = profile.getTournamentCount() - 1;
         profile.setTournamentCount(tournamentcount);
         profiles.save(profile);
     }
@@ -415,4 +429,6 @@ public class ProfileServiceImpl implements ProfileService{
             player.setMatchWinCount(matchWins + 1);
         }
     }
-}
+       
+    
+    }
