@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import csd.cuemaster.user.User;
-
 public interface ProfileService {
     List<Profile> getAllProfile();
     Profile getProfile(Long userId);

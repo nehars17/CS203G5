@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import csd.cuemaster.imageservice.ImageService;
-import csd.cuemaster.user.User;
-import csd.cuemaster.user.UserNotFoundException;
 import csd.cuemaster.user.UserRepository;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
@@ -29,9 +27,6 @@ public class ProfileController {
     private ProfileService profileService;
     private UserRepository users;
     private ProfileRepository profiles;
-
-    @Autowired
-    private ImageService imageService;
 
     public ProfileController(ProfileService profileService, UserRepository users, ProfileRepository profiles) {
         this.profileService = profileService;

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import csd.cuemaster.profile.Profile;
+import csd.cuemaster.profile.ProfileRepository;
 import csd.cuemaster.profile.ProfileService;
 import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.tournament.TournamentRepository;
@@ -29,20 +30,20 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
+    @Autowired 
     private ProfileRepository profileRepository;
 
     @Override
     public List<Match> createMatchesFromTournaments(Long tournamentId) {
 
         System.out.println("IM CALLED PLSSS");
-
+        
         // Retrieve the tournament from the repository using the tournamentId
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
-
+    
         List<Profile> players;
-
+    
         // If the tournament is in its first round, fetch initial players.
         if (tournament.getStatus() == Tournament.Status.ROUND_OF_32) {
             players = new ArrayList<>(profileService.getProfilesFromTournaments(tournamentId));
@@ -50,52 +51,68 @@ public class MatchServiceImpl implements MatchService {
             // Otherwise, get winners from the previous round
             players = getWinnersFromPreviousRound(tournament);
         }
-
+    
         // Ensure sufficient players to proceed in the tournament bracket.
         checkSufficientPlayers(players, getRequiredPlayersForNextRound(tournament));
-
+    
         if (players.size() < 2) {
             return new ArrayList<>();
         }
-
+    
         List<Match> matches = new ArrayList<>();
         Random random = new Random();
         int pointsRange = 100;
-
+    
         // Matchmaking for the current round.
         while (players.size() > 2) {
             int player1 = random.nextInt(players.size());
             int player2 = random.nextInt(players.size());
             player2 = validatePlayer(players, random, player1, player2);
             int difference = getDifference(players, player1, player2);
-
+    
             // Only create a match if it's balanced within the specified points range.
             if (difference <= pointsRange) {
                 createMatch(players, matches, player1, player2);
                 removePlayers(players, player1, player2);
-
+    
                 // Reset the range back to 100 after a successful pairing.
                 pointsRange = 100;
             } else {
                 pointsRange += 100;
             }
         }
-
+    
         // If exactly two players remain, create the final match for the round.
         if (players.size() == 2) {
             createLastMatch(players, matches);
         }
-
+    
         // Save the newly created matches to the repository.
         matchRepository.saveAll(matches);
-
+    
         // Update the tournament status to progress to the next round.
         updateTournamentStatus(tournament);
-
+    
         return matches;
     }
+    
+    // //back up method for manual match creation
+    // @Override
+    // public Match createMatch(Match match) {
+    //     if (match.getTournament() == null || !tournamentRepository.existsById(match.getTournament().getId())) {
+    //         throw new ResourceNotFoundException("Tournament with ID " + match.getTournament().getId() + " does not exist");
+    //     }
+    //     if (!userRepository.existsById(match.getUser1().getId())) {
+    //         throw new ResourceNotFoundException("User with ID " + match.getUser1().getId() + " does not exist");
+    //     }
+    //     if (!userRepository.existsById(match.getUser2().getId())) {
+    //         throw new ResourceNotFoundException("User with ID " + match.getUser2().getId() + " does not exist");
+    //     }
+        
+    //     return matchRepository.save(match);
+    // }
 
-    // update exisiting match
+    //update exisiting match
     @Override
     public Match updateMatch(Long matchId, Match match) {
         Match existingMatch = matchRepository.findById(matchId).orElse(null);
@@ -114,7 +131,7 @@ public class MatchServiceImpl implements MatchService {
 
         return matchRepository.save(existingMatch);
         // if (!matchRepository.existsById(matchId)) {
-        // return null;
+        //     return null;
         // }
         // match.setId(matchId);
         // return matchRepository.save(match);
@@ -133,7 +150,7 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public void deleteMatchById(Long matchId) {
         if (!matchRepository.existsById(matchId)) {
-            throw new ResourceNotFoundException("This match with id:" + matchId + " does not exist");
+            throw new ResourceNotFoundException("This match with id:" + matchId +" does not exist");
         }
         matchRepository.deleteById(matchId);
     }
@@ -147,15 +164,15 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public Match declareWinner(Long matchId, Long winnerId) {
         Match match = matchRepository.findById(matchId)
-                .orElseThrow(() -> new RuntimeException("Match not found"));
+            .orElseThrow(() -> new RuntimeException("Match not found"));
 
         User winner = userRepository.findById(winnerId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Profile winnerProfile = winner.getProfile();
         // Profile loserProfile = match.getUser1().getId().equals(winnerId)
-        // ? match.getUser2().getProfile()
-        // : match.getUser1().getProfile();
+        //     ? match.getUser2().getProfile()
+        //     : match.getUser1().getProfile();
 
         match.setWinner(winner);
         matchRepository.save(match);
@@ -170,10 +187,7 @@ public class MatchServiceImpl implements MatchService {
 
     /* Helpers Methods */
 
-    /**
-     * Prevent organizers from creating matches without enough players for the given
-     * starting round. Ex: Starting with Round of 32 will need 32 players
-     * 
+    /** Prevent organizers from creating matches without enough players for the given starting round. Ex: Starting with Round of 32 will need 32 players  
      * @param players
      * @param requiredPlayers
      */
@@ -184,24 +198,9 @@ public class MatchServiceImpl implements MatchService {
     }
 
     private int getRequiredPlayersForNextRound(Tournament tournament) {
-
-        // Matchmaking occurs here.
-        while (players.size() >= 2) {
-            int player1 = random.nextInt(players.size());
-            int player2 = random.nextInt(players.size());
-            player2 = validatePlayer(players, random, player1, player2);
-            int difference = getDifference(players, player1, player2);
-
-            // Create match only when it is balanced.
-            if (difference <= pointsRange) {
-                createMatch(players, matches, player1, player2);
-                setMatchCount(players, player1, player2);
-                removePlayers(players, player1, player2);
-
-                // Reset the range back to 100.
-                pointsRange = 100;
-            } else {
-                pointsRange += 100;
+        switch (tournament.getStatus()) {
+            case ROUND_OF_32 -> {
+                return 32;
             }
             case ROUND_OF_16 -> {
                 return 16;
@@ -217,8 +216,6 @@ public class MatchServiceImpl implements MatchService {
             }
             default -> throw new IllegalStateException("Invalid tournament status");
         }
-        matchRepository.saveAll(matches);
-        return matches;
     }
 
     // START OF HELPER METHODS
@@ -297,12 +294,10 @@ public class MatchServiceImpl implements MatchService {
 
     public List<Profile> getWinnersFromPreviousRound(Tournament tournament) {
         Tournament.Status previousRoundStatus = getPreviousRoundStatus(tournament.getStatus());
-
-        // Retrieve all matches from the previous round based on tournament ID and
-        // previous round status
-        List<Match> previousRoundMatches = matchRepository.findByTournamentIdAndStatus(tournament.getId(),
-                previousRoundStatus);
-
+        
+        // Retrieve all matches from the previous round based on tournament ID and previous round status
+        List<Match> previousRoundMatches = matchRepository.findByTournamentIdAndStatus(tournament.getId(), previousRoundStatus);
+        
         // Collect winners from these matches
         List<Profile> winners = new ArrayList<>();
         for (Match match : previousRoundMatches) {
@@ -312,14 +307,14 @@ public class MatchServiceImpl implements MatchService {
                 throw new IllegalStateException("Match without a declared winner in round: " + previousRoundStatus);
             }
         }
-
+    
         if (winners.size() < getRequiredPlayersForNextRound(tournament)) {
             throw new IllegalStateException("Not enough winners to create pairs for the next round");
         }
-
+    
         return winners;
     }
-
+    
     private Tournament.Status getPreviousRoundStatus(Tournament.Status currentStatus) {
         return switch (currentStatus) {
             case ROUND_OF_16 -> Tournament.Status.ROUND_OF_32;

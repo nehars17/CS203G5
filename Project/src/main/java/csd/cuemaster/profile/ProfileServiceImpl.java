@@ -116,8 +116,7 @@ public class ProfileServiceImpl implements ProfileService{
     @Override
     public Profile pointsSet(Long userId, Integer points) {
         User user = getUser(userId);
-        Profile profile = profiles.findByUserId(userId)
-                .orElseThrow(() -> new UserProfileNotFoundException(userId));
+        Profile profile = getProfile(userId);
         user = profile.getUser();
         if (user != null && user.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_PLAYER"))) {
@@ -162,60 +161,48 @@ public class ProfileServiceImpl implements ProfileService{
 
     @Override
     public String getName(long userId){
-        User user = users.findById(userId)           
-                        .orElseThrow(() -> new UserNotFoundException(userId));
-
+        checkIfUserExists(userId);
         // Retrieve the profile using userId.
-        Profile profile = profiles.findByUserId(userId)
-                        .orElseThrow(() -> new ProfileIdNotFoundException(userId));
+        Profile profile = getProfile(userId);
         String fullname = profile.getFirstname() + " " + profile.getLastname();
         return fullname;
     }
 
     public void increaseTournamentCount(Long userId){
-        User user = getUser(userId);
-        Profile profile = profiles.findByUserId(userId)
-                .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
+        checkIfUserExists(userId);
+        Profile profile = getProfile(userId);
         int tournamentcount = profile.getTournamentCount() + 1;
         profile.setTournamentCount(tournamentcount);
         profiles.save(profile);
     }
 
     public void decreaseTournamentCount(Long userId){
-
-        User user = users.findById(userId)           
-                        .orElseThrow(() -> new UserNotFoundException(userId));
-
-        Profile profile = profiles.findByUserId(userId)
-                        .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
-        
+        checkIfUserExists(userId);
+        Profile profile = getProfile(userId);
         int tournamentcount = profile.getTournamentCount() - 1;
         profile.setTournamentCount(tournamentcount);
         profiles.save(profile);
     }
 
     public void TournamentWinCount(Long userId){
-        User user = getUser(userId);
-        Profile profile = profiles.findByUserId(userId)
-                .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
+        checkIfUserExists(userId);
+        Profile profile = getProfile(userId);
         int tournamentWincount = profile.getTournamentWinCount() + 1;
         profile.setTournamentWinCount(tournamentWincount);
         profiles.save(profile);
     }
 
     public void increaseMatchCount(Long userId){
-        User user = getUser(userId);
-        Profile profile = profiles.findByUserId(userId)
-                .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
+        checkIfUserExists(userId);
+        Profile profile = getProfile(userId);
         int matchcount = profile.getMatchCount() + 1;
         profile.setMatchCount(matchcount);
         profiles.save(profile);
     }
 
     public void MatchWinCount(Long userId){
-        User user = getUser(userId);
-        Profile profile = profiles.findByUserId(userId)
-                .orElseThrow(() -> new ProfileAlreadyExistsException(userId));
+        checkIfUserExists(userId);
+        Profile profile = getProfile(userId);
         int matchWincount = profile.getMatchWinCount() + 1;
         profile.setTournamentWinCount(matchWincount);
         profiles.save(profile);
@@ -287,6 +274,20 @@ public class ProfileServiceImpl implements ProfileService{
         }
         return retrieved;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // START OF HELPER METHODS
 
