@@ -242,7 +242,7 @@
 
 //         User user = new User("Glenn", "goodpassword", "ROLE_ORGANISER", "normal", true);
 //         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore",null, user);
+//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore",null, "SMU", user);
 //         profile.setId(1L);
 //         profile.setUser(user);
 
@@ -303,12 +303,12 @@
 
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_ORGANISER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, "SMU", user1);
 //         profile1.setId(1L);
 //         profile1.setUser(user1);
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_ORGANISER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, "SMU", user2);
 //         profile2.setId(2L);
 //         profile2.setUser(user2);
 
