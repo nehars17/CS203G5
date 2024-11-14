@@ -144,15 +144,6 @@ GET http://localhost:8080/leaderboard
 Content-Type: application/json
 Authorization: Basic nehars.rs@gmail.com goodpassword
 
-###
-PUT http://localhost:8080/changepoints/4
-Content-Type: application/json
-Authorization: Basic admin@gmail.com goodpassword
-
-{
-    "points": "2300"
-}
-
 #SHIYUN
 ### Create a new tournament
 POST http://localhost:8080/tournaments
@@ -302,6 +293,8 @@ Authorization: Basic org@gmail.com goodpassword
 ###
 DELETE http://localhost:8080/matches/1
 Authorization: Basic org@gmail.com goodpassword
+
+# ALGORITHMS
 
 ###
 PUT http://localhost:8080/playerstats/1/3

@@ -1,9 +1,5 @@
 package csd.cuemaster.profile;
 
-// import java.io.IOException;
-// import java.nio.file.Files;
-// import java.nio.file.Path;
-// import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -66,8 +62,6 @@ public class ProfileServiceImpl implements ProfileService{
                       .orElseThrow(()-> new UserProfileNotFoundException(userId));
     }
 
-    //havent settle profile photo
-    //can be used for PUT and POST method 
     /**
      * Return the updated profile of the requested userId.
      * 
@@ -77,7 +71,6 @@ public class ProfileServiceImpl implements ProfileService{
      * @return a profile with the new profile details.
      * @throws UserNotFoundException if user is not found.
      * @throws UserProfileNotFoundException if profile is not found for the user.
-     * @throws ProfilePhotoRequiredException() if no profile photo is given.
      */
     @Override
     public Profile updateProfile(Long userId, Profile newProfileInfo, MultipartFile profilephoto){
