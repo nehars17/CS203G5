@@ -69,7 +69,7 @@ public class ProfileController {
     public Profile postProfile(@PathVariable(value = "user_id") Long user_id,
                                @RequestPart("profile") @Valid Profile profile,
                                @RequestPart("profilePhoto") MultipartFile profilePhoto) {
-        return profileService.addProfile(user_id, profilePhoto);
+        return profileService.addProfile(user_id, profile, profilePhoto);
     }
 
     // Return a sorted list of players.
@@ -83,13 +83,6 @@ public class ProfileController {
     @GetMapping("/playerrank")
     public Map<Long, Integer> getPlayerRank() {
         return profileService.setRank();
-    }
-
-    // Change a player's points.
-    @PutMapping("/changepoints/{userId}")
-    public Profile changePoints(@PathVariable (value = "userId") Long userId, @RequestBody Profile profile) {
-        Integer newpoints = profile.getPoints();
-        return profileService.pointsSet(userId, newpoints);
     }
 
     // Change a player's stats.

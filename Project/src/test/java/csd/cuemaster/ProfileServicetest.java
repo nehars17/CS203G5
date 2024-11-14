@@ -56,9 +56,9 @@
 //         // Arrange
 //         List<Profile> profileList = new ArrayList<>();
 
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, null);
 //         profile1.setId(1L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, null);
 //         profile2.setId(2L);
 
 //         profileList.add(profile1);
@@ -97,7 +97,7 @@
 //         // Arrange
 //         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
 //         profile.setId(1L);
 
 //         // Mock
@@ -118,7 +118,7 @@
 //         // Arrange
 //         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
 //         profile.setId(1L);
 //         user.setProfile(profile);
 
@@ -141,11 +141,11 @@
 //         // Arrange
 //         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
 //         profile1.setId(1L);
 //         user.setProfile(profile1);
 
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user);
 //         profile2.setId(1L);
 
 //         // Mock
@@ -168,16 +168,15 @@
 //         // Arrange
 //         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
 //         profile.setId(1L);
 
 //         // Mock
 //         when(users.findById(1L)).thenReturn(Optional.of(user));
-//         when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile));
 //         when(profiles.save(any(Profile.class))).thenReturn(profile);
 
 //         // Act
-//         Profile addedProfile = profileService.addProfile(1L, null);
+//         Profile addedProfile = profileService.addProfile(1L, profile, null);
 
 //         // Assert
 //         assertNotNull(addedProfile);
@@ -191,11 +190,11 @@
 //         // Arrange
 //         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
 //         profile1.setId(1L);
 //         user.setProfile(profile1);
 
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, null);
 //         profile2.setId(2L);
 
 //         // Mock
@@ -203,7 +202,7 @@
 
 //         // Act
 //         ProfileAlreadyExistsException exception = assertThrows(ProfileAlreadyExistsException.class, () -> {
-//             profileService.addProfile(1L, null);
+//             profileService.addProfile(1L, profile2, null);
 //         });
 
 //         // Assert
@@ -218,7 +217,7 @@
 
 //         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
 //         profile.setId(1L);
 //         profile.setUser(user);
 
@@ -243,7 +242,7 @@
 
 //         User user = new User("Glenn", "goodpassword", "ROLE_ORGANISER", "normal", true);
 //         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore",null);
+//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore",null, user);
 //         profile.setId(1L);
 //         profile.setUser(user);
 
@@ -260,54 +259,6 @@
 //         assertTrue(profileList.isEmpty());
 //     }
 
-//     // Test Case: Update player points.
-//     @Test
-//     void pointsSet_UpdatePlayerPoints_ReturnProfileWithUpdatedPoints() {
-//         // Arrange
-//         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
-//         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
-//         profile.setId(1L);
-//         profile.setUser(user);
-
-//         // Mock
-//         when(users.findById(1L)).thenReturn(Optional.of(user));
-//         when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile));
-//         when(profiles.save(any(Profile.class))).thenReturn(profile);
-
-//         // Act
-//         Profile updatedProfile = profileService.pointsSet(1L, 2300);
-
-//         // Assert
-//         assertNotNull(updatedProfile);
-//         assertEquals(2300, profile.getPoints());
-//         verify(profiles).save(profile);
-//     }
-
-//     // Test Case: Attempt to update organiser points which does not exist.
-//     @Test
-//     void pointsSet_UpdateOrganiserPoints_ReturnProfileWithNullPoints() {
-//         // Arrange
-//         User user = new User("Glenn", "goodpassword", "ROLE_ORGANISER", "normal", true);
-//         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
-//         profile.setId(1L);
-//         profile.setUser(user);
-
-//         // Mock
-//         when(users.findById(1L)).thenReturn(Optional.of(user));
-//         when(profiles.findByUserId(1L)).thenReturn(Optional.of(profile));
-//         when(profiles.save(any(Profile.class))).thenReturn(profile);
-
-//         // Act
-//         Profile updatedProfile = profileService.pointsSet(1L, 2300);
-
-//         // Assert
-//         assertNotNull(updatedProfile);
-//         assertEquals(null, profile.getPoints());
-//         verify(profiles).save(profile);
-//     }
-
 //     // Test Case: Sort players based on points.
 //     @Test
 //     void sortProfiles_UpdatePlayerPoints_ReturnSortedList() {
@@ -316,14 +267,14 @@
 
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         profile1.setPoints(1200);
 //         profile1.setUser(user1);
 
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         profile2.setPoints(2300);
 //         profile2.setUser(user2);
@@ -352,12 +303,12 @@
 
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_ORGANISER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         profile1.setUser(user1);
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_ORGANISER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         profile2.setUser(user2);
 
@@ -383,14 +334,14 @@
 
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         profile1.setPoints(1200);
 //         profile1.setUser(user1);
 
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         profile2.setPoints(2300);
 //         profile2.setUser(user2);
@@ -419,21 +370,21 @@
 
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         profile1.setPoints(1200);
 //         profile1.setUser(user1);
 
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         profile2.setPoints(2300);
 //         profile2.setUser(user2);
 
 //         User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user3.setId(3L);
-//         Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", null, user3);
 //         profile3.setId(3L);
 //         profile3.setPoints(2300);
 //         profile3.setUser(user3);
@@ -479,13 +430,13 @@
 //         // Arrange
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         user1.setProfile(profile1);
 
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         user2.setProfile(profile2);
 
@@ -512,7 +463,7 @@
 //         // Arrange
 //         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
 //         profile.setId(1L);
 //         user.setProfile(profile);
 
@@ -572,14 +523,14 @@
 //         // Arrange
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         user1.setProfile(profile1);
 //         profile1.setPoints(1200);
 
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         user2.setProfile(profile2);
 //         profile2.setPoints(2300);
@@ -607,7 +558,7 @@
 //         // Arrange
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         user1.setProfile(profile1);
 
@@ -634,19 +585,19 @@
 //         // Arrange
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         user1.setProfile(profile1);
 
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         user2.setProfile(profile2);
 
 //         User user3 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user3.setId(3L);
-//         Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile3 = new Profile("Koopa", "Paratroopa", LocalDate.of(2002, 7, 26), "Singapore", null, user3);
 //         profile3.setId(3L);
 //         user3.setProfile(profile3);
 
@@ -674,7 +625,7 @@
 //         // Arrange
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         user1.setProfile(profile1);
 //         profile1.setPoints(1200);
@@ -682,7 +633,7 @@
 
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         user2.setProfile(profile2);
 //         profile2.setPoints(2300);
@@ -715,13 +666,13 @@
 //         // Arrange
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         user1.setProfile(profile1);
 
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         user2.setProfile(profile2);
 
@@ -748,13 +699,13 @@
 //         // Arrange
 //         User user1 = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user1.setId(1L);
-//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile1 = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user1);
 //         profile1.setId(1L);
 //         user1.setProfile(profile1);
 
 //         User user2 = new User("Koopa", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user2.setId(2L);
-//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile2 = new Profile("Koopa", "Troopa", LocalDate.of(2002, 7, 26), "Singapore", null, user2);
 //         profile2.setId(2L);
 //         user2.setProfile(profile2);
 
@@ -783,7 +734,7 @@
 //         // Arrange
 //         User user = new User("Glenn", "goodpassword", "ROLE_PLAYER", "normal", true);
 //         user.setId(1L);
-//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null);
+//         Profile profile = new Profile("Glenn", "Fan", LocalDate.of(2002, 7, 26), "Singapore", null, user);
 //         profile.setId(1L);
 //         user.setProfile(profile);
 
