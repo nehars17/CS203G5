@@ -9,7 +9,7 @@ public interface ProfileService {
     List<Profile> getAllProfile();
     Profile getProfile(Long userId);
     Profile updateProfile(Long userId, Profile newProfileInfo, MultipartFile profilephoto);
-    Profile addProfile(Long userId, MultipartFile image);
+    Profile addProfile(Long userId, Profile profile, MultipartFile image);
     List<Profile> getPlayers();
     List<Profile> getOrganisers();
     Profile pointsSet(Long user_id, Integer points);

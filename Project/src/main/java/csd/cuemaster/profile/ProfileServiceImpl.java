@@ -53,46 +53,54 @@ public class ProfileServiceImpl implements ProfileService{
                       .orElseThrow(()-> new UserProfileNotFoundException(userId));
     }
 
-    //havent settle profile photo
-    //can be used for PUT and POST method 
     @Override
     public Profile updateProfile(Long userId, Profile newProfileInfo, MultipartFile profilephoto){
         User user = getUser(userId);
         return profiles.findByUserId(userId).map(profile -> {
+
+            //Set the updated profile mandatory details 
             profile.setFirstname(newProfileInfo.getFirstname());
             profile.setLastname(newProfileInfo.getLastname());
             profile.setBirthdate(newProfileInfo.getBirthdate());
             profile.setBirthlocation(newProfileInfo.getBirthlocation());
 
-            // Check if the profile photo exists.
-            checkProfilePhoto(profilephoto, user, profile);
+            //If a new profile photo is provided, replace the existing one.
+            if (profilephoto != null && !profilephoto.isEmpty()){
+                createProfilePhoto(profilephoto, user, profile);
+            }
+
+            //Check if user is an organiser 
             boolean isOrganiser = getIsOrganiser(user);
 
             // Update profile details.
             updateDetails(newProfileInfo, profile, isOrganiser);
+
+            //Save the profile and return the profile
             return profiles.save(profile);
         }).orElse(null);
     }
     
     @Override
-    public Profile addProfile(Long userId, MultipartFile profilephoto) {
+    public Profile addProfile(Long userId, Profile profile, MultipartFile profilephoto) {
+        // Get the User Object
         User user = getUser(userId);
+        //Check if the user has a profile, throw exception if user already has profile 
         checkIfUserProfileExists(userId, user);
-        Profile profile = checkIfProfileExists(userId);
-
-        // Check if the profile photo exists.
-        checkProfilePhoto(profilephoto, user, profile);
-        boolean isOrganiser = getIsOrganiser(user);
-        boolean isPlayer = getIsPlayer(user);
-
-        // Link profile to user.
+        //set the profile to the user 
         profile.setUser(user);
-
+        //Set the profilephoto path
+        createProfilePhoto(profilephoto, user, profile);
+        //Check if the user is an organiser
+        boolean isOrganiser = getIsOrganiser(user);
+        //Check if the user is a player
+        boolean isPlayer = getIsPlayer(user);
         // Create profile details.
         setDetails(profile, isOrganiser, isPlayer);
+        // Save the profile and return the profile
         return profiles.save(profile);
     }
 
+    
     // Returns a list of all players.
     @Override
     public List<Profile> getPlayers() {
@@ -312,20 +320,13 @@ public class ProfileServiceImpl implements ProfileService{
         }
     }
 
-    // Helper method to check if profile exists.
-    private Profile checkIfProfileExists(Long userId) {
-        Profile profile = profiles.findByUserId(userId)
-                .orElseThrow(() -> new ProfileIdNotFoundException(userId));
-        return profile;
-    }
-
-    // Helper method to check if profile photo exists.
-    private void checkProfilePhoto(MultipartFile profilephoto, User user, Profile profile) {
+    // Helper method to add profile photo when creating a profile.
+    private void createProfilePhoto(MultipartFile profilephoto, User user, Profile profile) {
         if (profilephoto != null && !profilephoto.isEmpty()){
             String photoPath = imageService.saveImage(user.getId(), profilephoto);
             profile.setProfilephotopath(photoPath);
         } else {
-            //throw new ProfilePhotoRequiredException();
+            throw new ProfilePhotoRequiredException();
         }
     }
 

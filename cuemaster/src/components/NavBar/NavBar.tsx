@@ -51,7 +51,7 @@ const NavBar: React.FC = () => {
           setProfile(response.data);
 
           // Fetch the username directly
-          const userResponse = await API.get<UserResponse>(`/userName/${userId}`);
+          const userResponse = await API.get<UserResponse>(`/fullname/${userId}`);
           setUsername(userResponse.data.username);
         } catch (err) {
           const errorMessage = (err as any)?.response?.data?.message || 'Failed to load profile data';

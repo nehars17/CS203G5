@@ -44,36 +44,54 @@ public class Profile {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthdate;
 
-    @NotNull (message = "Location should not be null")
-    private String birthlocation; 
+    @NotNull(message = "Location should not be null")
+    private String birthlocation;
 
     private String profilephotopath;
 
     private String organization;
 
-    private Integer TournamentCount; 
+    private Integer TournamentCount;
 
     private Integer TournamentWinCount;
 
-    private Integer MatchCount; 
+    private Integer MatchCount;
 
-    private Integer MatchWinCount; 
+    private Integer MatchWinCount;
 
-    private Integer points; 
-    
+    private Integer points;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Profile (String firstname, String lastname, LocalDate birthdate, String birthlocation, String profilephotopath, User user){
-
+    // Constructor for Organizers
+    public Profile(String firstname, String lastname, LocalDate birthdate, String birthlocation,
+            String profilephotopath, String organization, User user) {
         this.firstname = firstname;
-        this.lastname = lastname; 
+        this.lastname = lastname;
         this.birthdate = birthdate;
         this.birthlocation = birthlocation;
         this.profilephotopath = profilephotopath;
-        this.user=user;
+        this.organization = organization;
+        this.user = user;
     }
-    
+
+    // Constructor for Players
+    public Profile(String firstname, String lastname, LocalDate birthdate, String birthlocation,
+            String profilephotopath, User user) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.birthdate = birthdate;
+        this.birthlocation = birthlocation;
+        this.profilephotopath = profilephotopath;
+        this.user = user;
+        //default values when creating profile for player 
+        this.TournamentCount = 0;
+        this.TournamentWinCount = 0; 
+        this.MatchCount = 0;
+        this.MatchWinCount = 0;
+        this.points = 1200; 
+    }
+
 }
