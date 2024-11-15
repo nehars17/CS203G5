@@ -32,7 +32,6 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public List<Match> createMatchesFromTournaments(Long tournamentId) {
 
-        System.out.println("IM CALLED PLSSS");
         
         // Retrieve the tournament from the repository using the tournamentId
         Tournament tournament = tournamentRepository.findById(tournamentId)
