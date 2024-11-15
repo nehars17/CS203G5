@@ -120,7 +120,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/update/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/playerstats/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.PUT, "/playerstats/*").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.POST, "/tournaments/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
@@ -128,7 +128,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
-                .requestMatchers(HttpMethod.POST, "/matchmaking/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.POST, "/matchmaking/*").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
