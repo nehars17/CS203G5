@@ -1,19 +1,35 @@
 import React, { useState } from 'react';
 import API from '../../services/api';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Card, Container } from 'react-bootstrap';
+import { Form, Button, Card, Container,Alert } from 'react-bootstrap';
 import { GoogleLogin } from '@react-oauth/google'; // New Google OAuth import
+import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA correctly
+import useRecaptcha from './useRecaptcha';
+import config from '../../config';
+import { isAuthenticated, getUserIdFromToken, getUserRole } from '../../components/authUtils';
+
 
 const Register: React.FC = () => {
+  const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
+  const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(''); // To handle error messages
   const userType = "ROLE_ORGANISER";
   const navigate = useNavigate();
-
+  function Refresh() {
+    setTimeout(function() {
+      window.location.reload(); // This reloads the current page
+    }, 1000); // Adjust the time (in milliseconds) as needed
+  }
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaToken) {
+      setError('Please complete CAPTCHA');
+      return;
+    }
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -23,8 +39,11 @@ const Register: React.FC = () => {
         username: email,
         password: password,
         authorities: userType,
+        recaptchaToken: captchaToken
+
       });
-      navigate('/login');
+      setMessage("Activation Email sent, please check email");
+      setError('');
     } catch (error) {
       console.error('Registration failed', error);
       setError('Registration failed, please try again.');
@@ -37,7 +56,7 @@ const Register: React.FC = () => {
     const email = userInfo.email;
 
     try {
-      const res = await fetch('http://localhost:8080/googlelogin', {
+      const res = await fetch(`${config.apiBaseUrl}/googlelogin`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -46,14 +65,16 @@ const Register: React.FC = () => {
         body: JSON.stringify({
           tokenId: response.credential,
           email: email,
-          role: userType
+          role: userType,
+          
         }),
       });
       const data = await res.json();
       console.log(data);
       localStorage.setItem('token', data.token); // Store token
+      window.location.href = '/ProfileCreation';
 
-      navigate('/organiserProfile');
+      
 
     } catch (error) {
       console.error('Error during Google login:', error);
@@ -97,9 +118,16 @@ const Register: React.FC = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </Form.Group>
+            <Form.Group controlId="recaptcha" className="mt-3">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey="6LdKu3kqAAAAAAeXkISFRFa_DokCrNUxlr-Q_m2H" // Make sure this is correct
+                onChange={handleRecaptcha}
+              />
+            </Form.Group>
 
-            {error && <div className="alert alert-danger mt-3">{error}</div>} {/* Error message */}
-
+            {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+            {message && <Alert variant="success" className="mt-3">{message}</Alert>}
             <Button variant="primary" type="submit" className="w-100 mt-4">
               Register
             </Button>

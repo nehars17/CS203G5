@@ -1,0 +1,86 @@
+.profile-container {
+    max-width: 80%;
+    margin: auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-info {
+    display: flex; /* Layout the profile image and details side by side */
+    align-items: center;
+    margin: 0 auto;
+  }
+  
+  .profile-image {
+    margin-right: 30px; /* Space between the image and the details */
+    text-align: center;
+  }
+  
+  .profile-pphoto {
+    width: 550px;
+    height: 550px;
+    border-radius: 10%; /* Rounded corners for the photo */
+    object-fit: cover;
+    border: 2px solid #ccc;
+  }
+
+  .profile-spaces{
+    margin-left: 20px;
+    color:rgb(31, 71, 250); 
+    font-weight: bold;
+    font-family: inherit;
+  }
+  
+  .Name-info {
+    margin-top: 10px;
+    font-size: 50px;
+    font-family: inherit;
+    font-weight: bold;
+    color: rgb(16, 36, 124);
+  }
+  
+  .profile-details-container {
+    max-width: 500px; /* Restrict width of the details section */
+  }
+  
+  .profile-details {
+    margin-bottom: 25%;
+  }
+  
+  .profile-details p {
+    margin: 5px 0;
+    font-size: 30px;
+  }
+
+  .profile-details-row {
+    background-color: #cad8f7; /* Light background for each row */
+    padding: 10px; /* Increased padding for more space */
+    border-radius: 15px; /* Round the corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a shadow for depth */
+    display: flex; /* Use flexbox to align content */
+    align-items: center; /* Vertically center content */
+  }
+
+  .edit-button-container {
+    display: flex;
+    justify-content: flex-end; /* Align button to the right */
+    margin-top: 20px; /* Add some space at the top */
+  }
+  
+  .editbutton {
+    background-color: #0625b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .editbutton:hover {
+    background-color: #09bd27;
+  }

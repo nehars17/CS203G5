@@ -16,9 +16,19 @@ POST http://localhost:8080/register
 Content-Type: application/json
 
 {
-    "username": "ssam57@myyahoo.com",
+    "username": "bryanng435@gmail.com",
     "password": "goodpassword",
     "authorities":"ROLE_PLAYER"
+}
+
+###
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+    "username": "bryanng0906@gmail.com",
+    "password": "goodpassword",
+    "authorities":"ROLE_ORGANIZER"
 }
 
 ###
@@ -55,6 +65,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmdAZ21haWwuY29tIiwiaWF0I
     "authorities": "ROLE_ADMIN"
 }
 
+###
+DELETE http://localhost:8080/user/121/account
+Content-Type: application/json
+
+{
+
+}
+
 
 
 #BRYAN
@@ -66,11 +84,11 @@ GET http://localhost:8080/profiles
 Content-Type: application/json
 
 ###
-GET http://localhost:8080/user/2/profile/1
+GET http://localhost:8080/profile/2
 Content-Type: application/json
 
 ### (ORG PROFILE)
-POST http://localhost:8080/user/2/profile
+POST http://localhost:8080/user/3/profile
 Content-Type: application/json
 Authorization: Basic org@gmail.com goodpassword
 
@@ -83,7 +101,7 @@ Authorization: Basic org@gmail.com goodpassword
 }
 
 ### (PLAYER PROFILE 1 )
-POST http://localhost:8080/user/2/profile
+POST http://localhost:8080/user/4/profile
 Content-Type: application/json
 Authorization: Basic org@gmail.com goodpassword
 
@@ -125,15 +143,6 @@ Authorization: Basic org@gmail.com goodpassword
 GET http://localhost:8080/leaderboard
 Content-Type: application/json
 Authorization: Basic nehars.rs@gmail.com goodpassword
-
-###
-PUT http://localhost:8080/changepoints/4
-Content-Type: application/json
-Authorization: Basic admin@gmail.com goodpassword
-
-{
-    "points": "2300"
-}
 
 #SHIYUN
 ### Join a tournament
@@ -302,3 +311,13 @@ Authorization: Basic org@gmail.com goodpassword
 ###
 DELETE http://localhost:8080/matches/1
 Authorization: Basic org@gmail.com goodpassword
+
+# ALGORITHMS
+
+###
+PUT http://localhost:8080/playerstats/1/3
+Content-Type: application/json
+
+###
+POST http://localhost:8080/matchmaking/1
+Content-Type: application/json

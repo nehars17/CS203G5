@@ -1,18 +1,24 @@
 package csd.cuemaster.profile;
 
 import java.util.List;
-import csd.cuemaster.user.*;
+import java.util.Map;
+
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProfileService {
     List<Profile> getAllProfile();
-    Profile getProfile(Long userId, Long profileId);
-    Profile updateProfile(Long userId, Profile newProfileInfo);
-    Profile addProfile(User user, Profile profile);
-    // String addProfilePhoto(Long userID, byte[] image);
+    Profile getProfile(Long userId);
+    Profile updateProfile(Long userId, Profile newProfileInfo, MultipartFile profilephoto);
+    Profile addProfile(Long userId, Profile profile, MultipartFile image);
     List<Profile> getPlayers();
-    List<Profile> sort();
-    Profile pointsSet(Long user_id, Integer points);
-    // void updateRank(List<Profile> sortedplayers);
+    List<Profile> getOrganisers();
+    List<Profile> sortProfiles();
+    Map<Long, Integer> setRank();
+    String getName(long userId);
+    List<Profile> getProfilesFromMatches(Long matchId);
+    double calculateExpectedScore(Long matchId, Long userId);
+    List<Profile> updatePlayerStatistics(Long matchId, Long winnerId);
+    List<Profile> getProfilesFromTournaments(Long tournamentId);
     void increaseTournamentCount(Long userId);
     void decreaseTournamentCount(Long userId);
     void TournamentWinCount(Long userId);

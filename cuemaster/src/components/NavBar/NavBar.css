@@ -1,0 +1,47 @@
+.profile-nav-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-nav-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;  /* Make the profile picture round */
+    margin-right: 8px;  /* Space between the image and the username */
+  }
+  
+  .nav-username {
+    font-weight: bolder;
+  }
+
+  /* Add hover styles to prevent cursor changes */
+.profile-nav-container:hover,
+.profile-nav-image:hover,
+.nav-username:hover {
+    cursor: default;  /* No cursor change on hover */
+    opacity: 1;  /* Keep the elements fully opaque (no change) */
+    transform: none;  /* Prevent any scaling or transformation on hover */
+}
+
+
+.custom-navbar {
+    background-color: #123456;  /* Custom background color */
+    color: white;  /* Custom text color */
+  }
+  
+  .custom-navbar .navbar-nav .nav-link {
+    color: white !important;  /* Custom link color */
+  }
+  
+  .custom-navbar .navbar-nav .nav-link:hover {
+    color: #ff9900 !important;  /* Hover color for links */
+  }
+  
+  .custom-navbar .navbar-brand {
+    color: #ee0707;  /* Custom brand color */
+    font-weight: bolder;
+  }
+  
+  .custom-navbar .navbar-brand:hover {
+    color: #ffcc00;  /* Hover effect on brand */
+  }

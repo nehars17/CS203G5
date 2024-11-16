@@ -15,6 +15,8 @@ public class TournamentController {
 
     @Autowired
     private TournamentService tournamentService;
+
+    @Autowired
     private ProfileService profileService;
 
     /**
@@ -116,6 +118,8 @@ public class TournamentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to set tournament winner: " + e.getMessage());
         }
     }
+
+    
 
 
 }

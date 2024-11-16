@@ -1,51 +1,39 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './About.css'; // Adding a CSS file for better style management
 
 const Home: React.FC = () => {
     return (
-        <div style={styles.container}>
-            <h1 style={styles.title}>Cue Sports Management System</h1>
-            <p style={styles.subTitle}>Manage your tournaments, profile, and stay updated with the leaderboard!</p>
-            <div style={styles.linksContainer}>
-                <Link to="/login" style={styles.link}>Login</Link>
-                <Link to="/playerRegistration" style={styles.link}>Register Player</Link>
-                <Link to="/organiserRegistration" style={styles.link}>Register Organiser</Link>
-                <Link to="/tournaments" style={styles.link}>Tournaments</Link>
-                <Link to="/leaderboard" style={styles.link}>Leaderboard</Link>
-                {/* <Link to="/profile" style={styles.link}>Profile</Link> */}
+        <div className="home-container">
+            <div className="home-content">
+                <h1 className="home-title">Cue Master</h1>
+                <p className="home-subTitle">Manage your tournaments, profile, and stay updated with the leaderboard!</p>
+                
+                <div className="home-links-container">
+                    <Link to="/login" className="home-link">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828506.png" alt="Login" className="link-icon" />
+                        Login
+                    </Link>
+                    <Link to="/playerRegistration" className="home-link">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" alt="Register Player" className="link-icon" />
+                        Register Player
+                    </Link>
+                    <Link to="/organiserRegistration" className="home-link">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" alt="Register Organiser" className="link-icon" />
+                        Register Organiser
+                    </Link>
+                    <Link to="/tournaments" className="home-link">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2936/2936837.png" alt="Tournaments" className="link-icon" />
+                        Tournaments
+                    </Link>
+                    <Link to="/leaderboard" className="home-link">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Leaderboard" className="link-icon" />
+                        Leaderboard
+                    </Link>
+                </div>
             </div>
         </div>
     );
-};
-
-const styles = {
-    container: {
-        textAlign: 'center' as const,
-        marginTop: '50px',
-    },
-    title: {
-        fontSize: '2.5rem',
-        color: '#333',
-    },
-    subTitle: {
-        fontSize: '1.2rem',
-        color: '#666',
-    },
-    linksContainer: {
-        display: 'flex' as const,
-        justifyContent: 'center' as const,
-        marginTop: '20px',
-        gap: '20px',
-    },
-    link: {
-        textDecoration: 'none',
-        padding: '10px 20px',
-        border: '1px solid #333',
-        borderRadius: '5px',
-        backgroundColor: '#f0f0f0',
-        color: '#333',
-        fontSize: '1rem',
-    },
 };
 
 export default Home;

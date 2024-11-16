@@ -1,0 +1,94 @@
+/* Account.css */
+
+.account-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f3efef;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+}
+
+h2 {
+    font-size: 1.8rem;
+    color: #343a40;
+    margin-bottom: 1.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+strong {
+    font-weight: bold;
+}
+
+.text-muted {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+button {
+    border-radius: 5px;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+button:focus {
+    outline: none;
+}
+
+button.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.alert {
+    margin-bottom: 1rem;
+}
+
+.modal-dialog {
+    max-width: 500px;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+    color: #343a40;
+}
+
+.form-control {
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.form-label {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
