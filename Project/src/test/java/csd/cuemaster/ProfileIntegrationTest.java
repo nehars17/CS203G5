@@ -646,7 +646,7 @@ class ProfileIntegrationTest {
         }
         
         @Test
-        public void testChangePlayerStats_MatchNotFound() throws Exception {
+        public void testChangePlayerStats_Player1Wins() throws Exception {
                 // Arrange: Create test users and profiles
                 User playerUser1 = new User("glenn@gmail.com", encoder.encode("goodpassword"), "ROLE_PLAYER", "Normal",
                                 true);
