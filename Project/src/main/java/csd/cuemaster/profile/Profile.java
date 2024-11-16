@@ -44,23 +44,22 @@ public class Profile {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthdate;
 
-    @NotNull (message = "Location should not be null")
-    private String birthlocation; 
+    @NotNull(message = "Location should not be null")
+    private String birthlocation;
 
     private String profilephotopath;
 
     private String organization;
 
-    private Integer TournamentCount; 
+    private Integer TournamentCount;
 
     private Integer TournamentWinCount;
 
-    private Integer MatchCount; 
+    private Integer MatchCount;
 
-    private Integer MatchWinCount; 
+    private Integer MatchWinCount;
 
-    private Integer points; 
-    
+    private Integer points;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -78,7 +77,7 @@ public class Profile {
         this.user = user;
     }
 
-    // Constructor for Players
+    // Constructor for Players (Default)
     public Profile(String firstname, String lastname, LocalDate birthdate, String birthlocation,
             String profilephotopath, User user) {
         this.firstname = firstname;
@@ -94,4 +93,30 @@ public class Profile {
         this.MatchWinCount = 0;
         this.points = 1200; 
     }
+
+    // Constructor for Players (Creating profile )
+    public Profile(String firstname, String lastname, LocalDate birthdate, String birthlocation) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.birthdate = birthdate;
+        this.birthlocation = birthlocation;
+    }
+
+    
+    // Constructor for Players (with different points)
+    public Profile(String firstname, String lastname, LocalDate birthdate, String birthlocation,
+            String profilephotopath, User user, int Tournamentcount, int TournamentWinCount, int MatchCount, int MatchWinCount, int points) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.birthdate = birthdate;
+        this.birthlocation = birthlocation;
+        this.profilephotopath = profilephotopath;
+        this.user = user;
+        this.TournamentCount = Tournamentcount;
+        this.TournamentWinCount = TournamentWinCount; 
+        this.MatchCount = MatchCount;
+        this.MatchWinCount = MatchWinCount;
+        this.points = points; 
+    }
+
 }

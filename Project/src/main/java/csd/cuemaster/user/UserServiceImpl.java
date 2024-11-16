@@ -291,4 +291,5 @@ public class UserServiceImpl implements UserService {
                         .orElseThrow(() -> new UserNotFoundException(userId));
         return user.getProvider();
     }
+
 }

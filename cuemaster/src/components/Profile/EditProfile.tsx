@@ -146,7 +146,7 @@ const EditProfile: React.FC = () => {
     }
 
     try {
-      const updatedProfileResponse = await fetch(`${config.apiBaseUrl}/user/${userId}/profile/edit`, {
+      const updatedProfileResponse = await fetch(`${config.apiBaseUrl}/user/${userId}/profile`, {
         method: 'PUT',
         body: formData,
         headers: {

@@ -117,6 +117,7 @@ public class UserController {
     public User getUserByUserId(@PathVariable(value = "user_id") Long user_id) {
         return userService.getUser(user_id);
     }
+
     
     @Bean
     public RestTemplate restTemplate() {
