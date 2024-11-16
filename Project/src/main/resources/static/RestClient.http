@@ -84,7 +84,7 @@ GET http://localhost:8080/profiles
 Content-Type: application/json
 
 ###
-GET http://localhost:8080/user/2/profile/1
+GET http://localhost:8080/profile/2
 Content-Type: application/json
 
 ### (ORG PROFILE)

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import csd.cuemaster.profile.Profile;
+import csd.cuemaster.profile.ProfileRepository;
 import csd.cuemaster.profile.ProfileService;
 import csd.cuemaster.tournament.Tournament;
 import csd.cuemaster.tournament.TournamentRepository;
@@ -28,6 +29,9 @@ public class MatchServiceImpl implements MatchService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired 
+    private ProfileRepository profileRepository;
 
     @Override
     public List<Match> createMatchesFromTournaments(Long tournamentId) {
@@ -213,6 +217,8 @@ public class MatchServiceImpl implements MatchService {
         }
     }
 
+    // START OF HELPER METHODS
+
     // Helper method to check that the two players are different.
     private int validatePlayer(List<Profile> players, Random random, int player1, int player2) {
         while (player1 == player2) {
@@ -237,6 +243,15 @@ public class MatchServiceImpl implements MatchService {
         matches.add(match);
         match.setUser1(user1);
         match.setUser2(user2);
+    }
+
+    // Helper method to increase match count of the chosen players.
+    private void setMatchCount(List<Profile> players, int player1, int player2) {
+        Integer matchCount1 = players.get(player1).getMatchCount();
+        Integer matchCount2 = players.get(player2).getMatchCount();
+        players.get(player1).setMatchCount(matchCount1 + 1);
+        players.get(player2).setMatchCount(matchCount2 + 1);
+        profileRepository.saveAll(players);
     }
 
     // Helper method to remove the chosen players from the list.

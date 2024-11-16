@@ -94,7 +94,7 @@ const CreateProfile: React.FC = () => {
     formData.append("profilePhoto", profilePhoto);
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/create/profile/${userId}`, {
+      const response = await fetch(`${config.apiBaseUrl}/user/${userId}/profile`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
