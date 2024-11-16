@@ -79,7 +79,7 @@ public class Tournament {
         ROUND_OF_16,
         QUARTER_FINALS,
         SEMI_FINAL,
-        FINAL, COMPLETED
+        FINAL
     }
 
     @JsonManagedReference
@@ -103,6 +103,6 @@ public class Tournament {
         this.status = status;
         this.description = description;
         this.winnerId = winnerId;
-        this.players = players != null ? players : new ArrayList<>(); // Ensure players list is not null
+        this.players = players != null ? new ArrayList<>(players) : new ArrayList<>(); // Ensure players list is not null
     }    
 }
