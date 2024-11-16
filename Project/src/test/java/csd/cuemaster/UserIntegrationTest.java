@@ -53,7 +53,7 @@ class UserIntegrationTest {
     @Autowired
     private UserService userService;
 
-    @Autowired  
+    @Autowired
     private JwtService jwtService;
 
     @Autowired
@@ -314,7 +314,7 @@ class UserIntegrationTest {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        
+
         // Assert: Check the response
         assertEquals(200, response.statusCode());
         assertTrue(response.body().contains("testuser@gmail.com"));
@@ -354,31 +354,31 @@ class UserIntegrationTest {
     }
 
     @Test
-public void testForgotPassword_Success() throws Exception {
-    // Arrange: Create and save a user
-    User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
-    users.save(savedUser);
+    public void testForgotPassword_Success() throws Exception {
+        // Arrange: Create and save a user
+        User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
+        users.save(savedUser);
 
-    // Mock the forgotPassword method to return the saved user
-    // Act: Send HTTP request to forgotPassword endpoint
-    URI uri = new URI(baseUrl + port + "/forgotPassword");
-    Map<String, String> payload = new HashMap<>();
-    payload.put("username", "testuser@gmail.com");
-    String jsonPayload = new ObjectMapper().writeValueAsString(payload);
+        // Mock the forgotPassword method to return the saved user
+        // Act: Send HTTP request to forgotPassword endpoint
+        URI uri = new URI(baseUrl + port + "/forgotPassword");
+        Map<String, String> payload = new HashMap<>();
+        payload.put("username", "testuser@gmail.com");
+        String jsonPayload = new ObjectMapper().writeValueAsString(payload);
 
-    HttpRequest request = HttpRequest.newBuilder()
-            .uri(uri)
-            .header("Content-Type", "application/json")
-            .PUT(HttpRequest.BodyPublishers.ofString(jsonPayload))
-            .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .build();
 
-    HttpClient client = HttpClient.newHttpClient();
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-    // Assert: Check the response
-    assertEquals(200, response.statusCode());
-    assertEquals("Password reset link has been sent to your email.", response.body());
-}
+        // Assert: Check the response
+        assertEquals(200, response.statusCode());
+        assertEquals("Password reset link has been sent to your email.", response.body());
+    }
 
     @Test
     public void testForgotPassword_UserNotFound() throws Exception {
@@ -388,171 +388,175 @@ public void testForgotPassword_Success() throws Exception {
         Map<String, String> payload = new HashMap<>();
         payload.put("username", "nonexistentuser@gmail.com");
         String jsonPayload = new ObjectMapper().writeValueAsString(payload);
-    
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(jsonPayload))
                 .build();
-    
+
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-    
+
         // Assert: Check the response
         assertEquals(401, response.statusCode());
     }
 
-@Test
-public void testResetPassword_Success() throws Exception {
-    // Arrange: Create and save a user
-    User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
-    Key secretKey = totpService.generateSecret();
-    TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
-    savedUser.setSecret(secretKey);
-    savedUser.setTotpToken(totpCode);
-    users.save(savedUser);
-    // Mock the resetPassword method to return a success message
+    @Test
+    public void testResetPassword_Success() throws Exception {
+        // Arrange: Create and save a user
+        User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
+        Key secretKey = totpService.generateSecret();
+        TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
+        savedUser.setSecret(secretKey);
+        savedUser.setTotpToken(totpCode);
+        users.save(savedUser);
+        // Mock the resetPassword method to return a success message
 
-    // Act: Send HTTP request to resetPassword endpoint
-    URI uri = new URI(baseUrl + port + "/resetPassword");
-    Map<String, String> payload = new HashMap<>();
-    payload.put("token", totpCode.getCode());
-    payload.put("password", "newpassword123");
-    payload.put("user_id", savedUser.getId().toString());
-    String jsonPayload = new ObjectMapper().writeValueAsString(payload);
+        // Act: Send HTTP request to resetPassword endpoint
+        URI uri = new URI(baseUrl + port + "/resetPassword");
+        Map<String, String> payload = new HashMap<>();
+        payload.put("token", totpCode.getCode());
+        payload.put("password", "newpassword123");
+        payload.put("user_id", savedUser.getId().toString());
+        String jsonPayload = new ObjectMapper().writeValueAsString(payload);
 
-    HttpRequest request = HttpRequest.newBuilder()
-            .uri(uri)
-            .header("Content-Type", "application/json")
-            .PUT(HttpRequest.BodyPublishers.ofString(jsonPayload))
-            .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .build();
 
-    HttpClient client = HttpClient.newHttpClient();
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-    // Assert: Check the response
-    assertEquals(200, response.statusCode());
-    assertEquals("Password updated successfully.", response.body());
-}
-
-@Test
-public void testUpdatePassword_Success() throws Exception {
-    // Arrange: Create and save a user
-    User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
-    users.save(savedUser);
-
-    String jwtToken = obtainJwtToken("ROLE_PLAYER");
-
-    // Act: Send HTTP request to updatePassword endpoint
-    URI uri = new URI(baseUrl + port + "/update/" + savedUser.getId() + "/password");
-    Map<String, String> payload = new HashMap<>();
-    payload.put("password", "newpassword123");
-    String jsonPayload = new ObjectMapper().writeValueAsString(payload);
-
-    HttpRequest request = HttpRequest.newBuilder()
-            .uri(uri)
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer " + jwtToken)
-            .PUT(HttpRequest.BodyPublishers.ofString(jsonPayload))
-            .build();
-
-    HttpClient client = HttpClient.newHttpClient();
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-    // Assert: Check the response
-    assertEquals(200, response.statusCode());
-}
-@Test
-public void testDeleteAccount_Success() throws Exception {
-    // Arrange: Create and save a user
-    User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
-    users.save(savedUser);
-    String jwtToken = obtainJwtToken("ROLE_PLAYER");
-    // Mock the deleteUser method
-
-    // Act: Send HTTP request to deleteAccount endpoint
-    URI uri = new URI(baseUrl + port + "/user/" + savedUser.getId() + "/account");
-
-    HttpRequest request = HttpRequest.newBuilder()
-            .uri(uri)
-            .header("Authorization", "Bearer " + jwtToken)
-            .DELETE()
-            .build();
-
-    HttpClient client = HttpClient.newHttpClient();
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-    // Assert: Check the response
-    assertEquals(200, response.statusCode());
-}
-@Test
-public void testUnlockAccount_Success() throws Exception {
-    // Arrange: Create and save a user
-    User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_ADMIN", "normal", false);
-    savedUser.setUnlocked(false);
-    users.save(savedUser);
-    String jwtToken = obtainJwtToken("ROLE_ADMIN");
-
-
-    // Act: Send HTTP request to unlockAccount endpoint
-    URI uri = new URI(baseUrl + port + "/user/" + savedUser.getId() + "/account");
-
-    HttpRequest request = HttpRequest.newBuilder()
-            .uri(uri)
-            .header("Authorization", "Bearer " + jwtToken)
-            .PUT(HttpRequest.BodyPublishers.noBody())
-            .build();
-
-    HttpClient client = HttpClient.newHttpClient();
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-    // Assert: Check the response
-    assertEquals(200, response.statusCode());
-}
-
-@AfterEach
-void tearDown() {
-    users.deleteAll();
-}
-
-private String obtainJwtToken(String role) throws Exception {
-    // Implement the logic to obtain a valid JWT token
-    // This could involve sending a login request and extracting the token from the response
-    URI uri = new URI(baseUrl + port + "/verify-code");
-    User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
-    Key secretKey = totpService.generateSecret();
-    TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
-    savedUser.setSecret(secretKey);
-    savedUser.setTotpToken(totpCode);
-    users.save(savedUser);
-    Map<String, Object> loginPayload = new HashMap<>();
-    loginPayload.put("user", savedUser);
-    loginPayload.put("code", totpCode.getCode());
-    if(role.equals("ROLE_PLAYER")){
-        loginPayload.put("role", "ROLE_PLAYER");
+        // Assert: Check the response
+        assertEquals(200, response.statusCode());
+        assertEquals("Password updated successfully.", response.body());
     }
-    else if(role.equals("ROLE_ADMIN")){
-        loginPayload.put("role", "ROLE_ADMIN");
+
+    @Test
+    public void testUpdatePassword_Success() throws Exception {
+        // Arrange: Create and save a user
+        User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
+        users.save(savedUser);
+
+        String jwtToken = obtainJwtToken("ROLE_PLAYER");
+
+        // Act: Send HTTP request to updatePassword endpoint
+        URI uri = new URI(baseUrl + port + "/update/" + savedUser.getId() + "/password");
+        Map<String, String> payload = new HashMap<>();
+        payload.put("password", "newpassword123");
+        String jsonPayload = new ObjectMapper().writeValueAsString(payload);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + jwtToken)
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Assert: Check the response
+        assertEquals(200, response.statusCode());
     }
-    else{
-        loginPayload.put("role", "ROLE_ORGANIZER");
+
+    @Test
+    public void testDeleteAccount_Success() throws Exception {
+        // Arrange: Create and save a user
+        User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
+        users.save(savedUser);
+        String jwtToken = obtainJwtToken("ROLE_PLAYER");
+        // Mock the deleteUser method
+
+        // Act: Send HTTP request to deleteAccount endpoint
+        URI uri = new URI(baseUrl + port + "/user/" + savedUser.getId() + "/account");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Authorization", "Bearer " + jwtToken)
+                .DELETE()
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Assert: Check the response
+        assertEquals(200, response.statusCode());
     }
-    
-    String jsonLoginPayload = new ObjectMapper().writeValueAsString(loginPayload);
 
-    HttpRequest loginRequest = HttpRequest.newBuilder()
-            .uri(uri)
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(jsonLoginPayload))
-            .build();
+    @Test
+    public void testUnlockAccount_Success() throws Exception {
+        // Arrange: Create and save a user
+        User savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_ADMIN", "normal", false);
+        savedUser.setUnlocked(false);
+        users.save(savedUser);
+        String jwtToken = obtainJwtToken("ROLE_ADMIN");
 
-    HttpClient client = HttpClient.newHttpClient();
-    HttpResponse<String> loginResponse = client.send(loginRequest, HttpResponse.BodyHandlers.ofString());
+        // Act: Send HTTP request to unlockAccount endpoint
+        URI uri = new URI(baseUrl + port + "/user/" + savedUser.getId() + "/account");
 
-    // Extract the token from the login response
-    // Assuming the token is in the response body as a JSON field named "token"
-    Map<String, Object> responseBody = new ObjectMapper().readValue(loginResponse.body(), Map.class);
-    return (String) responseBody.get("token");
-}
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Authorization", "Bearer " + jwtToken)
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Assert: Check the response
+        assertEquals(200, response.statusCode());
+    }
+
+    @AfterEach
+    void tearDown() {
+        users.deleteAll();
+    }
+
+    private String obtainJwtToken(String role) throws Exception {
+        // Implement the logic to obtain a valid JWT token
+        // This could involve sending a login request and extracting the token from the
+        // response
+        URI uri = new URI(baseUrl + port + "/verify-code");
+        User savedUser;
+        if (role.equals("ROLE_ADMIN")) {
+            savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_ADMIN", "normal", true);
+        } else {
+            savedUser = new User("testuser@gmail.com", encoder.encode("password123"), "ROLE_PLAYER", "normal", true);
+
+        }
+        Key secretKey = totpService.generateSecret();
+        TOTPToken totpCode = totpService.generateTOTPToken(secretKey);
+        savedUser.setSecret(secretKey);
+        savedUser.setTotpToken(totpCode);
+        users.save(savedUser);
+        Map<String, Object> loginPayload = new HashMap<>();
+        loginPayload.put("user", savedUser);
+        loginPayload.put("code", totpCode.getCode());
+        if (role.equals("ROLE_PLAYER")) {
+            loginPayload.put("role", "ROLE_PLAYER");
+        } else if (role.equals("ROLE_ADMIN")) {
+            loginPayload.put("role", "ROLE_ADMIN");
+        } 
+
+        String jsonLoginPayload = new ObjectMapper().writeValueAsString(loginPayload);
+
+        HttpRequest loginRequest = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonLoginPayload))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> loginResponse = client.send(loginRequest, HttpResponse.BodyHandlers.ofString());
+
+        // Extract the token from the login response
+        // Assuming the token is in the response body as a JSON field named "token"
+        Map<String, Object> responseBody = new ObjectMapper().readValue(loginResponse.body(), Map.class);
+        return (String) responseBody.get("token");
+    }
 
 }

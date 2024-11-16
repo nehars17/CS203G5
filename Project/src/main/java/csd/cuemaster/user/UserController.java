@@ -402,7 +402,8 @@ public class UserController {
     @DeleteMapping("/user/{user_id}/account")
     public void deleteAccount(@PathVariable(value = "user_id") Long user_id) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentUser.getId() == 1 || currentUser.getId() == user_id) {
+        String role = currentUser.getAuthorities().iterator().next().getAuthority();
+        if (role.equals("ROLE_ADMIN") || currentUser.getId() == user_id) {
             userService.deleteUser(user_id);
             ImageService.deleteImage("ProfilePhoto_" + user_id + ".jpg");
         } else {
@@ -423,10 +424,10 @@ public class UserController {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String role = currentUser.getAuthorities().iterator().next().getAuthority();
 
-        if (role == "ROLE_ADMIN") {
+        if (role.equals("ROLE_ADMIN")) {
             userService.unlockAccount(user_id);
         } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this account");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to unlock this account");
         }
     }
 }
