@@ -118,7 +118,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
                 .requestMatchers(HttpMethod.PUT, "/forgotPassword").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/resetPassword").permitAll()
-                .requestMatchers(HttpMethod.PUT, "/playerstats/*").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/playerstats/**").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/update/**").authenticated()

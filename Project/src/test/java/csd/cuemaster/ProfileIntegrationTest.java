@@ -2,7 +2,10 @@ package csd.cuemaster;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,11 +29,18 @@ import org.springframework.core.io.ByteArrayResource;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.http.MediaType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 
+import csd.cuemaster.match.Match;
+import csd.cuemaster.match.MatchRepository;
 import csd.cuemaster.profile.*;
+import csd.cuemaster.tournament.Tournament;
+import csd.cuemaster.tournament.TournamentRepository;
 import csd.cuemaster.user.User;
 import csd.cuemaster.user.UserRepository;
 
@@ -52,11 +62,19 @@ class ProfileIntegrationTest {
         private UserRepository users;
 
         @Autowired
+        private TournamentRepository tournaments;
+
+        @Autowired
+        private MatchRepository matches;
+
+        @Autowired
         private BCryptPasswordEncoder encoder;
 
         @AfterEach
         void tearDown() {
                 profiles.deleteAll();
+                matches.deleteAll();
+                tournaments.deleteAll();
                 users.deleteAll();
         }
 
@@ -573,7 +591,8 @@ class ProfileIntegrationTest {
                 Long userId = playerUser.getId();
 
                 // Initial profile data
-                Profile initialProfile = new Profile("Jane", "Doe", LocalDate.of(1995, 5, 20), "Los Angeles", "ProfilePhoto_123.jpg", playerUser);
+                Profile initialProfile = new Profile("Jane", "Doe", LocalDate.of(1995, 5, 20), "Los Angeles",
+                                "ProfilePhoto_123.jpg", playerUser);
                 profiles.save(initialProfile); // Save the initial profile to the database
 
                 // Prepare the same profile data as JSON (no changes to profile fields)
@@ -625,4 +644,56 @@ class ProfileIntegrationTest {
                 assertEquals("ProfilePhoto_" + userId + ".jpg", updatedProfile.getProfilephotopath()); // Check new
                                                                                                        // photo path
         }
+        
+        @Test
+        public void testChangePlayerStats_MatchNotFound() throws Exception {
+                // Arrange: Create test users and profiles
+                User playerUser1 = new User("glenn@gmail.com", encoder.encode("goodpassword"), "ROLE_PLAYER", "Normal",
+                                true);
+                users.save(playerUser1);
+                User playerUser2 = new User("john@gmail.com", encoder.encode("anotherpassword"), "ROLE_PLAYER",
+                                "Normal", true);
+                users.save(playerUser2);
+
+                Profile playerProfile1 = new Profile("Glenn", "Doe", LocalDate.of(1990, 1, 1), "New York",
+                                "images/player1.jpg", playerUser1, 0, 0, 0, 0, 1200);
+                profiles.save(playerProfile1);
+                Profile playerProfile2 = new Profile("John", "Smith", LocalDate.of(1992, 3, 15), "Los Angeles",
+                                "images/player2.jpg", playerUser2, 0, 0, 0, 0, 1200);
+                profiles.save(playerProfile2);
+
+                List<Long> players = new ArrayList<>();
+                players.add(playerUser1.getId());
+                players.add(playerUser2.getId());
+                Tournament tournament = new Tournament("Tournament", "Singapore", LocalDate.of(2020, 1, 16), LocalDate.of(2020,1,30), LocalTime.of(13, 30), Tournament.Status.ONGOING, "description", playerUser1.getId(), players);
+                tournaments.save(tournament);
+
+                Match match1 = new Match (tournament, playerUser1, playerUser2, LocalDate.of(2020,1,16), LocalTime.of(13,30,00), 1, 0, Tournament.Status.ONGOING);
+                matches.save(match1);
+
+
+                // Create a match, assuming a match is created with two users
+                Long matchId = match1.getId();
+                Long winnerId = playerUser1.getId(); // Assume player 1 wins
+
+                // Act: Call the correct "/playerstats/{matchId}/{winnerId}" endpoint
+                URI uri = new URI(baseUrl + port + "/playerstats/" + matchId + "/" + winnerId);
+                ResponseEntity<List<Profile>> response = restTemplate.exchange(uri, HttpMethod.PUT, null, new ParameterizedTypeReference<List<Profile>>() {});
+
+                // Assert: Verify the response status and that player statistics are updated
+                assertEquals(200, response.getStatusCode().value());
+                List<Profile> updatedProfiles = response.getBody();
+                assertNotNull(updatedProfiles);
+                assertTrue(updatedProfiles.size() > 0);
+
+                // Check if player statistics have been updated for both players
+                Profile updatedProfile1 = updatedProfiles.get(0);
+                Profile updatedProfile2 = updatedProfiles.get(1);
+
+                assertEquals(1216, updatedProfile1.getPoints());
+                assertEquals(1184, updatedProfile2.getPoints());
+                assertEquals(1, updatedProfile1.getMatchWinCount());
+                assertEquals(0, updatedProfile2.getMatchWinCount());
+        }
+
 }

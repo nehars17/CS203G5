@@ -1621,3 +1621,9 @@ ON DELETE CASCADE [90045-224]
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:842)
+2024-11-16 16:07:14.606026+08:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "profile" not found (candidates are: "PROFILE"); SQL statement:
+delete from "profile" [42103-224]
+2024-11-16 16:07:33.972304+08:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "delete from [*]user"; expected "identifier"; SQL statement:
+delete from user [42001-224]
