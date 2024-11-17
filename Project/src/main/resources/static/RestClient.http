@@ -145,6 +145,24 @@ Content-Type: application/json
 Authorization: Basic nehars.rs@gmail.com goodpassword
 
 #SHIYUN
+### Join a tournament
+POST http://localhost:8080/tournaments/27/join
+Content-Type: application/json 
+Authorization: Basic throwawaynypemail@gmail.com goodpassword
+
+{
+  "players": [110,90]
+}
+
+### Leave a tournament
+POST http://localhost:8080/tournaments/27/join
+Content-Type: application/json 
+Authorization: Basic throwawaynypemail@gmail.com goodpassword
+
+{
+  "players": [110,90]
+}
+
 ### Create a new tournament
 POST http://localhost:8080/tournaments
 Content-Type: application/json 
@@ -156,7 +174,7 @@ Authorization: Basic org@gmail.com goodpassword
   "startDate": "2024-09-20",
   "endDate": "2024-09-21",
   "time": "10:00:00",
-  "status": "UPCOMING",
+  "status": "COMPLETED",
   "description": "Test Tournament",
   "winnerId": null,
   "players": []
@@ -227,7 +245,7 @@ Authorization: Basic org@gmail.com goodpassword
 }
 
 ### Delete a tournament
-DELETE http://localhost:8080/tournaments/2
+DELETE http://localhost:8080/tournaments/31
 Authorization: Basic org@gmail.com goodpassword
 
 
