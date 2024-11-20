@@ -68,7 +68,7 @@ Cue Master is an innovative platform designed to simplify the management of 9-ba
       mvn spring-boot:run
     ```
 4. The backend API should now be accessible at http://localhost:8080.
-
+---
 ### Frontend Setup
 1. navigate to frontend directory
    ```
