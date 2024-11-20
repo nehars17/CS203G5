@@ -1,0 +1,77 @@
+/* Styling for the Home component */
+.home-container {
+    background-image: url("pool.jpg"); 
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+}
+
+.home-content {
+    text-align: center;
+    padding: 20px;
+    height: 80%;
+    /* background-color: #123456; */
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.home-title {
+    font-size: 3rem;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.home-subTitle {
+    font-size: 1.5rem;
+    color: black;
+    margin-bottom: 20px;
+}
+
+.home-links-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.home-link {
+    text-decoration: none;
+    padding: 12px 24px;
+    border: 2px solid #123456;
+    border-radius: 8px;
+    background-color: #123456;
+    color: #ffffff;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.home-link:hover {
+    background-color: #0056b3;
+    transform: translateY(-5px);
+}
+
+.link-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+    .home-title {
+        font-size: 2rem;
+    }
+    
+    .home-subTitle {
+        font-size: 1.2rem;
+    }
+    
+    .home-link {
+        font-size: 0.9rem;
+    }
+}

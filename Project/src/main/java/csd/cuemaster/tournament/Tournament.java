@@ -63,6 +63,7 @@ public class Tournament {
 
     private Long winnerId; // stores the winner's player ID
 
+
     @ElementCollection
     private List<Long> players = new ArrayList<>();; // Storing player IDs participating in the tournament
     // Initializing players list to avoid null issues 
@@ -72,6 +73,7 @@ public class Tournament {
     public enum Status {
         UPCOMING,
         ONGOING,
+        COMPLETED,
         CANCELLED,
         ROUND_OF_32,
         ROUND_OF_16,
@@ -101,6 +103,6 @@ public class Tournament {
         this.status = status;
         this.description = description;
         this.winnerId = winnerId;
-        this.players = players != null ? players : new ArrayList<>(); // Ensure players list is not null
+        this.players = players != null ? new ArrayList<>(players) : new ArrayList<>(); // Ensure players list is not null
     }    
 }

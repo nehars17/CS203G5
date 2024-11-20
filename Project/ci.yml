@@ -1,0 +1,28 @@
+name: CI Pipeline # The name of this CI workflow
+
+on: 
+  push: # Trigger the workflow on every push event
+    branches:
+      - Main # Only run the workflow when code is pushed to the 'BryanNg' branch
+  pull_request: # Trigger the workflow for pull requests
+
+jobs:
+  build: # Define a job called 'build'
+    runs-on: ubuntu-latest # Specify the environment for the job (Linux Ubuntu)
+
+    steps: 
+    # Step 1: Check out the code from the repository
+    - name: Check out code
+      uses: actions/checkout@v3 # Action to fetch the repository's code to the runner
+
+    # Step 2: Set up Java Development Kit (JDK)
+    - name: Set up JDK
+      uses: actions/setup-java@v3 # Action to install and configure the Java environment
+      with:
+        distribution: 'temurin' # Use the Temurin distribution of Java (can change if needed)
+        java-version: '17'      # Specify the Java version required for the project (adjust based on your project's needs)
+
+    # Step 3: Build the project and run tests
+    - name: Build and run tests
+      run: |
+        mvn clean test # Clean the project to remove previous builds and run the tests using Maven 

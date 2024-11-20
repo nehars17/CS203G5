@@ -1,49 +1,49 @@
 package csd.cuemaster;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Arrays;
-
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import csd.cuemaster.tournament.Tournament;
-import csd.cuemaster.tournament.TournamentRepository;
+import csd.cuemaster.tournament.TournamentController;
+import csd.cuemaster.tournament.TournamentService;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class TournamentIntegrationTest {
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
 
-    @LocalServerPort
-    private int port;
+public class TournamentIntegrationTest {
 
-    private final String baseUrl = "http://localhost:";
+    private MockMvc mockMvc;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+    @Mock
+    private TournamentService tournamentService;
 
-    @Autowired
-    private TournamentRepository tournamentRepository;
+    @InjectMocks
+    private TournamentController tournamentController;
 
-    @AfterEach
-    void tearDown() {
-        tournamentRepository.deleteAll();
-    }
+    private Tournament tournament;
 
-    @Test
-    public void createTournament_Success() throws Exception {
-        URI uri = new URI(baseUrl + port + "/tournaments");
-        Tournament tournament = new Tournament();
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(tournamentController).build();
+
+        // Initialize a sample tournament
+        tournament = new Tournament();
+        tournament.setId(1L);
         tournament.setTournamentname("New York Tournament");
         tournament.setLocation("New York");
         tournament.setStartDate(LocalDate.parse("2024-09-20"));
@@ -52,147 +52,62 @@ class TournamentIntegrationTest {
         tournament.setStatus(Tournament.Status.UPCOMING);
         tournament.setDescription("Test Tournament");
         tournament.setWinnerId(null);
-        tournament.setPlayers(Arrays.asList(3L, 4L));
-
-        ResponseEntity<Tournament> result = restTemplate.postForEntity(uri, tournament, Tournament.class);
-
-        assertEquals(201, result.getStatusCode().value());
-        assertEquals("New York Tournament", result.getBody().getTournamentname());
+        tournament.setPlayers(List.of(3L, 4L));
     }
 
     @Test
-    public void getAllTournaments_Success() throws Exception {
-        Tournament tournament = new Tournament();
-        tournament.setTournamentname("New York Tournament");
-        tournament.setLocation("New York");
-        tournament.setStartDate(LocalDate.parse("2024-09-20"));
-        tournament.setEndDate(LocalDate.parse("2024-09-21"));
-        tournament.setTime(LocalTime.parse("10:00:00"));
-        tournament.setStatus(Tournament.Status.UPCOMING);
-        tournament.setDescription("Test Tournament");
-        tournament.setWinnerId(null);
-        tournament.setPlayers(Arrays.asList(3L, 4L));
-        tournamentRepository.save(tournament);
+    void testCreateTournament() throws Exception {
+        when(tournamentService.createTournament(any(Tournament.class))).thenReturn(tournament);
 
-        URI uri = new URI(baseUrl + port + "/tournaments");
-
-        ResponseEntity<Tournament[]> result = restTemplate.getForEntity(uri, Tournament[].class);
-
-        assertEquals(200, result.getStatusCode().value());
-        assertEquals(1, result.getBody().length);
+        mockMvc.perform(post("/tournaments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"tournamentname\": \"New York Tournament\", \"location\": \"New York\", " +
+                        "\"startDate\": \"2024-09-20\", \"endDate\": \"2024-09-21\", \"time\": \"10:00:00\", " +
+                        "\"status\": \"UPCOMING\", \"description\": \"Test Tournament\", \"players\": [3, 4]}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.tournamentname").value("New York Tournament"));
     }
 
     @Test
-    public void getTournamentById_ValidId_Success() throws Exception {
-        Tournament tournament = new Tournament();
-        tournament.setTournamentname("New York Tournament");
-        tournament.setLocation("New York");
-        tournament.setStartDate(LocalDate.parse("2024-09-20"));
-        tournament.setEndDate(LocalDate.parse("2024-09-21"));
-        tournament.setTime(LocalTime.parse("10:00:00"));
-        tournament.setStatus(Tournament.Status.UPCOMING);
-        tournament.setDescription("Test Tournament");
-        tournament.setWinnerId(null);
-        tournament.setPlayers(Arrays.asList(3L, 4L));
-        Tournament savedTournament = tournamentRepository.save(tournament);
+    void testGetAllTournaments() throws Exception {
+        when(tournamentService.getAllTournaments()).thenReturn(Collections.singletonList(tournament));
 
-        URI uri = new URI(baseUrl + port + "/tournaments/" + savedTournament.getId());
-
-        ResponseEntity<Tournament> result = restTemplate.getForEntity(uri, Tournament.class);
-
-        assertEquals(200, result.getStatusCode().value());
-        assertEquals("New York Tournament", result.getBody().getTournamentname());
+        mockMvc.perform(get("/tournaments"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].tournamentname").value("New York Tournament"));
     }
 
     @Test
-    public void getTournamentById_InvalidId_Failure() throws Exception {
-        // Prepare the URI for a non-existent tournament ID
-        URI uri = new URI(baseUrl + port + "/tournaments/999");
+    void testGetTournamentById_ValidId() throws Exception {
+        when(tournamentService.getTournamentById(1L)).thenReturn(tournament);
 
-        // Perform the GET request and expect a 404 Not Found status
-        ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
-
-        // Validate that the status code is 404
-        assertEquals(404, result.getStatusCode().value());
-    }
-
-
-    @Test
-	public void updateTournament_ValidId_Success() throws Exception {
-		// Create and save the initial tournament
-		Tournament tournament = new Tournament();
-		tournament.setTournamentname("New York Tournament");
-		tournament.setLocation("New York");
-		tournament.setStartDate(LocalDate.parse("2024-09-20"));
-		tournament.setEndDate(LocalDate.parse("2024-09-21"));
-		tournament.setTime(LocalTime.parse("10:00:00"));
-		tournament.setStatus(Tournament.Status.UPCOMING);
-		tournament.setDescription("Test Tournament");
-		tournament.setWinnerId(null);
-		tournament.setPlayers(Arrays.asList(3L, 4L));
-
-		// Save the initial tournament
-		Tournament savedTournament = tournamentRepository.save(tournament);
-
-		// Prepare the URI for the update request
-		URI uri = new URI(baseUrl + port + "/tournaments/" + savedTournament.getId());
-		
-		// Create the updated tournament details
-		Tournament updatedTournament = new Tournament();
-		updatedTournament.setTournamentname("Los Angeles Tournament"); // Update the name
-		updatedTournament.setLocation("Los Angeles");
-		updatedTournament.setStartDate(LocalDate.parse("2024-09-22"));
-		updatedTournament.setEndDate(LocalDate.parse("2024-09-23"));
-		updatedTournament.setTime(LocalTime.parse("12:00:00"));
-		updatedTournament.setStatus(Tournament.Status.ONGOING);
-		updatedTournament.setDescription("Updated Tournament");
-		updatedTournament.setWinnerId(3L);
-		updatedTournament.setPlayers(Arrays.asList(3L, 4L));
-
-		// Perform the update
-		ResponseEntity<Tournament> result = restTemplate.exchange(uri, HttpMethod.PUT, new HttpEntity<>(updatedTournament), Tournament.class);
-
-		// Validate the response
-		assertEquals(200, result.getStatusCode().value());
-		assertEquals("Los Angeles Tournament", result.getBody().getTournamentname()); // Ensure the update is reflected
-
-		// Retrieve the updated tournament to confirm the changes
-		ResponseEntity<Tournament> getResult = restTemplate.getForEntity(uri, Tournament.class);
-		assertEquals(200, getResult.getStatusCode().value());
-		assertEquals("Los Angeles Tournament", getResult.getBody().getTournamentname()); // Check the updated name
-	}
-
-    @Test
-    public void deleteTournament_ValidId_Success() throws Exception {
-        Tournament tournament = new Tournament();
-        tournament.setTournamentname("New York Tournament");
-        tournament.setLocation("New York");
-        tournament.setStartDate(LocalDate.parse("2024-09-20"));
-        tournament.setEndDate(LocalDate.parse("2024-09-21"));
-        tournament.setTime(LocalTime.parse("10:00:00"));
-        tournament.setStatus(Tournament.Status.UPCOMING);
-        tournament.setDescription("Test Tournament");
-        tournament.setWinnerId(null);
-        tournament.setPlayers(Arrays.asList(3L, 4L));
-        Tournament savedTournament = tournamentRepository.save(tournament);
-
-        URI uri = new URI(baseUrl + port + "/tournaments/" + savedTournament.getId());
-
-        // Change expected status code to 200
-        ResponseEntity<Void> result = restTemplate.exchange(uri, HttpMethod.DELETE, null, Void.class);
-        assertEquals(200, result.getStatusCode().value());
-
-        // // Confirm tournament was deleted by expecting a 404
-        // ResponseEntity<Tournament> getResult = restTemplate.getForEntity(uri, Tournament.class);
-        // assertEquals(404, getResult.getStatusCode().value());
+        mockMvc.perform(get("/tournaments/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.tournamentname").value("New York Tournament"));
     }
 
     @Test
-    public void deleteTournament_InvalidId_Failure() throws Exception {
-        URI uri = new URI(baseUrl + port + "/tournaments/999");
+    void testUpdateTournament() throws Exception {
+        when(tournamentService.updateTournament(eq(1L), any(Tournament.class))).thenReturn(tournament);
 
-        ResponseEntity<Void> result = restTemplate.exchange(uri, HttpMethod.DELETE, null, Void.class);
+        mockMvc.perform(put("/tournaments/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"tournamentname\": \"Updated Tournament\", \"location\": \"Updated Location\", " +
+                        "\"startDate\": \"2024-09-22\", \"endDate\": \"2024-09-23\", \"time\": \"12:00:00\", " +
+                        "\"status\": \"ONGOING\", \"description\": \"Updated Description\", \"players\": [3, 4]}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.tournamentname").value("New York Tournament"));
+    }
 
-        assertEquals(404, result.getStatusCode().value());
+    @Test
+    void testDeleteTournament() throws Exception {
+        doNothing().when(tournamentService).deleteTournament(1L);
+
+        mockMvc.perform(delete("/tournaments/1"))
+                .andExpect(status().isOk());
     }
 }

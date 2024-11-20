@@ -18,6 +18,7 @@ import csd.cuemaster.tournament.TournamentServiceImpl;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class TournamentServiceTest {
         tournament.setStatus(Tournament.Status.UPCOMING);       // Set status using the enum
         tournament.setDescription("Test Tournament");
         tournament.setWinnerId(null);
-        tournament.setPlayers(Arrays.asList(3L, 4L));
+        tournament.setPlayers(new ArrayList<>(Arrays.asList(3L, 4L)));
     }
 
     @Test
@@ -166,4 +167,42 @@ public class TournamentServiceTest {
         verify(tournamentRepository, times(1)).existsById(2L);
         verify(tournamentRepository, never()).deleteById(anyLong());
     }
+
+    @Test
+    void testPlayerJoinsTournament() {
+        // Arrange
+        Long newPlayerId = 5L;
+        when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
+        when(tournamentRepository.save(any(Tournament.class))).thenReturn(tournament);
+
+        // Act
+        Tournament updatedTournament = tournamentService.joinTournament(1L, newPlayerId);
+
+        // Assert
+        assertNotNull(updatedTournament);
+        assertTrue(updatedTournament.getPlayers().contains(newPlayerId));
+        assertEquals(3, updatedTournament.getPlayers().size()); // Initially 2 players + 1 new player
+        verify(tournamentRepository, times(1)).findById(1L);
+        verify(tournamentRepository, times(1)).save(tournament);
+    }
+
+
+    @Test
+    void testPlayerLeavesTournament() {
+        // Arrange
+        Long existingPlayerId = 3L;
+        when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
+        when(tournamentRepository.save(any(Tournament.class))).thenReturn(tournament);
+
+        // Act
+        Tournament updatedTournament = tournamentService.leaveTournament(1L, existingPlayerId);
+
+        // Assert
+        assertNotNull(updatedTournament);
+        assertFalse(updatedTournament.getPlayers().contains(existingPlayerId));
+        assertEquals(1, updatedTournament.getPlayers().size()); // Initially 2 players - 1 player removed
+        verify(tournamentRepository, times(1)).findById(1L);
+        verify(tournamentRepository, times(1)).save(tournament);
+    }
+
 }

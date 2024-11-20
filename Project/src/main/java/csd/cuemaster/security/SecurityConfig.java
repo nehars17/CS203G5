@@ -1,5 +1,7 @@
 package csd.cuemaster.security;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,136 +13,164 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
-import csd.cuemaster.user.CustomAuthenticationSuccessHandler;
 
+/**
+ * Security configuration class for setting up web security in the application.
+ * This class configures authentication providers, security filter chains, CORS settings, and more.
+ * 
+ * <p>It uses JWT for authentication and integrates with OAuth2 for Google login.</p>
+ * 
+ * <p>It also defines various security rules for different endpoints and HTTP methods.</p>
+ */
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
-    private UserDetailsService userDetailsService;
-    private final CustomAuthenticationSuccessHandler customSuccessHandler; // Add this line
+    /**
+     * Service to load user-specific data.
+     */
+    private final UserDetailsService userDetailsService;
 
+    /**
+     * Filter for JWT authentication.
+     */
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    /**
+     * Google client ID for OAuth2 login.
+     */
     @Value("${google.client-id}")
-    private String client_id;
+    private String clientId;
 
+    /**
+     * Google client secret for OAuth2 login.
+     */
     @Value("${google.client-secret}")
-    private String client_secret;
+    private String clientSecret;
 
-    public SecurityConfig(UserDetailsService userSvc, CustomAuthenticationSuccessHandler customSuccessHandler) {
-        this.userDetailsService = userSvc;
-        this.customSuccessHandler = customSuccessHandler; // Assign it here
+    /**
+     * URL of the client application.
+     */
+    @Value("${app.clientUrl}")
+    private String clienturl;
 
+    /**
+     * Constructor to initialize the SecurityConfig with required services.
+     * 
+     * @param userDetailsService the service to load user-specific data
+     * @param jwtAuthenticationFilter the filter for JWT authentication
+     */
+    public SecurityConfig(UserDetailsService userDetailsService,
+                          JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.userDetailsService = userDetailsService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     /**
-     * Exposes a bean of DaoAuthenticationProvider, a type of AuthenticationProvider
-     * Attaches the user details and the password encoder
+     * Bean for DaoAuthenticationProvider to handle authentication.
      * 
-     * @return
+     * @return the DaoAuthenticationProvider bean
      */
-
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(encoder());
         return authProvider;
-
     }
 
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(this.googleClientRegistration());
-    }
-
-    private ClientRegistration googleClientRegistration() {
-
-        return ClientRegistration.withRegistrationId("google")
-                .clientId(client_id)
-                .clientSecret(client_secret)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("http://localhost:8080/login/oauth2/code/{registrationId}")
-                .scope("openid", "profile", "email", "address", "phone")
-                .authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
-                .tokenUri("https://www.googleapis.com/oauth2/v4/token")
-                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
-                .userNameAttributeName(IdTokenClaimNames.SUB)
-                .jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
-                .clientName("Google")
-                .build();
-    }
-
+    /**
+     * Bean for configuring the security filter chain.
+     * 
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/normallogin/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*", "/loginSuccess", "/profiles", "/user/**", "/tournaments/*", "/matches/*", "/matches", "/tournaments", "/leaderboard").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/changepoints/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
-                        .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(login -> login.disable())   // Disable default form login
-                .oauth2Login(oauth2 -> oauth2
-                                .loginPage("/googlelogin/*")
-                                .successHandler(customSuccessHandler)
-
-
-
-                )
-                .logout(logout -> logout
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll())
-
-                .sessionManagement(session -> session
-                                .sessionCreationPolicy(SessionCreationPolicy.NEVER) // Stateless session management for REST
-                // APIs
-
-                )
-                .sessionManagement(session -> session
-                                .maximumSessions(1) // Limit to one session per user
-                                .maxSessionsPreventsLogin(true) // Prevent new login if session exists
-                )
-
-                .httpBasic(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable()) // CSRF protection is needed only for browser based attacks
-                .headers(header -> header.disable()) // disable the security headers, as we do not return HTML in our
-                .authenticationProvider(authenticationProvider());
-
+            .cors(Customizer.withDefaults()) // Enable CORS support
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/error").permitAll()
+                .requestMatchers("/normallogin/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/users", "/googlelogin/*", "/activate", "/activate/*",
+                        "/loginSuccess", "/profiles", "/profile/*", "/tournaments/*", "/matches/*", "/matches",
+                        "/tournaments", "/leaderboard", "/playerrank", "/fullname/*","/user/*","/me").permitAll()
+                .requestMatchers(HttpMethod.GET, "/googlelogin").permitAll()
+                .requestMatchers(HttpMethod.GET, "/profile/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/profilePhotos/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/googlelogin").permitAll()
+                .requestMatchers(HttpMethod.POST, "/activate").permitAll()
+                .requestMatchers(HttpMethod.POST, "/verify-code").permitAll()
+                .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                .requestMatchers(HttpMethod.POST, "/normallogin").permitAll()
+                .requestMatchers(HttpMethod.POST, "/matchmaking/*").permitAll()
+                .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/tournaments/*/join").hasRole("PLAYER")
+                .requestMatchers(HttpMethod.POST, "/tournaments/*/leave").hasRole("PLAYER")
+                .requestMatchers(HttpMethod.POST, "/tournaments/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.POST, "/matches/tournament/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.POST, "/matches/create").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.PUT, "/forgotPassword").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/resetPassword").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/playerstats/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/update/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/tournaments/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.PUT, "/matches/**").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.DELETE, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/tournaments/*").hasRole("ORGANISER")
+                .requestMatchers(HttpMethod.DELETE, "/matches/*").hasRole("ORGANISER")
+                .requestMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated())
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/googlelogin"))
+            .logout(logout -> logout
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Adjust based on your needs
+            .httpBasic(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .headers(headers -> headers.frameOptions().disable()); 
         return http.build();
     }
 
     /**
-     * @Bean annotation is used to declare a PasswordEncoder bean in the Spring
-     *       application context.
-     *       Any calls to encoder() will then be intercepted to return the bean
-     *       instance.
+     * Bean for BCryptPasswordEncoder to encode passwords.
+     * 
+     * @return the BCryptPasswordEncoder bean
      */
     @Bean
     public BCryptPasswordEncoder encoder() {
-        // auto-generate a random salt internally
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Bean for configuring CORS settings.
+     * 
+     * @return the CorsFilter bean
+     */
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOrigins(Arrays.asList(clienturl)); // Your frontend origin
+        corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfig.setAllowedHeaders(Arrays.asList("*"));
+        corsConfig.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+        return new CorsFilter(source);
+    }
 }

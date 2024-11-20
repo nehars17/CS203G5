@@ -1,0 +1,153 @@
+[33m34ea832[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mBryanNg[m[33m)[m Frontend for Profiles, Leaderboard, Navigation Bar, Setting (My account, profile, logout) Done
+[33m3a5d02e[m Merge branch 'frontendNeha' into BryanNg
+[33m2103722[m[33m ([m[1;31morigin/BryanNg[m[33m)[m Build the Frontend Profile Dashboard and fixes the ProfilePhoto Methods
+[33mda7ada7[m Update UserIntegrationTest.java
+[33m150f5f8[m Created the creation of profile frontend & added the profile photo function
+[33mb65b477[m create function getUserRole()
+[33m70922bc[m moved EmailService
+[33m6a8e149[m connected application to azure mysql db
+[33m5fcd9a7[m fixed getUserId function for react
+[33m5f8fac0[m make some changes to createProfile
+[33m7ee5b47[m added privateRoutes for authenticated users and change navbar to cater to authenticated and non-authenticated users
+[33mbae56a2[m implemented JWT Session Management
+[33mf19d489[m Merge branch 'frontendNeha' into BryanNg
+[33m956908b[m created a simple create profile frontend
+[33m817bd71[m frontend for login and registration including google authentication
+[33m7406899[m revert the file
+[33m98b87fc[m Create WebConfig.java
+[33m0a72231[m Delete WebConfig.java
+[33m1da30b0[m Create WebConfig.java
+[33m29d4c5f[m adding frontend codes
+[33m48523b8[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Merge branch 'canicaTesting'
+[33mf304e93[m integration test
+[33m257822c[m unit testing for match services
+[33me35741f[m Fixed the issue in the ProfileServiceTest
+[33mafd171d[m Delete Project/data/books.mv.db
+[33m9236566[m Delete Project/data/books.trace.db
+[33m6535b27[m add missing import
+[33m2d85465[m Added Match Codes
+[33mec19639[m Update README.md
+[33mb17733b[m Delete Project/src/test/java/csd/cuemaster/ProfileServiceTest.java
+[33m033119b[m[33m ([m[1;31morigin/Neha[m[33m)[m Update ProfileServicetest class name
+[33mcd9d156[m Updated ProfileServiceTest
+[33m0de43db[m Delete Week5ApplicationTests.java
+[33mcc439fc[m Update User.java
+[33mc529b36[m Merge branch 'Shiyun' into Neha
+[33m57e747e[m Merge branch 'BryanNg' into Neha
+[33mf82144a[m Delete CueMasterApplicationTests.java
+[33m4d58175[m Merge branch 'Glenn' into Neha
+[33m9b5a91c[m added codes in TournamentRepository and edited TournamentIntegrationTest
+[33m4b2a2bb[m removed secret keys
+[33m4d2d1fb[m deleted commented out code
+[33m7a151d1[m added more test cases
+[33mf0cd5ca[m Update ProfileServiceTest.java
+[33me9e0b64[m Added a few more integration test cases
+[33m98e3bcd[m Added more test cases.
+[33m52710d4[m Added Profile Integration Test
+[33m3e2abdf[m fixed integration testing
+[33mc3ac917[m Added more test cases.
+[33ma26efe8[m Pulled changes from Neha.
+[33mbf1abbf[m Merge remote-tracking branch 'origin/Neha' into BryanNg
+[33m5874d6a[m add organiser user precreated
+[33m3389d41[m fixed authorities method
+[33m51d09fa[m Merge branch 'Glenn' into Neha
+[33m80edf77[m added UnitTesting and IntegrationTesting codes
+[33m7e57093[m Merge remote-tracking branch 'origin/Neha' into BryanNg
+[33m6897536[m change authorities handling
+[33m698cf30[m Added more test cases.
+[33m375bcbb[m Merge branch 'Neha' into BryanNg
+[33m492ebe0[m added ProfileIntegrationTest and ProfileServiceTest
+[33m04f426c[m[33m ([m[1;32mNeha[m[33m)[m Edited authorities method, and added integration tests
+[33m6c65fde[m Added custom deserialization for Authorities
+[33m266b266[m Added verify statements.
+[33mf230577[m Added more test cases.
+[33me752437[m edited RestClient.http and enable google account by default
+[33md73c671[m Small changes.
+[33mc7bea46[m cleaned up UserController and UserService codes
+[33mb8794a4[m removed secret keys from SecurityConfig.java
+[33m2350d69[m Merge branch 'Glenn' into Neha
+[33m6f3935d[m Minor changes.
+[33m1ead470[m RestClient.http changes
+[33ma1110f8[m Unit testing.
+[33mf779a14[m edited RestClient.http
+[33m4efef17[m Update RestClient.http
+[33m23038a9[m[33m ([m[1;32mNehaTesting[m[33m)[m restclient changes
+[33mb8d8fa3[m Merge branch 'BryanNg' into NehaTesting
+[33m3205176[m fixed 400 error for match controller
+[33mbe9b860[m Merge with NehaTesting (Latest)
+[33m6ea9aec[m Fixed the sort() method and the changepoint() method in profile
+[33md8caf55[m Code refining.
+[33m1257eea[m updated matchcontroller
+[33m9caa8a3[m edited RestClient.http
+[33m6464201[m Merge branch 'canica2' into NehaTesting
+[33mc78ace6[m added match restclient codes
+[33m1407e17[m updated RestClient.http
+[33m1b3a281[m merge Shiyun and Canica
+[33me830195[m edited RestClient
+[33mcf8b6be[m Merge branch 'BryanNg' into Neha
+[33mdd2ae8e[m Merge branch 'Glenn' into bryanng
+[33mc112b78[m Merge branch 'glenn' into bryanng
+[33mcd4bb72[m Revert "Merge branch 'Canica' into Shiyun"
+[33mdff1e10[m Small changes.
+[33m6ec4f12[m Merge branch 'Canica' into Shiyun
+[33m8c9a09a[m minor changes
+[33mbb527b9[m change name of match.java
+[33m4534b86[m Reapply "Made some changes to sort method."
+[33mca2db95[m Revert "Made some changes to sort method."
+[33m2306d8e[m fix input winner function
+[33m79f7b06[m Made some changes to sort method.
+[33m314329a[m Syntax change.
+[33m6eacde7[m Implemented the delete function for User Account
+[33ma786a55[m Minor changes.
+[33mdceb269[m Merge branch 'BryanNg' into Glenn
+[33m40298e4[m update controller
+[33m7f7ee0d[m fixed delete method
+[33mf352986[m added Registration Test requests
+[33ma569526[m Merge branch 'Neha' into nehabryan
+[33mfaf6393[m Added Exception Handling
+[33mbfd9ebd[m Fixed the error of organization being null when updating the profile as an organize & Fixed the error of creating a second profile & remove unnecessary codes
+[33m915a6c9[m Account Activation Email
+[33m7801041[m error handling & fix dependencies with user and tournament
+[33mbb6f93e[m added Exception Handling
+[33m419f312[m Login and Registration
+[33m4d7c9a6[m split the TournamentService and added TournamentServiceImpl and fixed errors
+[33m1bbbdfb[m CRUD for Profile done
+[33m87a187b[m added exception for TournamentService.java
+[33ma4010dd[m added TournamentExistsExecption.java and made changes to TournamentController, CueMasterApplication and RestTemplateClient
+[33mc25f472[m basic Match CRUD
+[33m3f56940[m updated tournamentController.java
+[33m14868ef[m Added tournamentService.java
+[33m309e646[m Updated Tournament.java
+[33med609fa[m RestClient methods.
+[33m59b7b7e[m Code refining.
+[33mf725612[m Player ranks are visible.
+[33m2688535[m Added a point reset method.
+[33me1ea6a3[m Added getId method.
+[33mf1061c2[m Made changes to getSortedPlayers method.
+[33m19a929a[m Added a method to find the top players.
+[33m52555d8[m Formatting changes.
+[33ma65043f[m update Profile class and User class
+[33m3861bff[m Updated Profile.java and User.java
+[33m1cc0ff8[m Untracked DS Store files.
+[33m9c97faa[m Added file.
+[33m57e9680[m Removed file.
+[33m4522d09[m Fixed a typo.
+[33m40f418e[m Delete week5 directory
+[33m34acc14[m Merge pull request #3 from oshiyun/main
+[33mc1f6fec[m Merge pull request #2 from oshiyun/b
+[33me5c3fc3[m Template
+[33m85155bc[m adding all subfolders and files
+[33m6cbcb7f[m testing
+[33mf565228[m removing week5
+[33m10d9885[m adding subdirectories
+[33mb234d21[m first commit
+[33m736ae86[m Merge branch 'Glenn'.
+[33m012c1be[m Minor tweaks.
+[33mffbab17[m Merge pull request #1 from oshiyun/Bryan
+[33med34834[m Update README.md
+[33m7a4c34a[m Removed ReactSpringBoot.
+[33ma9d6c63[m Added ReactSpringBoot.
+[33md534abe[m Made some changes.
+[33m1de4e20[m My first commit.
+[33mb32fd71[m Created a test file.
+[33md027ec4[m Initial commit
