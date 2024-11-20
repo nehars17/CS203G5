@@ -1,6 +1,7 @@
 # Cue Master: Your Ultimate 9-Ball Management System
 
 Cue Master is an innovative platform designed to simplify the management of 9-ball pool games. It combines a **Spring Boot** backend with a **ReactJS + TypeScript** frontend, offering a seamless experience for players, organizers, and enthusiasts. Whether you want to manage tournaments, track matches, or explore player statistics, Cue Master has you covered.
+![image](https://github.com/user-attachments/assets/d4941f19-81bd-4747-b04d-24ac09895d8d)
 
 ---
 
