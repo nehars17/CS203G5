@@ -70,14 +70,16 @@ Cue Master is an innovative platform designed to simplify the management of 9-ba
 4. The backend API should now be accessible at http://localhost:8080.
 
 ### Frontend Setup
-1. navigate to frontend directory cd cuemaster
-2. Install dependencies:
+1. navigate to frontend directory
+   ```
+   cd cuemaster
+   ```
+3. Install dependencies:
    ```
    npm install
-
    ```
-3. npm start
-4. The frontend should now be accessible at http://localhost:3000.
+4. npm start
+5. The frontend should now be accessible at http://localhost:3000.
 
 
    
