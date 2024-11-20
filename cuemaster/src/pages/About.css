@@ -1,17 +1,16 @@
 /* Styling for the Home component */
 .home-container {
-    /* background-image: url("pool.jpg"); Add a nice background */
+    background-image: url("pool.jpg"); 
     background-size: cover;
     background-position: center;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #fff;
+    color: black;
 }
 
 .home-content {
-    background-image: url("pool.jpg");
     text-align: center;
     padding: 20px;
     height: 80%;
@@ -22,13 +21,13 @@
 
 .home-title {
     font-size: 3rem;
-    color: #f8f9fa;
+    color: black;
     margin-bottom: 10px;
 }
 
 .home-subTitle {
     font-size: 1.5rem;
-    color: #c9d1d9;
+    color: black;
     margin-bottom: 20px;
 }
 

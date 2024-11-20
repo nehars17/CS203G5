@@ -101,6 +101,11 @@ public class UserController {
     @Autowired
     private RestTemplate restTemplate;
 
+
+
+    @Value("${captcha.enabled}") 
+    private boolean captchaEnabled;
+
     @ElementCollection
     @GetMapping("/users")
     public List<User> getUsers() {
@@ -153,7 +158,8 @@ public class UserController {
             HttpServletRequest request) throws Exception {
 
         // Verify reCAPTCHA token
-        if (!verifyRecaptcha((String) user.getRecaptchaToken())) {
+
+        if (captchaEnabled && !verifyRecaptcha((String) user.getRecaptchaToken())) {
             throw new IllegalArgumentException("Invalid CAPTCHA, please try again");
         }
 
@@ -243,7 +249,7 @@ public class UserController {
             throws Exception {
 
         // Verify reCAPTCHA token
-        if (!verifyRecaptcha((String) user.getRecaptchaToken())) {
+        if (captchaEnabled && !verifyRecaptcha((String) user.getRecaptchaToken())) {
             throw new IllegalArgumentException("Invalid CAPTCHA, please try again");
         }
         user.setRecaptchaToken(null);
@@ -396,7 +402,8 @@ public class UserController {
     @DeleteMapping("/user/{user_id}/account")
     public void deleteAccount(@PathVariable(value = "user_id") Long user_id) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentUser.getId() == 1 || currentUser.getId() == user_id) {
+        String role = currentUser.getAuthorities().iterator().next().getAuthority();
+        if (role.equals("ROLE_ADMIN") || currentUser.getId() == user_id) {
             userService.deleteUser(user_id);
             ImageService.deleteImage("ProfilePhoto_" + user_id + ".jpg");
         } else {
@@ -415,10 +422,12 @@ public class UserController {
     @PutMapping("/user/{user_id}/account")
     public void unlockAccount(@PathVariable(value = "user_id") Long user_id) throws MessagingException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentUser.getId() == 1) {
+        String role = currentUser.getAuthorities().iterator().next().getAuthority();
+
+        if (role.equals("ROLE_ADMIN")) {
             userService.unlockAccount(user_id);
         } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this account");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to unlock this account");
         }
     }
 }
