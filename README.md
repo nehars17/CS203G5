@@ -53,7 +53,7 @@ Cue Master is an innovative platform designed to simplify the management of 9-ba
    ```bash
    git clone https://github.com/nehars17/CS203G5.git
    cd Project
-2. Update the application.properties file with your MySQL credentials:
+2. Update the application.properties file with your DB credentials:
      ```
     server.error.include-stacktrace=never
     spring.datasource.url=jdbc:h2:mem:cuemasterdb;DB_CLOSE_DELAY=-1;NON_KEYWORDS=USER
