@@ -21,21 +21,6 @@ public class MatchController {
     
     @Autowired
     private MatchService matchService;
-
-    //create match
-    // @PostMapping("/matches/create")
-    // public Match createMatch(@Valid @RequestBody Match match) {
-    //     return matchService.createMatch(match);     
-    // }
-
-    // //create match
-    // @PostMapping("/matches/")
-    // public ResponseEntity<String> createMatch(@Valid @RequestBody Match match) {
-        
-    //     Match createdMatch = matchService.createMatch(match);
-    //     // return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
-    //     return ResponseEntity.ok("match created: id =" + createdMatch.getId());
-    // }
     
     // Create matches for a tournament's next round
     @PostMapping("/matches/tournament/{tournamentId}")

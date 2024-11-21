@@ -1,125 +1,101 @@
-// package csd.cuemaster;
+package csd.cuemaster;
 
-// import java.time.LocalDate;
-// import java.time.LocalTime;
-// import java.util.ArrayList;
-// import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import static org.mockito.ArgumentMatchers.any;
-// import static org.mockito.ArgumentMatchers.eq;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import static org.mockito.Mockito.doNothing;
-// import static org.mockito.Mockito.when;
-// import org.mockito.MockitoAnnotations;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.MediaType;
-// import org.springframework.test.web.servlet.MockMvc;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-// import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.hamcrest.Matchers.hasSize;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-// import csd.cuemaster.match.Match;
-// import csd.cuemaster.match.MatchController;
-// import csd.cuemaster.match.MatchService;
-// import csd.cuemaster.tournament.Tournament;
-// import csd.cuemaster.user.User;
+import csd.cuemaster.match.Match;
+import csd.cuemaster.match.MatchService;
 
-// public class MatchIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class MatchIntegrationTest {
 
-//     @Autowired
-//     private MockMvc mockMvc;
+    @LocalServerPort
+    private int port;
 
-//     @Mock
-//     private MatchService matchService;
+    private final String baseUrl = "http://localhost:";
 
-//     @InjectMocks
-//     private MatchController matchController;
+    @Autowired
+    private WebApplicationContext context;
 
-//     private Match match;
+    private MockMvc mockMvc;
 
-//     @BeforeEach
-//     void setUp() {
-//         MockitoAnnotations.openMocks(this);
-//         mockMvc = MockMvcBuilders.standaloneSetup(matchController).build(); // Set up MockMvc
+    @MockBean
+    private MatchService matchService;
 
-//         // Create mock User objects
-//         User user1 = new User();
-//         user1.setId(100L);
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+    }
 
-//         User user2 = new User();
-//         user2.setId(200L);
+    @Test
+    void testCreateMatchesForNextRound() throws Exception {
+        Long tournamentId = 1L;
+        List<Match> matches = new ArrayList<>();
+        for (int i = 0; i < 16; i++) {
+            Match match = new Match();
+            match.setId((long) i);
+            matches.add(match);
+        }
 
-//         Tournament tournament = new Tournament(); 
+        when(matchService.createMatchesFromTournaments(tournamentId)).thenReturn(matches);
 
-//         // Initialize Match object
-//         match = new Match(tournament, user1, user2, LocalDate.now(), LocalTime.now(), 0, 0);
-//         match.setId(1L);
-//     }
+        mockMvc.perform(post(baseUrl + port + "/matches/tournament/{tournamentId}", tournamentId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", hasSize(16)));
+    }
 
-//     @Test
-//     void testCreateMatch() throws Exception {
-//         when(matchService.createMatch(any(Match.class))).thenReturn(match); // Mock service response
+    @Test
+    void testGetAllMatches() throws Exception {
+        List<Match> matches = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Match match = new Match();
+            match.setId((long) i);
+            matches.add(match);
+        }
 
-//         mockMvc.perform(post("/matches/create")
-//                 .contentType(MediaType.APPLICATION_JSON)
-//                 .content("{\"tournament\": {}, \"user1\": {}, \"user2\": {}, \"matchDate\": \"" + LocalDate.now() + "\", \"matchTime\": \"" + LocalTime.now() + "\", \"user1Score\": 0, \"user2Score\": 0}"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().string("match created: id =1")); // Adjust expected output
-//     }
+        when(matchService.getAllMatches()).thenReturn(matches);
 
-//     @Test
-//     void testUpdateMatch() throws Exception {
-//         when(matchService.updateMatch(eq(1L), any(Match.class))).thenReturn(match); // Mock service response
+        mockMvc.perform(get(baseUrl + port + "/matches")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(10)));
+    }
 
-//         mockMvc.perform(put("/matches/1")
-//                 .contentType(MediaType.APPLICATION_JSON)
-//                 .content("{\"tournament\": {}, \"user1\": {}, \"user2\": {}, \"matchDate\": \"" + LocalDate.now() + "\", \"matchTime\": \"" + LocalTime.now() + "\", \"user1Score\": 1, \"user2Score\": 2}"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().string("match updated: id =1")); // Adjust expected output
-//     }
+    @Test
+    void testGetMatchesByTournamentId() throws Exception {
+        Long tournamentId = 1L;
+        List<Match> matches = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            Match match = new Match();
+            match.setId((long) i);
+            matches.add(match);
+        }
 
-//     @Test
-//     void testGetMatchById() throws Exception {
-//         when(matchService.getMatchById(1L)).thenReturn(match); // Mock service response
+        when(matchService.getMatchesByTournamentId(tournamentId)).thenReturn(matches);
 
-//         mockMvc.perform(get("/matches/1"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.id").value(1L)); // Adjust expected output
-//     }
-
-//     @Test
-//     void testGetAllMatches() throws Exception {
-//         List<Match> matches = new ArrayList<>();
-//         matches.add(match);
-//         when(matchService.getAllMatches()).thenReturn(matches); // Mock service response
-
-//         mockMvc.perform(get("/matches"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$[0].id").value(1L)); // Adjust expected output
-//     }
-
-//     @Test
-//     void testDeleteMatch() throws Exception {
-//         doNothing().when(matchService).deleteMatchById(1L); // Mock service response
-
-//         mockMvc.perform(delete("/matches/1"))
-//                 .andExpect(status().isNoContent()); // Expecting HTTP 204 No Content
-//     }
-
-//     @Test
-//     void testDeclareWinner() throws Exception {
-//         when(matchService.declareWinner(1L, 100L)).thenReturn(match); // Mock service response
-
-//         mockMvc.perform(post("/matches/1/declareWinner/100"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.id").value(1L)); // Adjust expected output
-//     }
-// }
+        mockMvc.perform(get(baseUrl + port + "/matches/tournament/{tournamentId}", tournamentId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(8)));
+    }
+}
