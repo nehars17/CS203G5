@@ -228,8 +228,8 @@ const UpdateTournament: React.FC = () => {
             </form>
 
             <div className="center-button">
-                <Link to={`/matches/tournament`} className="create-button">
-                    View Matches
+                <Link to={`/matches/tournament/${id}`} className="create-button">
+                    Edit Matches
                 </Link>
             </div>
 

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
 import { Link } from 'react-router-dom';
-import { isAuthenticated, getUserRole, getUserIdFromToken} from '../authUtils';
+import { isAuthenticated, getUserRole, getUserIdFromToken } from '../authUtils';
+import './Tournament.css';
 import config from '../../config';
+
 interface Tournament {
     id: number;
     tournamentname: string;
@@ -78,7 +80,7 @@ const Tournaments: React.FC = () => {
                 },
                 body: JSON.stringify(playerId),  // Send playerId as a plain number
             });
-    
+
             if (response1.ok) {
                 console.log(`Player ${playerId} joined tournament ${id}.`);
                 alert(`You have successfully joined!`);
@@ -124,7 +126,7 @@ const Tournaments: React.FC = () => {
                 },
                 body: JSON.stringify(playerId),  // Send playerId as a plain number
             });
-    
+
             if (response2.ok) {
                 console.log(`Player ${playerId} left tournament ${id}.`);
                 alert(`You have successfully left!`);
@@ -150,7 +152,7 @@ const Tournaments: React.FC = () => {
             console.error('Error:', error);
         }
     };
-    
+
 
     const handleDelete = async (id: number) => {
         if (window.confirm('Are you sure you want to delete this tournament?')) {
@@ -176,7 +178,7 @@ const Tournaments: React.FC = () => {
             }
         }
     };
-    
+
 
     if (loading) {
         return <div>Loading tournaments...</div>;
@@ -187,19 +189,16 @@ const Tournaments: React.FC = () => {
     }
 
     return (
-        <div style={styles.container}>
-            <h1 style={styles.title}>Tournaments</h1>
+        <div className="tournament-container">
+            <h1 className="tournament-title">Tournaments</h1>
 
             {/* Filter Tabs */}
-            <div style={styles.tabs}>
+            <div className="tabs">
                 {['ALL', 'UPCOMING', 'ONGOING', 'COMPLETED'].map((status) => (
                     <button
                         key={status}
                         onClick={() => setFilter(status)}
-                        style={{
-                            ...styles.tab,
-                            ...(filter === status ? styles.activeTab : {})
-                        }}
+                        className={`tab ${filter === status ? 'active-tab' : ''}`}
                     >
                         {status}
                     </button>
@@ -207,7 +206,7 @@ const Tournaments: React.FC = () => {
             </div>
 
             {/* Season Dropdown */}
-            <select value={seasonFilter} onChange={(e) => setSeasonFilter(e.target.value)} style={styles.dropdown}>
+            <select value={seasonFilter} onChange={(e) => setSeasonFilter(e.target.value)} className="dropdown">
                 <option value="ALL">All Seasons</option>
                 <option value="Season 1">Season 1</option>
                 <option value="Season 2">Season 2</option>
@@ -217,62 +216,64 @@ const Tournaments: React.FC = () => {
 
             {/* Show Create Tournament button only for authenticated organizers */}
             {isUserAuthenticated && userRole === "ROLE_ORGANISER" && (
-                <Link to="/tournaments/create-tournament" className="create-button" style={styles.createButton}>
+                <Link to="/tournaments/create-tournament" className="create-button">
                     Create Tournament
                 </Link>
             )}
 
-            <ul style={styles.tournamentList}>
-                {filteredTournaments.map((tournament) => (  // Use filteredTournaments here
+            <ul className="tournament-list">
+                {filteredTournaments.map((tournament) => (
                     <li
-                    key={tournament.id}
-                    style={styles.tournamentItem}
-                    onMouseEnter={(e) => e.currentTarget.style.boxShadow = styles.tournamentItemHover.boxShadow}
-                    onMouseLeave={(e) => e.currentTarget.style.boxShadow = styles.tournamentItem.boxShadow}
+                        key={tournament.id}
+                        className="tournament-item"
+                        onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15)'}
+                        onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)'}
                     >
-                        <h3>{tournament.tournamentname}</h3>
-                        <p><strong>Date:</strong> {tournament.startDate} to {tournament.endDate}</p>
-                        <p><strong>Time:</strong> {tournament.time}</p>
-                        <p><strong>Location:</strong> {tournament.location}</p>
-                        <p><strong>Status:</strong> {tournament.status}</p>
-                        <p><strong>Description:</strong> {tournament.description}</p>
-                        <p><strong>WinnerID:</strong> {tournament.winnerId}</p>
-                        {/* Render player list only for organizers */}
-                        {isUserAuthenticated && userRole === "ROLE_ORGANISER" && (
-                            <p><strong>Players (ID):</strong> {tournament.players.length > 0 ? tournament.players.join(', ') : 'No players'}</p>
-                        )}
-                        
+                        <h3 className="tournament-heading">{tournament.tournamentname}</h3>
+                        <p className="tournament-details"><strong>Date:</strong> {tournament.startDate} to {tournament.endDate}</p>
+                        <p className="tournament-details"><strong>Time:</strong> {tournament.time}</p>
+                        <p className="tournament-details"><strong>Location:</strong> {tournament.location}</p>
+                        <p className="tournament-details"><strong>Status:</strong> {tournament.status}</p>
+                        <p className="tournament-details"><strong>Description:</strong> {tournament.description}</p>
+                        <p className="tournament-details"><strong>WinnerID:</strong> {tournament.winnerId}</p>
 
-                        {/* Render Join button only for authenticated players not already in the tournament */}
+                        {/* Render Join button */}
                         {isUserAuthenticated && tournament.players.length < 32 && userRole === "ROLE_PLAYER" && playerId !== null && !tournament.players.includes(playerId) && tournament.status === "UPCOMING" && (
-                            <button onClick={() => handleJoin(tournament.id)} style={styles.joinButton}>
+                            <button onClick={() => handleJoin(tournament.id)} className="join-button">
                                 Join
                             </button>
                         )}
 
-                        {/* Render Leave button only for authenticated players in the tournament */}
+                        {/* Render Leave button */}
                         {isUserAuthenticated && userRole === "ROLE_PLAYER" && playerId !== null && tournament.players.includes(playerId) && tournament.status === "UPCOMING" && (
-                            <button onClick={() => handleLeave(tournament.id)} style={styles.leaveButton}>
+                            <button onClick={() => handleLeave(tournament.id)} className="leave-button">
                                 Leave
                             </button>
                         )}
 
-
-
                         {/* Render buttons only for authenticated organizers */}
                         {isUserAuthenticated && userRole === "ROLE_ORGANISER" && (
-                            <div style={styles.buttonContainer}>
-                                <Link to={`/tournaments/update-tournament/${tournament.id}`} className="update-button" style={styles.updateButton}>
+                            <div className="button-container">
+                                <Link to={`/tournaments/update-tournament/${tournament.id}`} className="update-button">
                                     Edit
                                 </Link>
                                 <button
                                     onClick={() => handleDelete(tournament.id)}
-                                    style={styles.deleteButton}
+                                    className="delete-button"
                                 >
                                     Delete
                                 </button>
                             </div>
                         )}
+
+                        {/* View Matches Button */}
+                        <div className="button-container">
+                            {isUserAuthenticated && userRole === "ROLE_PLAYER" && (
+                                <Link to={`/tournaments/${tournament.id}/matches`} className="viewMatchesButton">
+                                    View Matches
+                                </Link>
+                            )}
+                        </div>
                     </li>
                 ))}
             </ul>
@@ -280,135 +281,6 @@ const Tournaments: React.FC = () => {
     );
 };
 
-const styles = {
-    container: {
-        margin: '20px',
-        textAlign: 'center' as const,
-    },
-    title: {
-        fontSize: '2.5rem',
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: '20px',
-    },
-    tabs: {
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '10px',
-        marginBottom: '20px',
-    },
-    tab: {
-        padding: '10px 20px',
-        border: '1px solid #ddd',
-        borderRadius: '5px',
-        backgroundColor: '#e0e0e0',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-        color: '#555',
-        transition: 'background-color 0.3s, color 0.3s',
-    },
-    activeTab: {
-        backgroundColor: '#007bff',
-        color: '#fff',
-        border: '1px solid #007bff',
-    },
-    createButton: {
-        display: 'inline-block',
-        marginBottom: '20px',
-        padding: '10px 20px',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        textDecoration: 'none',
-        borderRadius: '5px',
-        fontWeight: 'bold',
-        transition: 'background-color 0.3s',
-        cursor: 'pointer',
-    },
-    dropdown: {
-        margin: '20px', 
-        padding: '10px', 
-        fontSize: '1rem' 
-    },
-    tournamentList: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)', // Ensures 3 items per row on larger screens
-        gap: '20px',
-        listStyle: 'none',
-        padding: 0,
-    },
-    tournamentItem: {
-        padding: '20px',
-        border: '1px solid #ddd',
-        borderRadius: '8px',
-        backgroundColor: '#fff',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        transition: 'box-shadow 0.3s',
-        textAlign: 'left' as const, // Align details to the left
-    },
-    tournamentItemHover: {
-        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15)',
-    },
-    tournamentHeading: {
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        marginBottom: '10px',
-        color: '#333',
-        textAlign: 'center' as const, // Center-align the tournament name
-    },
-    tournamentDetails: {
-        fontSize: '1rem',
-        color: '#555',
-        marginBottom: '8px',
-    },
-    buttonContainer: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginTop: '15px',
-    },
-    updateButton: {
-        padding: '8px 12px',
-        backgroundColor: '#28a745',
-        color: '#fff',
-        textDecoration: 'none',
-        borderRadius: '5px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s',
-    },
-    deleteButton: {
-        padding: '8px 12px',
-        backgroundColor: '#dc3545',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s',
-        textDecoration: 'none', // Remove underline
-    },
-    joinButton: {
-        padding: '8px 12px',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s',
-        marginTop: '10px',
-    },
-    leaveButton: {
-        padding: '8px 12px',
-        backgroundColor: '#ff6b6b',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s',
-        marginTop: '10px',
-    },
 
-};
 
 export default Tournaments;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './TournamentMatches.css';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios'; // You can use axios to fetch data from the API
 
 interface Match {
     id: string;
@@ -14,36 +15,53 @@ type Round = 'ROUND_OF_32' | 'ROUND_OF_16' | 'QUARTER_FINALS' | 'SEMIFINALS' | '
 const rounds: Round[] = ['ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINALS', 'SEMIFINALS', 'FINAL'];
 
 const TournamentMatches: React.FC = () => {
+    //const { tournamentId } = useParams();
     const [matches, setMatches] = useState<{ [key in Round]?: Match[] }>({});
     const [currentRound, setCurrentRound] = useState<Round>('ROUND_OF_32');
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    // const tournamentId = queryParams.get('id'); 
-    
-    // Helper function to shuffle an array randomly
-    const shuffleArray = <T,>(array: T[]): T[] => {
-        const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    const tournamentId = queryParams.get('id'); // Fetch tournament ID from query params
+
+    useEffect(() => {
+        if (tournamentId) {
+            // Fetch the tournament data (including status)
+            axios
+                .get(`/api/tournaments/${tournamentId}`)
+                .then(response => {
+                    const fetchedTournament = response.data as { status: string };
+                    const tournamentStatus = fetchedTournament.status; // Get the status of the tournament
+
+                    // Now fetch the matches
+                    axios
+                        .get(`/api/matches/tournament/${tournamentId}`)
+                        .then(response => {
+                            const fetchedMatches = response.data as Match[];
+                            const matchesByStatus = groupMatchesByStatus(fetchedMatches, tournamentStatus);
+                            setMatches(matchesByStatus);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching matches:', error);
+                        });
+                })
+                .catch(error => {
+                    console.error('Error fetching tournament:', error);
+                });
         }
-        return shuffled;
+    }, [tournamentId]);
+
+
+    // Helper function to group matches by tournament status
+    const groupMatchesByStatus = (matches: Match[], tournamentStatus: string) => {
+        return matches.reduce((acc, match) => {
+            // Grouping based on tournament status rather than match.round
+            if (!acc[tournamentStatus]) acc[tournamentStatus] = [];
+            acc[tournamentStatus].push(match);
+            return acc;
+        }, {} as { [key: string]: Match[] });
     };
 
-    // Initialize players for Round of 32 with random pairing
-    useEffect(() => {
-        const players = Array.from({ length: 32 }, (_, i) => `Player ${i + 1}`);
-        const shuffledPlayers = shuffleArray(players);
-        const initialMatches = Array.from({ length: 16 }, (_, i) => ({
-            id: `match-${i}`,
-            player1: shuffledPlayers[i * 2],
-            player2: shuffledPlayers[i * 2 + 1],
-        }));
-        setMatches({ ROUND_OF_32: initialMatches });
-    }, []);
-
-    // Generate next round matches based on winners of current round
+    // Generate next round matches based on winners of the current round
     const generateNextRound = (round: Round) => {
         const roundMatches = matches[round];
         if (!roundMatches || roundMatches.some(match => !match.winner)) {
@@ -64,6 +82,18 @@ const TournamentMatches: React.FC = () => {
             return acc;
         }, []);
 
+        // Save new round matches via the API
+        if (tournamentId) {
+            axios
+                .post(`/api/matches/tournament/${tournamentId}`, nextRoundMatches)
+                .then(response => {
+                    console.log('Next round matches saved:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error saving next round matches:', error);
+                });
+        }
+
         setMatches(prevMatches => ({
             ...prevMatches,
             [nextRound]: nextRoundMatches,
@@ -71,19 +101,32 @@ const TournamentMatches: React.FC = () => {
         setCurrentRound(nextRound);
     };
 
-    // Declare winner for a match
+    // Declare winner for a match and update via API
     const declareWinner = (round: Round, matchId: string, winner: string) => {
+        // Update the match locally
         setMatches(prevMatches => ({
             ...prevMatches,
             [round]: prevMatches[round]?.map(match =>
                 match.id === matchId ? { ...match, winner } : match
             ),
         }));
+
+        // Save the winner to the backend API
+        if (tournamentId) {
+            axios
+                .post(`/api/matches/${matchId}/winner/${winner}`)
+                .then(response => {
+                    console.log('Winner declared:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error declaring winner:', error);
+                });
+        }
     };
 
     // Navigate back to the tournament page
     const handleSave = () => {
-        navigate('/tournaments');  
+        navigate('/tournaments');
     };
 
     return (

@@ -1,47 +1,95 @@
 import React, { useEffect, useState } from 'react';
-import { Accordion } from 'react-bootstrap';
+import './Matches.css';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
+import axios from 'axios'; // Axios for API calls
+import { isAuthenticated, getUserRole } from '../authUtils';
 
 interface Match {
-    id: number;
+    id: string;
     player1: string;
     player2: string;
-    winner?: string; 
+    winner?: string;
+    status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 }
 
 const Matches: React.FC = () => {
-    const [allMatches, setAllMatches] = useState<Match[]>([]);
+    const [matches, setMatches] = useState<Match[]>([]);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const tournamentId = queryParams.get('id'); // Fetch tournament ID 
+    const isUserAuthenticated = isAuthenticated();
+    const userRole = getUserRole();
 
+    // Ensure useEffect is called before the early return
     useEffect(() => {
-        // Fetch all matches
-        const fetchMatches = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/matches');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch matches');
-                }
-                const data = await response.json();
-                setAllMatches(data);
-            } catch (error) {
-                console.error('Error fetching matches:', error);
-            }
-        };
+        if (tournamentId) {
+            // Fetch matches for the tournament from the API
+            axios
+                .get(`/api/matches/tournament/${tournamentId}`)
+                .then(response => {
+                    setMatches(response.data as Match[]);
+                })
+                .catch(error => {
+                    console.error('Error fetching matches:', error);
+                });
+        }
+    }, [tournamentId]);
 
-        fetchMatches();
-    }, []);
+    // If the user is not authenticated or doesn't have the correct role, redirect
+    if (!isUserAuthenticated || userRole !== "ROLE_PLAYER") {
+        return <Navigate to="/home" />;
+    }
+
+    // Group matches by status
+    const groupMatchesByStatus = (matches: Match[]) => {
+        return {
+            notStarted: matches.filter(match => match.status === 'NOT_STARTED'),
+            inProgress: matches.filter(match => match.status === 'IN_PROGRESS'),
+            completed: matches.filter(match => match.status === 'COMPLETED'),
+        };
+    };
+
+    const groupedMatches = groupMatchesByStatus(matches);
+
+    // Navigate back to the tournament page
+    const handleBackToTournament = () => {
+        navigate('/tournaments');
+    };
 
     return (
-        <div className="container mt-4">
-            <h2>All Matches</h2>
-            <Accordion>
-                {allMatches.map((match) => (
-                    <Accordion.Item eventKey={match.id.toString()} key={match.id}>
-                        <Accordion.Header>{match.player1} vs {match.player2}</Accordion.Header>
-                        <Accordion.Body>
-                            <div>Winner: {match.winner || 'N/A'}</div>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                ))}
-            </Accordion>
+        <div className="matches-display">
+            <h2>Tournament Match Details</h2>
+
+            <div className="info-box">
+                <p>Below are all matches for this tournament.</p>
+            </div>
+
+            {/* Matches Grouped by Status */}
+            {Object.keys(groupedMatches).map((statusKey) => {
+                const statusGroup = groupedMatches[statusKey as keyof typeof groupedMatches];
+                return (
+                    <div className="match-status-group" key={statusKey}>
+                        <h3>{statusKey.replace(/([A-Z])/g, ' $1').toUpperCase()}</h3> {/* Capitalize status */}
+                        {statusGroup.length > 0 ? (
+                            statusGroup.map(match => (
+                                <div className="match-card" key={match.id}>
+                                    <h4>{match.player1} vs {match.player2}</h4>
+                                    <p>Status: {match.status}</p>
+                                    <p>{match.winner ? `Winner: ${match.winner}` : 'Winner: TBD'}</p>
+                                    <button onClick={() => navigate(`/matches/${match.id}`)}>View Match</button>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No matches available in this status.</p>
+                        )}
+                    </div>
+                );
+            })}
+
+            <button className="back-button" onClick={handleBackToTournament}>
+                Back to Tournament List
+            </button>
         </div>
     );
 };
